@@ -90,27 +90,30 @@ namespace lima
 
 		//BufferCtrlObj* _getBufferCtrlObj() {return m_buffer;}
 		void setExposing(pcoAcqStatus exposing) {m_exposing = exposing;}
-		void setStarted(bool started) {m_started = started;}
+		void setStarted(bool started); 
 		bool getStarted() {return m_started;}
 		pcoAcqStatus getExposing() {return m_exposing;}
 
+		int _getRequestStop(int &nrStop);
+		void _setRequestStop(int requestStop);
+
 	
 	private:
+		double	m_exp_time;			/* exposure time in s */
+		double	m_lat_time;			/* lattency - delay? */
 
+		Camera*		m_cam;
+		HANDLE&	m_handle;
+		TrigMode		m_trig_mode;
+		BufferCtrlObj*	m_buffer;
+		int		m_nb_frames;
+		int m_nb_acq_frames;
+		bool		m_started;
+		pcoAcqStatus m_exposing;
+		struct stcPcoData *m_pcoData;
+		Cond  m_cond;
+		int m_requestStop, m_requestStopRetry;
 
-     	double	m_exp_time;			/* exposure time in s */
-     	double	m_lat_time;			/* lattency - delay? */
-
-      Camera*		m_cam;
-      HANDLE&	m_handle;
-      TrigMode		m_trig_mode;
-      BufferCtrlObj*	m_buffer;
-      int		m_nb_frames;
-	  int m_nb_acq_frames;
-	  bool		m_started;
-	pcoAcqStatus m_exposing;
-	struct stcPcoData *m_pcoData;
-	
 	};
 
   } // namespace Pco

@@ -57,6 +57,8 @@ SyncCtrlObj::SyncCtrlObj(Camera *cam,BufferCtrlObj *buffer) :
 {
 	// DONE
   DEB_CONSTRUCTOR();
+    _setRequestStop(stopNone);
+
 }
 
 //=========================================================================================================
@@ -431,67 +433,59 @@ void SyncCtrlObj::startAcq()
   
 		if(m_buffer) {
 			m_buffer->startAcq();
-			setStarted(true);
-			m_buffer->_setRequestStop(stopNone);
 		}
-      //else m_cam->startAcq();
+
+		_setRequestStop(stopNone);
+		setExposing(pcoAcqStart);
+		m_cam->startAcq();
+		setStarted(true);
     }
+}
+
+
+
+//=========================================================================================================
+//=========================================================================================================
+void SyncCtrlObj::setStarted(bool started) {
+
+	DEB_MEMBER_FUNCT();
+	DEF_FNID;
+	AutoMutex lock(m_cond.mutex());
+
+	
+	m_started = started;
+	m_cond.broadcast();
+
+	DEB_ALWAYS() << fnId << "[exit]" << ": " << DEB_VAR2(m_started, started);
 }
 
 //=========================================================================================================
 //=========================================================================================================
 void SyncCtrlObj::stopAcq(bool clearQueue)
 {
-	//int error;
+	DEB_MEMBER_FUNCT();
+	DEF_FNID;
+
+
 	int _stopRequestIn, _stopRequestOut, _nrStop;
 	bool _started;
+	bool resWait;
 
+	AutoMutex lock(m_cond.mutex());
 
-  DEB_MEMBER_FUNCT();
-  DEF_FNID;
+	m_cam->msgLog("stopAcq");
 
-  m_cam->msgLog("stopAcq");
-  DEB_ALWAYS() << ": SyncCtrlObj::stopAcq()";
+	_stopRequestIn = _getRequestStop(_nrStop);
 
-  _stopRequestIn = m_buffer->_getRequestStop(_nrStop);
+	while(_started = getStarted()) {
+		_setRequestStop(stopRequest);
+        resWait = m_cond.wait(5.);
+	}
+	lock.unlock();
+	_stopRequestOut = _getRequestStop(_nrStop);
 
-  if(_started = getStarted())
-    {
-		switch(_stopRequestIn) {
-			case stopNone:
-				m_buffer->_setRequestStop(stopRequest);
-
-				//m_cam->_pcoSet_RecordingState(0, error);
-				//PCO_THROW_OR_TRACE(error, "Try to stop Acq") ;
-				break;
-
-			//case stopProcessing:
-				//m_buffer->_setRequestStop(stopRequest);
-				//break;			
-
-			case stopRequest:
-				m_buffer->_setRequestStop(stopRequest);
-				break;
-
-			default:
-				break;
-
-		} // sw
-
-
-    //  if(clearQueue) - ignored
-    }
-
-
-
-  _stopRequestOut = m_buffer->_getRequestStop(_nrStop);
-
-	//setStarted(false);
-
-  DEB_ALWAYS() << fnId << ": " << DEB_VAR4(_started, _stopRequestIn, _stopRequestOut, _nrStop);
+	DEB_ALWAYS() << fnId << " [exit]" << ": " << DEB_VAR5(_started, _stopRequestIn, _stopRequestOut, _nrStop, resWait);
 }
-
-
 //=========================================================================================================
 //=========================================================================================================
 void SyncCtrlObj::getStatus(HwInterface::StatusType& status)
@@ -545,3 +539,37 @@ DEB_TRACE() << DEB_VAR3(_started, m_buffer, m_exposing);
 
   DEB_RETURN() << DEB_VAR1(status);
 }
+
+//=========================================================================================================
+//=========================================================================================================
+int SyncCtrlObj::_getRequestStop(int &nrStop)
+{ 
+	nrStop = m_requestStopRetry;
+	return m_requestStop;
+}
+
+
+void SyncCtrlObj::_setRequestStop(int requestStop) 
+{ 
+	DEB_MEMBER_FUNCT();
+	DEF_FNID;
+
+	int m_requestStop0 = m_requestStop;
+
+	switch(requestStop) {
+			case stopNone:
+				m_requestStopRetry = 0;
+				m_requestStop = requestStop;
+				break;
+
+			case stopRequest:
+				m_requestStopRetry++;
+				m_requestStop = requestStop;
+				break;
+
+	}
+	//DEB_ALWAYS() <<  fnId << " [exit]: "  << DEB_VAR4(m_requestStop0, m_requestStop, m_requestStopRetry, requestStop);
+
+}
+//=========================================================================================================
+//=========================================================================================================

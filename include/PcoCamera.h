@@ -70,7 +70,7 @@
 
 //---------------------------------------
 
-
+#define	ALWAYS_NL   "\n===\n"
 #define KILOBYTE (1024LL)
 #define MEGABYTE (KILOBYTE * KILOBYTE)
 #define GIGABYTE (KILOBYTE * MEGABYTE)
@@ -93,6 +93,7 @@ struct stcXlatCode2Str {
 
 #define LEN_TRACEACQ_MSG 512
 #define LEN_ERROR_MSG			(512-1)
+#define LEN_MSG					(256-1)
 
 #define PCO_MAXSEGMENTS 4
 
@@ -104,6 +105,7 @@ void msElapsedTimeSet(struct __timeb64 &t0);
 
 void usElapsedTimeSet(LARGE_INTEGER &tick0) ;
 long long usElapsedTime(LARGE_INTEGER &tick0) ;
+double usElapsedTimeTicsPerSec() ;
 
 
 enum timestampFmt {Iso=1, IsoHMS, FnFull, FnDate};
@@ -152,8 +154,11 @@ struct stcTemp {
 	short wSetpoint;
 };
 
+struct stcLongLongStr {
+	long long value;
+	char *desc;
+};
 
-#define LEN_TRACEACQ_TRHEAD 8
 #define SIZEARR_stcPcoHWIOSignal 10
 struct stcPcoData {
 	PCO_General stcPcoGeneral;
@@ -169,7 +174,17 @@ struct stcPcoData {
 	WORD wNrPcoHWIOSignal;
 	unsigned long long debugLevel;
 	unsigned long long testCmdMode;
+	BYTE ipField[4];
 
+#define PARAMS_NR 20
+#define PARAMS_LEN_TOKEN (31)
+#define PARAMS_LEN_BUFF (PARAMS_NR * (PARAMS_LEN_TOKEN +1))
+	struct stcParams {
+		char *ptrKey[PARAMS_NR];
+		char *ptrValue[PARAMS_NR];
+		int nr;
+		char buff[PARAMS_LEN_BUFF+1];
+	} params;
 
 	DWORD dwPixelRateMax;
 
@@ -178,84 +193,86 @@ struct stcPcoData {
 
 	PCO_SC2_CL_TRANSFER_PARAM clTransferParam;
 	int pcoError;
-        char pcoErrorMsg[ERR_SIZE+1];
+    char pcoErrorMsg[ERR_SIZE+1];
 
 	double	cocRunTime;		/* cam operation code - delay & exposure time & readout in s*/
 	double	frameRate;
     WORD    activeRamSegment;				/* active ram segment */
 
-      	//WORD		m_acq_mode;
-      	bool		bExtTrigEnabled;
-      	WORD		storage_mode;
-      	WORD		recorder_submode;
-		unsigned long	frames_per_buffer; 
-        DWORD   dwRamSize;
-        WORD    wPixPerPage;
-        DWORD   dwMaxFramesInSegment[4];
-        DWORD   dwSegmentSize[4];
+  	//WORD		m_acq_mode;
+  	bool		bExtTrigEnabled;
+  	WORD		storage_mode;
+  	WORD		recorder_submode;
+	unsigned long	frames_per_buffer; 
+    DWORD   dwRamSize;
+    WORD    wPixPerPage;
+    DWORD   dwMaxFramesInSegment[4];
+    DWORD   dwSegmentSize[4];
 
-        DWORD   dwValidImageCnt[4];
-        DWORD   dwMaxImageCnt[4];
+    DWORD   dwValidImageCnt[4];
+    DWORD   dwMaxImageCnt[4];
 
-		char		camera_name[CAMERA_NAME_SIZE];
-        char		sensor_type[64];
+	WORD	wRoiX0Now, wRoiY0Now, wRoiX1Now, wRoiY1Now;
 
-        
-        WORD    wNowADC, wNumADC;
-        unsigned int    maxwidth_step, maxheight_step;
+	char		camera_name[CAMERA_NAME_SIZE];
+    char		sensor_type[64];
+    
+    WORD    wNowADC, wNumADC;
+    unsigned int    maxwidth_step, maxheight_step;
 
-        struct stcTemp temperature;
+    struct stcTemp temperature;
 
-		WORD bMetaDataAllowed, wMetaDataMode, wMetaDataSize, wMetaDataVersion;
+	WORD bMetaDataAllowed, wMetaDataMode, wMetaDataSize, wMetaDataVersion;
+	
+	long msAcqRec, msAcqXfer, msAcqTout, msAcqTnow, msAcqAll;
+	time_t msAcqRecTimestamp, msAcqXferTimestamp, msAcqToutTimestamp, msAcqTnowTimestamp;
+
+	struct stcTraceAcq{
+		DWORD nrImgRecorded;
+		DWORD maxImgCount;
+		int nrImgRequested;
+		int nrImgRequested0;
+		int nrImgAcquired;
+		long msTotal, msRecord, msRecordLoop, msXfer, msTout;
+		long msStartAcqStart, msStartAcqEnd;
 		
-		long msAcqRec, msAcqXfer, msAcqTout, msAcqTnow, msAcqAll;
-		time_t msAcqRecTimestamp, msAcqXferTimestamp, msAcqToutTimestamp, msAcqTnowTimestamp;
-
-		struct stcTraceAcq{
-			DWORD nrImgRecorded;
-			DWORD maxImgCount;
-			int nrImgRequested;
-			int nrImgRequested0;
-			int nrImgAcquired;
-			long msTotal, msRecord, msRecordLoop, msXfer, msTout;
-			long msStartAcqStart, msStartAcqEnd;
-			
-			//long msThreadBeforeXfer, msThreadAfterXfer, msThreadEnd;
-			long msThread[LEN_TRACEACQ_TRHEAD];
-			long msReserved[15-LEN_TRACEACQ_TRHEAD];
-			
-			long long usThread[LEN_TRACEACQ_TRHEAD];
-			double msImgCoc;
-			double sExposure, sDelay;
-			time_t endRecordTimestamp;
-			time_t endXferTimestamp;
-			char *fnId;
-			char *fnIdXfer;
-			char msg[LEN_TRACEACQ_MSG+1];
-		} traceAcq;
-
-		DWORD dwPixelRate, dwPixelRateRequested;
-		double fTransferRateMHzMax;
-
-		WORD wXResActual, wYResActual, wXResMax, wYResMax;
-		WORD wLUT_Identifier, wLUT_Parameter;
-
-		DWORD dwAllocatedBufferSize;
-		int iAllocatedBufferNumber;
-		int iAllocatedBufferNumberLima;
-		bool bAllocatedBufferDone;
-		bool bRollingShutter;
-
-		char version[BUFF_VERSION];
-
-		double min_exp_time, min_exp_time_err, step_exp_time;
-		double max_exp_time, max_exp_time_err;
-		double min_lat_time, min_lat_time_err, step_lat_time;
-		double max_lat_time, max_lat_time_err;
+#define LEN_TRACEACQ_TRHEAD 11
+		//long msThreadBeforeXfer, msThreadAfterXfer, msThreadEnd;
+		//long msThread[LEN_TRACEACQ_TRHEAD];
+		long msReserved[15-LEN_TRACEACQ_TRHEAD];
 		
-		stcPcoData();
-		void traceAcqClean();
-		void traceMsg(char *s);
+		struct stcLongLongStr usTicks[LEN_TRACEACQ_TRHEAD];
+		double msImgCoc;
+		double sExposure, sDelay;
+		time_t endRecordTimestamp;
+		time_t endXferTimestamp;
+		char *fnId;
+		char *fnIdXfer;
+		char msg[LEN_TRACEACQ_MSG+1];
+	} traceAcq;
+
+	DWORD dwPixelRate, dwPixelRateRequested;
+	double fTransferRateMHzMax;
+
+	WORD wXResActual, wYResActual, wXResMax, wYResMax;
+	WORD wLUT_Identifier, wLUT_Parameter;
+
+	DWORD dwAllocatedBufferSize;
+	int iAllocatedBufferNumber;
+	int iAllocatedBufferNumberLima;
+	bool bAllocatedBufferDone;
+	bool bRollingShutter;
+
+	char version[BUFF_VERSION];
+
+	double min_exp_time, min_exp_time_err, step_exp_time;
+	double max_exp_time, max_exp_time_err;
+	double min_lat_time, min_lat_time_err, step_lat_time;
+	double max_lat_time, max_lat_time_err;
+	
+	stcPcoData();
+	void traceAcqClean();
+	void traceMsg(char *s);
 };
 
 enum enumChange {
@@ -331,7 +348,8 @@ namespace lima
 		
 		void getXYsteps(unsigned int &xSteps, unsigned int &ySteps);
 
-        void getArmWidthHeight(WORD& width,WORD& height){width = m_pcoData->wXResActual, height = m_pcoData->wYResActual;}
+//        void getArmWidthHeight(WORD& width,WORD& height){width = m_pcoData->wXResActual, height = m_pcoData->wYResActual;}
+        void getArmWidthHeight(WORD& width,WORD& height);
 
 		void getBytesPerPixel(unsigned int& pixbytes);
 		void getBitsPerPixel(WORD& pixbits);
@@ -354,7 +372,7 @@ namespace lima
 		SyncCtrlObj*	_getSyncCtrlObj() { return m_sync;}
 		struct stcPcoData * _getPcoData() {return  m_pcoData; }
 		
-		char* _PcoCheckError(int line, char *file, int err, int&error) ;
+		char* _PcoCheckError(int line, char *file, int err, int&error, char *fn = "***") ;
 		int pcoGetError() {return m_pcoData->pcoError;}
 
 		char *_pcoSet_RecordingState(int state, int &error);
@@ -365,8 +383,12 @@ namespace lima
 		bool _isConfig(){return m_config; };
 		void _pco_set_shutter_rolling_edge(int &error);
 		void msgLog(char *s);
+		bool _getIsArmed() {return m_isArmed; };
+		void _armRequired(bool armRequiered){m_isArmed = !armRequiered;};
+		void _traceMsg(char *s);
 		
-
+		void paramsInit(const char *str);
+		bool paramsGet(const char *key, char *&value);
 
 	private:
 		PcoHwEventCtrlObj *m_HwEventCtrlObj;
@@ -380,6 +402,8 @@ namespace lima
 
         HANDLE	m_handle;				/* handle of opened camera */
         bool m_cam_connected;
+
+		Cond m_cond;
 	
 		int m_pcoError;
 
@@ -388,24 +412,24 @@ namespace lima
 		
 		//struct stcSize m_size;
 
-
 		int		m_acq_frame_nb;
 		bool m_config;
 
+		bool m_isArmed;
 
-        int PcoCheckError(int line, char *file, int err);
+        int PcoCheckError(int line, char *file, int err, char *fn = "***");
 
 		void _allocBuffer();
 
         char *_talk(char *cmd, char *output, int lg);
 
-		char *_pcoSet_Trig_Acq_Mode(int &error);
-		char *_pcoSet_Storage_subRecord_Mode(enumPcoStorageMode, int &error);
-		int _pcoGet_Storage_subRecord_Mode();
-		char *_pcoSet_Exposure_Delay_Time(int &error, int ph);
-		char *_pcoSet_Cameralink_GigE_Parameters(int &error);
-		char *_pcoGet_Camera_Type(int &error);
-		char *_pcoGet_TemperatureInfo(int &error);
+		char *_pco_SetTriggerMode_SetAcquireMode(int &error);
+		char *_pco_SetStorageMode_SetRecorderSubmode(enumPcoStorageMode, int &error);
+		int _pco_GetStorageMode_GetRecorderSubmode();
+		char *_pco_SetDelayExposureTime(int &error, int ph);
+		char *_pco_SetCamLinkSetImageParameters(int &error);
+		char *_pco_GetCameraType(int &error);
+		char *_pco_GetTemperatureInfo(int &error);
 		void _pco_GetPixelRate(DWORD &pixRate, DWORD &pixRateNext, int &error);
 		void _presetPixelRate(DWORD &pixRate, int &error);
 
@@ -416,9 +440,10 @@ namespace lima
 		void _init();
 		void _init_edge();
 		void _init_dimax();
-		char *_prepare_cameralink_interface(int &error);
-		char *_get_coc_runtime(int &error);
-		char *_set_metadata_mode(WORD wMetaDataMode, int &error);
+		char *_pco_SetTransferParameter_SetActiveLookupTable(int &error);
+		char *_pco_SetPixelRate(int &error);
+		char *_pco_GetCOCRuntime(int &error);
+		char *_pco_SetMetaDataMode(WORD wMetaDataMode, int &error);
 
 		bool _isValid_pixelRate(DWORD dwPixelRate);
 		
@@ -443,8 +468,8 @@ namespace lima
 
 		ringLog *m_msgLog;
 		ringLog *m_tmpLog;
-		int _pco_getADC(int &adc_working, int &adc_max);
-		int _pco_setADC(int adc_new, int &adc_working);
+		int _pco_GetADCOperation(int &adc_working, int &adc_max);
+		int _pco_SetADCOperation(int adc_new, int &adc_working);
 		int _pco_GetImageTiming(double &frameTime, double &expTime, double &sysDelay, double &sysJitter, double &trigDelay );
 
     };

@@ -96,8 +96,8 @@ typedef int tPvErr;
 { \
 		if(__err__){ \
 			char ___buff___[ERRMSG_SIZE+1]; \
-			sprintf_s(___buff___, ERRMSG_SIZE, "=== %s PcoError[x%08x][%s]", __msg__, m_pcoData->pcoError,  m_pcoData->pcoErrorMsg); \
-			DEB_TRACE() << ___buff___; \
+			sprintf_s(___buff___, ERRMSG_SIZE, "LIMA_HW_EXC ===> %s PcoError[x%08x][%s]", __msg__, m_pcoData->pcoError,  m_pcoData->pcoErrorMsg); \
+			DEB_ALWAYS() << ___buff___; \
 			throw LIMA_HW_EXC(Error, ___buff___); \
 		} \
 		DEB_TRACE() << "*** " <<  __msg__ << " OK" ; \
@@ -114,5 +114,14 @@ typedef int tPvErr;
 }
 
 #define DEF_FNID 	static char *fnId =__FUNCTION__;
+
+#define PRINTLINES { for(int i = 0; i<50;i++) printf("=====  %s [%d]/[%d]\n", __FILE__, __LINE__,i); }
+
+#define PCO_FN1(er,mg, fn, x1) {mg = #fn; er = PcoCheckError(__LINE__, __FILE__, fn ( (x1) ), #fn ); }
+#define PCO_FN2(er,mg, fn, x1, x2) {mg = #fn; er = PcoCheckError(__LINE__, __FILE__, fn ( (x1),(x2) ), #fn ) ; }
+#define PCO_FN3(er,mg, fn, x1, x2, x3) {mg = #fn; er = PcoCheckError(__LINE__, __FILE__, fn ( (x1),(x2),(x3) ), #fn ) ; }
+#define PCO_FN4(er,mg, fn, x1, x2, x3, x4) {mg = #fn; er = PcoCheckError(__LINE__, __FILE__, fn ( (x1),(x2),(x3),(x4) ), #fn ) ; }
+#define PCO_FN5(er,mg, fn, x1, x2, x3, x4, x5) {mg = #fn; er = PcoCheckError(__LINE__, __FILE__, fn ( (x1),(x2),(x3),(x4),(x5) ), #fn ) ; }
+
 
 #endif

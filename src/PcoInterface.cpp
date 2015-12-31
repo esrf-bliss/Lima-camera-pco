@@ -52,10 +52,12 @@ Interface::Interface(Camera *cam) :
   
   m_RoiCtrlObj = new RoiCtrlObj(cam);
   m_det_info = new DetInfoCtrlObj(cam);
+
   cam->m_buffer = m_buffer = new BufferCtrlObj(cam);
+  
   cam->m_sync = m_sync = new SyncCtrlObj(cam, m_buffer);
    
-  DEB_TRACE() << DEB_VAR2(cam, m_buffer);
+  DEB_TRACE() << DEB_VAR5(cam, m_buffer, m_sync, m_det_info, m_RoiCtrlObj);
 
   if(m_buffer){
     m_buffer->m_sync = m_sync;
@@ -82,14 +84,11 @@ Interface::Interface(Camera *cam) :
 //=========================================================================================================
 void Interface::getCapList(CapList &cap_list) const
 {
-	// DONE
-  cap_list.push_back(HwCap(m_HwEventCtrlObj));
-  cap_list.push_back(HwCap(m_RoiCtrlObj));
-  cap_list.push_back(HwCap(m_sync));
-  cap_list.push_back(HwCap(m_det_info));
-  cap_list.push_back(HwCap(m_buffer));
-  //cap_list.push_back(HwCap(m_buffer));
-  
+	cap_list.push_back(HwCap(m_HwEventCtrlObj));
+	cap_list.push_back(HwCap(m_RoiCtrlObj));
+	cap_list.push_back(HwCap(m_sync));
+	cap_list.push_back(HwCap(m_det_info));
+	cap_list.push_back(HwCap(m_buffer));
 }
 
 //=========================================================================================================
@@ -109,10 +108,9 @@ void Interface::reset(ResetLevel reset_level)
 //=========================================================================================================
 void Interface::prepareAcq()
 {
-  DEB_MEMBER_FUNCT();
-	// DONE
-  if(m_buffer)
-    m_buffer->prepareAcq();
+	DEB_MEMBER_FUNCT();
+	if(m_buffer)
+		m_buffer->prepareAcq();
 }
 
 //=========================================================================================================
