@@ -123,7 +123,10 @@ typedef struct _PCO_USB_TRANSFER_PARAM {
    unsigned int   ClockFrequency;      // Pixelclock in Hz: 40000000,66000000,80000000
    unsigned int   Transmit;            // single or continuous transmitting images, 0-single, 1-continuous
    unsigned int   UsbConfig;           // 0=bulk_image, 1=iso_image
-   unsigned int   ImgTransMode;        // 1: 12Bit Image 0: 14Bit Image 4: VTI coding enabled
+   unsigned int   ImgTransMode;        // Bit0: 14Bit Image
+                                       // Bit1: 12Bit Image (obsolete)
+                                       // Bit2: VTI coding enabled
+                                       // Bit3: 1024Byte padding enabled
 }PCO_USB_TRANSFER_PARAM;
 
 #define PCO_GIGE_PAKET_RESEND    0x00000001

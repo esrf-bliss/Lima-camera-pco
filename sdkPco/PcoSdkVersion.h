@@ -1,2 +1,2 @@
-#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.18] $"
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
 
