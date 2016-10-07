@@ -905,23 +905,56 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 
 
 		//----------------------------------------------------------------------------------------------------------
+		// dwGeneralCapsDESC1;      // General capabilities:
+        //		Bit 3: Timestamp ASCII only available (Timestamp mode 3 enabled)
+		//		Bit 8: Timestamp not available
+		// m_pcoData->stcPcoDescription.dwGeneralCapsDESC1 & BIT3 / BIT8
+
+		
 		key = keys[ikey] = "timestampMode"; 
 		keys_desc[ikey++] = "(RW) pco timestampMode [<new value (0, 1, 2, 3)>]"; 
 		if(_stricmp(cmd, key) == 0){
 			int error, val;
 			WORD wTimeStampMode;
+			DWORD capsDesc1; 
+			_pco_GetGeneralCapsDESC(capsDesc1, error);
 
-			error = PcoCheckError(__LINE__, __FILE__, PCO_GetTimestampMode(m_handle, &wTimeStampMode));
+			int valMax;
+
+			if(capsDesc1 & BIT8)
+			{
+				ptr += sprintf_s(ptr, ptrMax - ptr, "timestampmode not allowed\n");
+				return output;
+			}
+			valMax = (capsDesc1 & BIT3) ? 3 : 2;
+
+			_pco_GetTimestampMode(wTimeStampMode, error);
+			if(error) 
+			{
+				ptr += sprintf_s(ptr, ptrMax - ptr, "SDK ERROR _pco_GetTimestampMode\n");
+				return output;
+			}
 			ptr += sprintf_s(ptr, ptrMax - ptr, "%d   ", wTimeStampMode);
 
 			if((tokNr == 1)){
 				val = atoi(tok[1]);
-				if((val < 0) ||(val>3)) {
-					ptr += sprintf_s(ptr, ptrMax - ptr, "invalid value [%d] must be (0, 1, 2, 3)",  val);
+				
+				if((val < 0) ||(val>valMax)) {
+					ptr += sprintf_s(ptr, ptrMax - ptr, "invalid value [%d] must be (0 - %d)",  val, valMax);
 				}else {
 					wTimeStampMode = val;
-					error = PcoCheckError(__LINE__, __FILE__, PCO_SetTimestampMode(m_handle, wTimeStampMode));
-					error = PcoCheckError(__LINE__, __FILE__, PCO_GetTimestampMode(m_handle, &wTimeStampMode));
+					_pco_SetTimestampMode(wTimeStampMode, error);
+					if(error) 
+					{
+						ptr += sprintf_s(ptr, ptrMax - ptr, "SDK ERROR _pco_SetTimestampMode\n");
+						return output;
+					}
+					_pco_GetTimestampMode(wTimeStampMode, error);
+					if(error) 
+					{
+						ptr += sprintf_s(ptr, ptrMax - ptr, "SDK ERROR _pco_GetTimestampMode\n");
+						return output;
+					}
 					ptr += sprintf_s(ptr, ptrMax - ptr, "%d   ", wTimeStampMode);
 				}
 			}
@@ -1760,11 +1793,13 @@ char * Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
 	
 	//--------------- general info
 	if(flag & CAMINFO_GENERAL) {
+
 		ptr += sprintf_s(ptr, ptrMax - ptr, "* general info \n");
 
 		
-		ptr += sprintf_s(ptr, ptrMax - ptr, "* ... GigE IP [%d.%d.%d.%d]\n", 
-			m_pcoData->ipField[0], m_pcoData->ipField[1], m_pcoData->ipField[2], m_pcoData->ipField[3]);
+		// OBSOLETE after sdk 120
+		//ptr += sprintf_s(ptr, ptrMax - ptr, "* ... GigE IP [%d.%d.%d.%d]\n", 
+		//	m_pcoData->ipField[0], m_pcoData->ipField[1], m_pcoData->ipField[2], m_pcoData->ipField[3]);
 		
 		double pixSizeX, pixSizeY;
 		_get_PixelSize(pixSizeX, pixSizeY);
@@ -2011,7 +2046,7 @@ char * Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
 		WORD wTimeStampMode;
 		char *mode;
 		int error;
-		error = PcoCheckError(__LINE__, __FILE__, PCO_GetTimestampMode(m_handle, &wTimeStampMode));
+		_pco_GetTimestampMode(wTimeStampMode, error);
 		if(error) wTimeStampMode = 100;
 		switch(wTimeStampMode) {
 			case 0: mode = "no stamp in image"; break;

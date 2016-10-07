@@ -2566,10 +2566,11 @@ void Camera::_checkImgNrInit(bool &checkImgNr, int &imgNrDiff, int &alignmentShi
 	checkImgNr = false;
 	imgNrDiff = 1;
 	alignmentShift = 0;
+	int err;
 
 	WORD wTimeStampMode;
 
-	PCO_GetTimestampMode(m_handle, &wTimeStampMode);
+	_pco_GetTimestampMode(wTimeStampMode, err);
 
 	if(wTimeStampMode == 0) return;
 	checkImgNr = true;

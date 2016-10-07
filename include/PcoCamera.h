@@ -42,6 +42,11 @@
 #define MICRO (1.0E-6)
 #define MILI (1.0E-3)
 
+//--------------------------------------- bits
+#define BIT3	(0x00000001 << 3)
+#define BIT8	(0x00000001 << 8)
+
+
 //--------------------------------------- debug const for talk
 #define DBG_BUFF           0x00000001
 #define DBG_XFER2LIMA      0x00000002
@@ -544,6 +549,11 @@ namespace lima
 		int _pco_GetImageTiming(double &frameTime, double &expTime, double &sysDelay, double &sysJitter, double &trigDelay );
 		int _pco_GetBitAlignment(int &alignment);
 		int _pco_SetBitAlignment(int alignment);
+
+		void _pco_SetTimestampMode(WORD mode, int &err);
+		void _pco_GetTimestampMode(WORD &mode, int &err);
+		void _pco_GetGeneralCapsDESC(DWORD &capsDesc1, int &err);
+		void _pco_GetTransferParameter(void* buffer, int ilen, int &err);
 
     };
   }
