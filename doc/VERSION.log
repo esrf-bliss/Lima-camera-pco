@@ -6,6 +6,9 @@ from: [../../install/] and [./bat/]
   to: [/t/rhoms1/install-2016-10-07_184851]
   to: [/t/rhoms1/install-beta]
 
+Camera::_isRunAfterAssign() - check for pco
+beta test / wid16napco2
+temp save
 
 2016/10/07 16:11:54 ==========================================
 scp: copied local directory to segfs and /tmp_14_days:
@@ -15,6 +18,14 @@ from: [../../install/] and [./bat/]
   to: [/t/rhoms1/install-beta]
 
 
+    sdk functions
+      _pco_SetTimestampMode _pco_GetTimestampMode
+      _pco_GetGeneralCapsDESC
+      _pco_GetTransferParameter
+    minor fixes
+    temp save
+
+
 2016/10/04 12:08:32 ==========================================
 scp: copied local directory to segfs and /tmp_14_days:
 from: [../../install/] and [./bat/]
@@ -22,7 +33,7 @@ from: [../../install/] and [./bat/]
   to: [/t/rhoms1/install-2016-10-04_120826]
   to: [/t/rhoms1/install-beta]
 
-
+upgrade sdk118 to sdk120
 
 2016/10/04 11:23:19 ==========================================
 #define        PCO_SDK_VERSION "$Id:    PCOSDK [1.18] $"

@@ -2621,6 +2621,7 @@ void Camera::_setCameraState(long long flag, bool val)
 
 bool Camera::_isRunAfterAssign()
 {
-	return false;
+	return _isCameraType(Edge);
+	//return false;
 }
 
