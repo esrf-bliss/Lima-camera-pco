@@ -500,7 +500,14 @@ int BufferCtrlObj::_xferImag()
 
 
 	dwFrameIdx = 1;
+	if(m_cam->_getDebug(DBG_WAITOBJ)){
+		DEB_ALWAYS() << "FRAME IDX before while: " << DEB_VAR2(dwFrameIdx, dwRequestedFrames);
+	}
 	while(dwFrameIdx <= dwRequestedFrames) {
+		
+		if(m_cam->_getDebug(DBG_WAITOBJ)){
+			DEB_ALWAYS() << "FRAME IDX inside while: " << DEB_VAR2(dwFrameIdx, dwRequestedFrames);
+		}
 
 _RETRY:
 
