@@ -1,4 +1,16 @@
 
+
+2016/10/10 19:55:05 ==========================================
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
+#define        PCO_GIT_VERSION "$Id:       PCO rev[2016-10-10 19:52:16 +0200] head[6456d62][6456d62796f491ce0c11d7a43b5a312be200d92a] ref[ (HEAD, gitrh/master, master)] at [2016/10/10 19:55:05] $"
+#define       LIMA_GIT_VERSION "$Id:      LIMA rev[2016-05-19 15:11:55 +0200] head[d0008e7][d0008e7c9e7ff688079bce4ea9ec79531d9b5df2] ref[ (HEAD, origin/core-1.4, core-1.4)] at [2016/10/10 19:55:05] $"
+#define    PROCLIB_GIT_VERSION "$Id:   PROCLIB rev[2016-01-15 15:44:08 +0100] head[3a08863][3a0886386e57a24ced072832d321d2dc43449e0b] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/10 19:55:05] $"
+#define  LIBCONFIG_GIT_VERSION "$Id: LIBCONFIG rev[2013-02-07 18:08:29 +0100] head[89c411a][89c411a541d4ab4d66257ccb85749853fd685cbb] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/10 19:55:05] $"
+#define      TANGO_GIT_VERSION "$Id:     TANGO rev[2016-06-02 14:44:15 +0200] head[479c51e][479c51e847021563cdca895d6a213ca98cf43ec4] ref[ (HEAD, github/master, github/HEAD, master)] at [2016/10/10 19:55:05] $"
+#define       SPEC_GIT_VERSION "$Id:      SPEC rev[2016-05-19 13:58:33 +0200] head[a5b9be5][a5b9be5efd7916a28cf0ab06fcc6f17e19194605] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/10 19:55:05] $"
+
+
+
 2016/10/07 18:48:58 ==========================================
 scp: copied local directory to segfs and /tmp_14_days:
 from: [../../install/] and [./bat/]
