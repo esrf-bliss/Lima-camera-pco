@@ -1,19 +1,33 @@
 
+
+2016/10/21 17:31:31 ==========================================
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
+#define        PCO_GIT_VERSION "$Id:       PCO rev[2016-10-21 17:11:33 +0200] head[ad7e43a][ad7e43a122dc712ce24fe6051319d9ed78f1cb06] ref[ (HEAD, gitrh/master, master)] at [2016/10/21 17:31:31] $"
+#define       LIMA_GIT_VERSION "$Id:      LIMA rev[2016-10-21 17:15:42 +0200] head[7d896a3][7d896a38135815af8765a61414ac6a33aa9ef78a] ref[ (HEAD, gitrh/pco-1.6.1, pco-1.6.1)] at [2016/10/21 17:31:31] $"
+#define    PROCLIB_GIT_VERSION "$Id:   PROCLIB rev[2016-01-15 15:44:08 +0100] head[3a08863][3a0886386e57a24ced072832d321d2dc43449e0b] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/21 17:31:31] $"
+#define  LIBCONFIG_GIT_VERSION "$Id: LIBCONFIG rev[2013-02-07 18:08:29 +0100] head[89c411a][89c411a541d4ab4d66257ccb85749853fd685cbb] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/21 17:31:31] $"
+#define      TANGO_GIT_VERSION "$Id:     TANGO rev[2016-09-27 17:28:03 +0200] head[75531aa][75531aaf9bcda8b27a09b92cf355307847835d6c] ref[ (HEAD, github/master, github/HEAD)] at [2016/10/21 17:31:31] $"
+#define       SPEC_GIT_VERSION "$Id:      SPEC rev[2016-10-10 09:40:10 +0200] head[65690d3][65690d3b7d24783256b279542a796c8a8a3f795f] ref[ (HEAD, origin/master, origin/HEAD)] at [2016/10/21 17:31:31] $"
+
+
 2016/10/21 16:51:02 ==========================================
 scp: copied local directory to segfs and /tmp_14_days:
 from: [../../install/] and [./bat/]
   to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-10-21_165055]
   to: [/t/rhoms1/install-2016-10-21_165055]
   to: [/t/rhoms1/install-beta]
+  
+- added new pco edge subtypes
+- added CLHS dll
+- tmp save
 
+- wid00limande
+-- hd failed / new one restored with image (to check if it is corrupted)
+-- me5 clhs driver / alert of non signed / accepted / alert of not well installed / not worked
+-- complete update of windows 
+-- me5 clhs driver / installed ok without warnings - microdiagnostics ok
 
-2016/10/11 16:13:00 ==========================================
-scp: copied local directory to segfs and /tmp_14_days:
-from: [../../install/] and [./bat/]
-  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-10-11_161254]
-  to: [/t/rhoms1/install-2016-10-11_161254]
-  to: [/t/rhoms1/install-beta]
-
+- testing with id15 / PCO EDGE hs (EDGE_55) (I/F CAMERALINK_HS) (SN 61002688)
 
 
 2016/10/11 16:11:34 ==========================================
@@ -31,7 +45,9 @@ from: [../../install/] and [./bat/]
 scp: copied local directory to segfs and /tmp_14_days:
 from: [../../install/] and [./bat/]
   to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-10-11_152514]
-  to: [/t/rhoms1/install-2016-10-11_152514]
+  to: [/t/rhoms1/install-2016-10-11_152514]- added new pco edge subtypes
+    - added CLHS dll
+    - tmp save
   to: [/t/rhoms1/install-beta]
 
 - lima 1.60 + skd 1.20 / win64
