@@ -333,6 +333,7 @@ enum enumPcoFamily {
 	Pco2k				= 1<<4,
 	Pco4k				= 1<<5,
 	EdgeUSB				= 1<<6,
+	EdgeHS				= 1<<7,
 };
 
 

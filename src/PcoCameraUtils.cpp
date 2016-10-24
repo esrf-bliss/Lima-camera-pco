@@ -286,7 +286,7 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 		}
 		//----------------------------------------------------------------------------------------------------------
 		key = keys[ikey] = "expDelayTime";     
-		keys_desc[ikey++] = "(R) exposure and delay time";
+		keys_desc[ikey++] = "(R) exposure & delay time (actual & valid ranges)";
 		if(_stricmp(cmd, key) == 0){
 			_camInfo(ptr, ptrMax, CAMINFO_EXP);
 			return output;

@@ -1,5 +1,26 @@
 
 
+2016/10/24 11:32:02 ==========================================
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
+#define        PCO_GIT_VERSION "$Id:       PCO rev[2016-10-21 17:33:10 +0200] head[0fdff6b][0fdff6be950f6ea5dc12231c9c1cdd9917b46fee] ref[ (HEAD, gitrh/master, master)] at [2016/10/24 11:32:01] $"
+#define       LIMA_GIT_VERSION "$Id:      LIMA rev[2016-10-21 17:15:42 +0200] head[7d896a3][7d896a38135815af8765a61414ac6a33aa9ef78a] ref[ (HEAD, gitrh/pco-1.6.1, pco-1.6.1)] at [2016/10/24 11:32:01] $"
+#define    PROCLIB_GIT_VERSION "$Id:   PROCLIB rev[2016-01-15 15:44:08 +0100] head[3a08863][3a0886386e57a24ced072832d321d2dc43449e0b] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/24 11:32:01] $"
+#define  LIBCONFIG_GIT_VERSION "$Id: LIBCONFIG rev[2013-02-07 18:08:29 +0100] head[89c411a][89c411a541d4ab4d66257ccb85749853fd685cbb] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/24 11:32:01] $"
+#define      TANGO_GIT_VERSION "$Id:     TANGO rev[2016-09-27 17:28:03 +0200] head[75531aa][75531aaf9bcda8b27a09b92cf355307847835d6c] ref[ (HEAD, github/master, github/HEAD)] at [2016/10/24 11:32:01] $"
+#define       SPEC_GIT_VERSION "$Id:      SPEC rev[2016-10-10 09:40:10 +0200] head[65690d3][65690d3b7d24783256b279542a796c8a8a3f795f] ref[ (HEAD, origin/master, origin/HEAD)] at [2016/10/24 11:32:01] $"
+
+
+
+2016/10/24 10:07:04 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-10-24_100657]
+  to: [/t/rhoms1/install-2016-10-24_100657]
+  to: [/t/rhoms1/install-beta]
+
+- clTransferParameters / included cameralinkHS
+
+
 2016/10/21 17:31:31 ==========================================
 #define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
 #define        PCO_GIT_VERSION "$Id:       PCO rev[2016-10-21 17:11:33 +0200] head[ad7e43a][ad7e43a122dc712ce24fe6051319d9ed78f1cb06] ref[ (HEAD, gitrh/master, master)] at [2016/10/21 17:31:31] $"

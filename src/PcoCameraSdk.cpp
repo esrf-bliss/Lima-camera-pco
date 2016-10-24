@@ -376,8 +376,10 @@ char *Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error){
 	// PCO_CL_DATAFORMAT_5x12L  0x09     //extract data to 16Bit
 	// PCO_CL_DATAFORMAT_5x12R  0x0A     //without extract
 
-	if (_getInterfaceType()==INTERFACE_CAMERALINK) 
+	if ((_getInterfaceType()==INTERFACE_CAMERALINK) || (_getInterfaceType()==INTERFACE_CAMERALINKHS)) 
 	{
+		char *info = "[none]";
+
 		PCO_FN3(error, pcoFn,PCO_GetTransferParameter, m_handle, &m_pcoData->clTransferParam, sizeof(PCO_SC2_CL_TRANSFER_PARAM));
 		PCO_THROW_OR_TRACE(error, pcoFn) ;
 	
@@ -389,6 +391,7 @@ char *Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error){
 				//m_pcoData->clTransferParam.Transmit = 1;
 				//_pcoData.clTransferParam.Transmit = m_pcoData->clTransferParam.Transmit;
 				m_pcoData->clTransferParam.DataFormat=PCO_CL_DATAFORMAT_2x12; //=2
+				info = "DIMAX / 2x12 ";
 		} else 
 			
 		if(_isCameraType(EdgeGL)) {
@@ -398,25 +401,38 @@ char *Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error){
 				//SCCMOS_FORMAT_TOP_BOTTOM;
 			m_pcoData->wLUT_Identifier = 0; //Switch LUT->off
 			doLut = true;
+			info = "EDGE GL / 5x12 TOP_CENTER_BOTTOM_CENTER / LUT off";
 		} else 
 			
-		if(_isCameraType(EdgeRolling)){
+		if(_isCameraType(EdgeHS)) {
+			m_pcoData->clTransferParam.Transmit = 1;
+			m_pcoData->clTransferParam.DataFormat=PCO_CL_DATAFORMAT_5x16 | 
+						SCCMOS_FORMAT_TOP_CENTER_BOTTOM_CENTER;
+			m_pcoData->wLUT_Identifier = PCO_EDGE_LUT_NONE; // Switch LUT->off
+			doLut = true;
+			info = "EDGE HS / 5x16 TOP_CENTER_BOTTOM_CENTER / LUT off";
+		} else 
+
+			if(_isCameraType(EdgeRolling)){
 				m_pcoData->clTransferParam.Transmit = 1;
 
 				if(m_pcoData->dwPixelRate <= PCO_EDGE_PIXEL_RATE_LOW){
 					m_pcoData->clTransferParam.DataFormat=PCO_CL_DATAFORMAT_5x16 | 
 						SCCMOS_FORMAT_TOP_CENTER_BOTTOM_CENTER;
 					m_pcoData->wLUT_Identifier = PCO_EDGE_LUT_NONE; // Switch LUT->off
+					info = "EDGE Rolling / 5x16 TOP_CENTER_BOTTOM_CENTER / LUT off";
 				} else 
 				if( ((m_pcoData->dwPixelRate >= PCO_EDGE_PIXEL_RATE_HIGH) & 
 						(wXResActual > PCO_EDGE_WIDTH_HIGH))) {
 					m_pcoData->clTransferParam.DataFormat=PCO_CL_DATAFORMAT_5x12L | 
 						SCCMOS_FORMAT_TOP_CENTER_BOTTOM_CENTER;
 					m_pcoData->wLUT_Identifier = PCO_EDGE_LUT_SQRT; //Switch LUT->sqrt
+					info = "EDGE Rolling / 5x12L TOP_CENTER_BOTTOM_CENTER / LUT SQRT";
 				} else {
 					m_pcoData->clTransferParam.DataFormat = PCO_CL_DATAFORMAT_5x16 | 
 						SCCMOS_FORMAT_TOP_CENTER_BOTTOM_CENTER;
 					m_pcoData->wLUT_Identifier = PCO_EDGE_LUT_NONE; // Switch LUT->off
+					info = "EDGE Rolling / 5x16 TOP_CENTER_BOTTOM_CENTER / LUT off";
 				}
 				doLut = true;
 		} 
@@ -425,7 +441,7 @@ char *Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error){
 			(_pcoData.clTransferParam.DataFormat != m_pcoData->clTransferParam.DataFormat) ||
 			(_pcoData.clTransferParam.Transmit != m_pcoData->clTransferParam.Transmit)	)
 		{
-			DEB_ALWAYS() << "PCO_SetTransferParameter (ckTransferParam)" ;
+			DEB_ALWAYS() << "PCO_SetTransferParameter (clTransferParam) " << info ;
 			PCO_FN3(error, pcoFn,PCO_SetTransferParameter,m_handle, &m_pcoData->clTransferParam, sizeof(m_pcoData->clTransferParam));
 			if(error){
 				sprintf_s(msg,ERRMSG_SIZE, "PCO_SetTransferParameter - baudrate[%d][%d] dataFormat[x%08x][x%08x] trasmit[%d][%d]",

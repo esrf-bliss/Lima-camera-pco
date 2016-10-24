@@ -2436,6 +2436,8 @@ bool Camera::_isCameraType(int tp){
 			return !!(tp & (EdgeUSB | EdgeRolling | Edge));
 
 		case CAMERATYPE_PCO_EDGE_HS:
+			return !!(tp & (EdgeHS | EdgeRolling | Edge));
+
 		case CAMERATYPE_PCO_EDGE_42:
 		case CAMERATYPE_PCO_EDGE:
 			return !!(tp & (EdgeRolling | Edge));
