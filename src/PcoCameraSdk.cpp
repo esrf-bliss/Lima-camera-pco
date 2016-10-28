@@ -892,9 +892,12 @@ char * Camera::_pco_SetRecordingState(int state, int &error){
 	}
 
 
-	DEB_ALWAYS() << fnId << ": PCO_SetRecordingState " << DEB_VAR1(wRecState_new);
-	PCO_FN2(error, msg,PCO_SetRecordingState, m_handle, wRecState_new);
-	PCO_PRINT_ERR(error, msg); 	if(error) return msg;
+	if(wRecState_new != wRecState_actual) 
+	{
+		DEB_ALWAYS() << fnId << ": PCO_SetRecordingState " << DEB_VAR1(wRecState_new);
+		PCO_FN2(error, msg,PCO_SetRecordingState, m_handle, wRecState_new);
+		PCO_PRINT_ERR(error, msg); 	if(error) return msg;
+	}
 
 	PCO_FN2(error, msg,PCO_GetRecordingState, m_handle, &wRecState_actual);
 	PCO_PRINT_ERR(error, msg); 	if(error) return msg;
