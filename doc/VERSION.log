@@ -1,11 +1,23 @@
 
-2016/10/28 12:46:39 ==========================================
+2016/10/28 13:34:16 ==========================================
 scp: copied local directory to segfs and /tmp_14_days:
 from: [../../install/] and [./bat/]
-  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-10-28_124632]
-  to: [/t/rhoms1/install-2016-10-28_124632]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-10-28_133410]
+  to: [/t/rhoms1/install-2016-10-28_133410]
   to: [/t/rhoms1/install-beta]
 
+
+
+2016/10/28 13:21:25 ==========================================
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
+#define        PCO_GIT_VERSION "$Id:       PCO rev[2016-10-28 13:20:34 +0200] head[023a3e2][023a3e20c7b1ad990cf1460b83d87bb51c287fc4] ref[ (HEAD, master)] at [2016/10/28 13:21:25] $"
+#define       LIMA_GIT_VERSION "$Id:      LIMA rev[2016-10-21 17:15:42 +0200] head[7d896a3][7d896a38135815af8765a61414ac6a33aa9ef78a] ref[ (HEAD, gitrh/pco-1.6.1, pco-1.6.1)] at [2016/10/28 13:21:25] $"
+#define    PROCLIB_GIT_VERSION "$Id:   PROCLIB rev[2016-01-15 15:44:08 +0100] head[3a08863][3a0886386e57a24ced072832d321d2dc43449e0b] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/28 13:21:25] $"
+#define  LIBCONFIG_GIT_VERSION "$Id: LIBCONFIG rev[2013-02-07 18:08:29 +0100] head[89c411a][89c411a541d4ab4d66257ccb85749853fd685cbb] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/10/28 13:21:25] $"
+#define      TANGO_GIT_VERSION "$Id:     TANGO rev[2016-09-27 17:28:03 +0200] head[75531aa][75531aaf9bcda8b27a09b92cf355307847835d6c] ref[ (HEAD, github/master, github/HEAD)] at [2016/10/28 13:21:25] $"
+#define       SPEC_GIT_VERSION "$Id:      SPEC rev[2016-10-10 09:40:10 +0200] head[65690d3][65690d3b7d24783256b279542a796c8a8a3f795f] ref[ (HEAD, origin/master, origin/HEAD)] at [2016/10/28 13:21:25] $"
+
+- fix dimax/2k/4k - pre recording state
 
 =============================== merged github/gitrh
 2016/10/25 13:32:24 ==========================================
