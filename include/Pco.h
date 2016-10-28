@@ -58,6 +58,7 @@
 #define CAMERA_NAME_SIZE	128
 #define MSG_SIZE	512
 #define BUFF_XLAT_SIZE 128
+#define MSG1K	1024
 
 #define ID_TIMESTAMP "$Id: [" __DATE__ " " __TIME__ "] [" __TIMESTAMP__ "] [" __FILE__ "] $"
 

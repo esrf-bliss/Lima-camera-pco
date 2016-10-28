@@ -244,7 +244,9 @@ stcPcoData::stcPcoData(){
 	ptr += sprintf_s(ptr, ptrMax - ptr, "   computer name: %s\n", _getComputerName(buff, BUFFER_LEN));
 	ptr += sprintf_s(ptr, ptrMax - ptr, "       user name: %s\n", _getUserName(buff, BUFFER_LEN));
 	ptr += sprintf_s(ptr, ptrMax - ptr, "VS configuration: %s\n", _getVSconfiguration(buff, BUFFER_LEN));
-	ptr += sprintf_s(ptr, ptrMax - ptr, " PCO SDK version: %s\n", _getPcoSdkVersion(buff, BUFFER_LEN));
+	ptr += sprintf_s(ptr, ptrMax - ptr, " PCO SDK version: %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, "sc2_cam.dll"));
+	//ptr += sprintf_s(ptr, ptrMax - ptr, "                  %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, "sc2_cl_me4.dll"));
+	//ptr += sprintf_s(ptr, ptrMax - ptr, "                  %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, "sc2_clhs.dll"));
 	//ptr += sprintf_s(ptr, ptrMax - ptr, "    lima pco dll: %s\n", _getDllPath(FILE_PCO_DLL, buff, BUFFER_LEN));
 
 
@@ -413,6 +415,7 @@ Camera::Camera(const char *params) :
 	
 	_init();
 	m_config = FALSE;
+	_setActionTimestamp(tsConstructor);
 }
 
 
@@ -754,6 +757,7 @@ void Camera::startAcq()
 	struct __timeb64 tStart;
 	msElapsedTimeSet(tStart);
 
+
 //=====================================================================
 	DEF_FNID;
     WORD state;
@@ -990,6 +994,7 @@ void Camera::startAcq()
 
 //	if(_isCameraType(Dimax)){
 	if(_isCameraType(Dimax | Pco2k | Pco4k)){
+		_pco_SetRecordingState(1, error);
 		if(iRequestedFrames > 0 ) {
 			if((trig_mode  == ExtTrigSingle) ) {
 				_beginthread( _pco_acq_thread_dimax_trig_single, 0, (void*) this);
@@ -2371,7 +2376,7 @@ void Camera::_get_PixelSize(double& x_size,double &y_size)
 	}
 
 	if( _isCameraType(Dimax)) {
-		x_size = y_size = 11;	// um / pco.dimax User’s Manual V1.01	
+		x_size = y_size = 11;	// um / pco.dimax User's Manual V1.01	
 		return;
 	}
 
@@ -2455,6 +2460,45 @@ bool Camera::_isCameraType(int tp){
 		
 }
 
+
+//=================================================================================================
+//=================================================================================================
+bool Camera::_isInterfaceType(int tp){
+		
+	DEB_MEMBER_FUNCT();
+	DEF_FNID;
+
+	switch(_getInterfaceType()) {
+		case INTERFACE_FIREWIRE: 
+			return !!(tp & ifFirewire) ;
+		
+		case INTERFACE_CAMERALINK:
+			return !!(tp & (ifCameralink));
+
+		case INTERFACE_CAMERALINKHS:
+			return !!(tp & (ifCameralinkHS));
+
+		case INTERFACE_USB:
+			return !!(tp & (ifUsb));
+
+		case INTERFACE_USB3:
+			return !!(tp & (ifUsb3));
+
+		case INTERFACE_ETHERNET:
+			return !!(tp & (ifEth));
+
+		case INTERFACE_SERIAL:
+			return !!(tp & (ifSerial));
+
+		case INTERFACE_COAXPRESS:
+			return !!(tp & (ifCoaxpress));
+
+		default:
+			return FALSE;
+
+	}
+		
+}
 
 
 //=================================================================================================
@@ -2624,12 +2668,30 @@ void Camera::_setCameraState(long long flag, bool val)
 }
 
 
+
 //=================================================================================================
 //=================================================================================================
 
 bool Camera::_isRunAfterAssign()
 {
-	return _isCameraType(Edge);
+	return (_isCameraType(Edge) && _isInterfaceType(ifCameralink));
 	//return false;
 }
 
+//=================================================================================================
+//=================================================================================================
+
+time_t Camera::_getActionTimestamp(int action)
+{
+	if((action < 0) || (action >= DIM_ACTION_TIMESTAMP)) return 0;
+	time_t ts = m_pcoData->action_timestamp.ts[action];
+	return ts ? ts : 1;
+}
+
+void Camera::_setActionTimestamp(int action)
+{
+	if((action >= 0) && (action < DIM_ACTION_TIMESTAMP)) 
+	{
+		m_pcoData->action_timestamp.ts[action] = time(NULL);
+	}
+}

@@ -563,12 +563,14 @@ _RETRY:
 
 		int errPco = PCO_GetBufferStatus(m_handle, sBufNr, &dwStatusDll, &dwStatusDrv);		
 		if((dwStatusDll != 0x80000000) || dwStatusDrv || errPco) {
-			printf("=== %s> got frame[%d / %d] bufIdx[%d] size[%ld] dest[%08lx] src[%08lx] \n"
-				"dwStatusDll[%08lx] dwStatusDrv[%08lx] errPco[%08lx] err[%s]\n", fnId, 
+			char msg[MSG1K];
+			sprintf_s(msg,MSG1K,"SDK ERROR got frame[%d / %d] bufIdx[%d] size[%ld] dest[%08lx] src[%08lx] \n"
+				"dwStatusDll[%08lx] dwStatusDrv[%08lx] errPco[%08lx] err[%s]\n", 
 				dwFrameIdx, dwRequestedFrames, bufIdx,
 				size, ((DWORD) ptrDest), ((DWORD) ptrSrc),
 				dwStatusDll, dwStatusDrv, errPco,
 				m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error));
+			DEB_ALWAYS() << msg;
 		}
 		
 #ifdef DEBUG_XFER_IMAG

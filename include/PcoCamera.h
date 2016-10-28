@@ -121,6 +121,8 @@ void usElapsedTimeSet(LARGE_INTEGER &tick0) ;
 long long usElapsedTime(LARGE_INTEGER &tick0) ;
 double usElapsedTimeTicsPerSec() ;
 
+#define DIM_ACTION_TIMESTAMP 10
+enum actionTimestamp {tsConstructor = 0, tsStartAcq, tsStopAcq, tsPrepareAcq, tsReset};
 
 enum timestampFmt {Iso=1, IsoHMS, FnFull, FnDate};
 char *getTimestamp(timestampFmt fmtIdx, time_t xtime = 0) ;
@@ -306,6 +308,11 @@ struct stcPcoData {
 	
 	WORD wBitAlignment; // 0 = MSB (left) alignment
 	
+	struct 
+	{
+	    time_t ts[DIM_ACTION_TIMESTAMP];
+	} action_timestamp;
+
 	stcPcoData();
 	void traceAcqClean();
 	void traceMsg(char *s);
@@ -336,6 +343,16 @@ enum enumPcoFamily {
 	EdgeHS				= 1<<7,
 };
 
+enum enumInterfaceTypes {
+    ifFirewire          = 1<<0, 
+    ifCameralink        = 1<<1, 
+    ifCameralinkHS      = 1<<2,
+    ifUsb               = 1<<3, 
+    ifUsb3              = 1<<4,
+    ifEth               = 1<<5,
+    ifSerial            = 1<<6,
+    ifCoaxpress         = 1<<7,
+};
 
 enum enumRoiError {
 	Xrange      = 1<<0, 
@@ -421,6 +438,7 @@ namespace lima
 		int dumpRecordedImages(int &nrImages, int &error);
 
 		bool _isCameraType(int tp);
+		bool _isInterfaceType(int tp);
 		bool _isConfig(){return m_config; };
 		void _pco_set_shutter_rolling_edge(int &error);
 		void msgLog(char *s);
@@ -430,6 +448,9 @@ namespace lima
 		
 		void paramsInit(const char *str);
 		bool paramsGet(const char *key, char *&value);
+
+		time_t _getActionTimestamp(int action);
+		void _setActionTimestamp(int action);
 
 	private:
 		PcoHwEventCtrlObj *m_HwEventCtrlObj;
