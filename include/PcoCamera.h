@@ -336,6 +336,16 @@ enum enumPcoFamily {
 	EdgeHS				= 1<<7,
 };
 
+enum enumInterfaceTypes {
+    ifFirewire          = 1<<0, 
+    ifCameralink        = 1<<1, 
+    ifCameralinkHS      = 1<<2,
+    ifUsb               = 1<<3, 
+    ifUsb3              = 1<<4,
+    ifEth               = 1<<5,
+    ifSerial            = 1<<6,
+    ifCoaxpress         = 1<<7,
+};
 
 enum enumRoiError {
 	Xrange      = 1<<0, 
@@ -421,6 +431,7 @@ namespace lima
 		int dumpRecordedImages(int &nrImages, int &error);
 
 		bool _isCameraType(int tp);
+		bool _isInterfaceType(int tp);
 		bool _isConfig(){return m_config; };
 		void _pco_set_shutter_rolling_edge(int &error);
 		void msgLog(char *s);

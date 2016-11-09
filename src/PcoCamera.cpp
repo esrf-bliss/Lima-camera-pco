@@ -2372,7 +2372,7 @@ void Camera::_get_PixelSize(double& x_size,double &y_size)
 	}
 
 	if( _isCameraType(Dimax)) {
-		x_size = y_size = 11;	// um / pco.dimax User’s Manual V1.01	
+		x_size = y_size = 11;	// um / pco.dimax User's Manual V1.01	
 		return;
 	}
 
@@ -2456,6 +2456,45 @@ bool Camera::_isCameraType(int tp){
 		
 }
 
+
+//=================================================================================================
+//=================================================================================================
+bool Camera::_isInterfaceType(int tp){
+		
+	DEB_MEMBER_FUNCT();
+	DEF_FNID;
+
+	switch(_getInterfaceType()) {
+		case INTERFACE_FIREWIRE: 
+			return !!(tp & ifFirewire) ;
+		
+		case INTERFACE_CAMERALINK:
+			return !!(tp & (ifCameralink));
+
+		case INTERFACE_CAMERALINKHS:
+			return !!(tp & (ifCameralinkHS));
+
+		case INTERFACE_USB:
+			return !!(tp & (ifUsb));
+
+		case INTERFACE_USB3:
+			return !!(tp & (ifUsb3));
+
+		case INTERFACE_ETHERNET:
+			return !!(tp & (ifEth));
+
+		case INTERFACE_SERIAL:
+			return !!(tp & (ifSerial));
+
+		case INTERFACE_COAXPRESS:
+			return !!(tp & (ifCoaxpress));
+
+		default:
+			return FALSE;
+
+	}
+		
+}
 
 
 //=================================================================================================
@@ -2630,7 +2669,7 @@ void Camera::_setCameraState(long long flag, bool val)
 
 bool Camera::_isRunAfterAssign()
 {
-	return _isCameraType(Edge);
+	return (_isCameraType(Edge) && _isInterfaceType(ifCameralink));
 	//return false;
 }
 
