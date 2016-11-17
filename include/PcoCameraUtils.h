@@ -52,7 +52,7 @@
 char * _getComputerName(char *infoBuff, DWORD  bufCharCount);
 char * _getUserName(char *infoBuff, DWORD  bufCharCount);
 char * _getVSconfiguration(char *infoBuff, DWORD  bufCharCount);
-char * _getPcoSdkVersion(char *infoBuff, int strLen);
+char * _getPcoSdkVersion(char *infoBuff, int strLen, char *lib);
 char * _getDllPath(const char* pzFileName, char *path, size_t strLen);
 
 

@@ -121,6 +121,8 @@ void usElapsedTimeSet(LARGE_INTEGER &tick0) ;
 long long usElapsedTime(LARGE_INTEGER &tick0) ;
 double usElapsedTimeTicsPerSec() ;
 
+#define DIM_ACTION_TIMESTAMP 10
+enum actionTimestamp {tsConstructor = 0, tsStartAcq, tsStopAcq};
 
 enum timestampFmt {Iso=1, IsoHMS, FnFull, FnDate};
 char *getTimestamp(timestampFmt fmtIdx, time_t xtime = 0) ;
@@ -306,6 +308,11 @@ struct stcPcoData {
 	
 	WORD wBitAlignment; // 0 = MSB (left) alignment
 	
+	struct 
+	{
+	    time_t ts[DIM_ACTION_TIMESTAMP];
+	} action_timestamp;
+
 	stcPcoData();
 	void traceAcqClean();
 	void traceMsg(char *s);
@@ -441,6 +448,9 @@ namespace lima
 		
 		void paramsInit(const char *str);
 		bool paramsGet(const char *key, char *&value);
+
+		time_t _getActionTimestamp(int action);
+		void _setActionTimestamp(int action);
 
 	private:
 		PcoHwEventCtrlObj *m_HwEventCtrlObj;

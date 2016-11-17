@@ -244,7 +244,9 @@ stcPcoData::stcPcoData(){
 	ptr += sprintf_s(ptr, ptrMax - ptr, "   computer name: %s\n", _getComputerName(buff, BUFFER_LEN));
 	ptr += sprintf_s(ptr, ptrMax - ptr, "       user name: %s\n", _getUserName(buff, BUFFER_LEN));
 	ptr += sprintf_s(ptr, ptrMax - ptr, "VS configuration: %s\n", _getVSconfiguration(buff, BUFFER_LEN));
-	ptr += sprintf_s(ptr, ptrMax - ptr, " PCO SDK version: %s\n", _getPcoSdkVersion(buff, BUFFER_LEN));
+	ptr += sprintf_s(ptr, ptrMax - ptr, " PCO SDK version: %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, "sc2_cam.dll"));
+	//ptr += sprintf_s(ptr, ptrMax - ptr, "                  %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, "sc2_cl_me4.dll"));
+	//ptr += sprintf_s(ptr, ptrMax - ptr, "                  %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, "sc2_clhs.dll"));
 	//ptr += sprintf_s(ptr, ptrMax - ptr, "    lima pco dll: %s\n", _getDllPath(FILE_PCO_DLL, buff, BUFFER_LEN));
 
 
@@ -413,6 +415,7 @@ Camera::Camera(const char *params) :
 	
 	_init();
 	m_config = FALSE;
+	_setActionTimestamp(tsConstructor);
 }
 
 
@@ -753,6 +756,8 @@ void Camera::startAcq()
 
 	struct __timeb64 tStart;
 	msElapsedTimeSet(tStart);
+
+	_setActionTimestamp(tsStartAcq);
 
 //=====================================================================
 	DEF_FNID;
@@ -2664,6 +2669,7 @@ void Camera::_setCameraState(long long flag, bool val)
 }
 
 
+
 //=================================================================================================
 //=================================================================================================
 
@@ -2673,3 +2679,20 @@ bool Camera::_isRunAfterAssign()
 	//return false;
 }
 
+//=================================================================================================
+//=================================================================================================
+
+time_t Camera::_getActionTimestamp(int action)
+{
+	if((action < 0) || (action >= DIM_ACTION_TIMESTAMP)) return 0;
+	time_t ts = m_pcoData->action_timestamp.ts[action];
+	return ts ? ts : 1;
+}
+
+void Camera::_setActionTimestamp(int action)
+{
+	if((action >= 0) && (action < DIM_ACTION_TIMESTAMP)) 
+	{
+		m_pcoData->action_timestamp.ts[action] = time(NULL);
+	}
+}

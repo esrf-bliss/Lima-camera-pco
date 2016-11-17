@@ -141,7 +141,8 @@ void Interface::stopAcq()
   DEF_FNID;
 
 	DEB_ALWAYS() << _sprintComment(fnId, "[ENTRY]");
-  m_sync->stopAcq();
+	m_cam->_setActionTimestamp(tsStopAcq);
+	m_sync->stopAcq();
 }
 
 //=========================================================================================================
