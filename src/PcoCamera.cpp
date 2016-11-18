@@ -757,7 +757,6 @@ void Camera::startAcq()
 	struct __timeb64 tStart;
 	msElapsedTimeSet(tStart);
 
-	_setActionTimestamp(tsStartAcq);
 
 //=====================================================================
 	DEF_FNID;

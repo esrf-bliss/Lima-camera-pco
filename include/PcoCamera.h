@@ -122,7 +122,7 @@ long long usElapsedTime(LARGE_INTEGER &tick0) ;
 double usElapsedTimeTicsPerSec() ;
 
 #define DIM_ACTION_TIMESTAMP 10
-enum actionTimestamp {tsConstructor = 0, tsStartAcq, tsStopAcq};
+enum actionTimestamp {tsConstructor = 0, tsStartAcq, tsStopAcq, tsPrepareAcq, tsReset};
 
 enum timestampFmt {Iso=1, IsoHMS, FnFull, FnDate};
 char *getTimestamp(timestampFmt fmtIdx, time_t xtime = 0) ;

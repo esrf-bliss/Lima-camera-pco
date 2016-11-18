@@ -337,12 +337,15 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 		}
 
 		//----------------------------------------------------------------------------------------------------------
-		key = keys[ikey] = "actionTimestamp";     
+		key = keys[ikey] = "timestampAction";     
 		keys_desc[ikey++] = "(R) action timestamps";     
 		if(_stricmp(cmd, key) == 0){
-			ptr += sprintf_s(ptr, ptrMax - ptr,  "  constructor [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsConstructor)));
-			ptr += sprintf_s(ptr, ptrMax - ptr,  "last startAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsStartAcq)));
-			ptr += sprintf_s(ptr, ptrMax - ptr,  " last stopAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsStartAcq)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "            now [%s]\n", getTimestamp(Iso));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "    constructor [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsConstructor)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "     last reset [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsReset)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "last prepareAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsPrepareAcq)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "  last startAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsStartAcq)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "   last stopAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsStopAcq)));
 
 			return output;
 		}
@@ -1485,34 +1488,18 @@ Notes: the command will be rejected, if Recording State is [run]
 			return output;
 		}
 
-#if 0
-		//----------------------------------------------------------------------------------------------------------
-		key = keys[ikey] = "?";     
-		keys_desc[ikey++] = "(R) this help / list of the talk cmds";     
-		if(_stricmp(cmd, key) == 0){
-			for(int i = 0; i < ikey; i++) {
-				ptr += sprintf_s(ptr, ptrMax - ptr, "%18s - %s\n", keys[i], keys_desc[i]);
-			}
-			ptr += sprintf_s(ptr, ptrMax - ptr, "--- nrCmds[%d][%d]\n", ikey, NRCMDS);
-			return output;
-		}
-
-
-		sprintf_s(ptr, ptrMax - ptr, "ERROR unknown cmd [%s]", cmd);
-		return output;
-}
-#endif
-
 
 		//----------------------------------------------------------------------------------------------------------
 		// this must be the last cmd
 		//----------------------------------------------------------------------------------------------------------
+#if 0
 		if(ikey >= NRCMDS) 
 		{
 			char *msg =  "FATAL ERROR - too many talk cmds - increase NRCMDS & recompile";
 			DEB_ALWAYS() << msg;		
 			throw LIMA_HW_EXC(Error, msg);
 		}
+#endif
 
 		key = keys[ikey] = "?";     
 		keys_desc[ikey++] = "(R) this help / list of the talk cmds";     
