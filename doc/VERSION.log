@@ -1,4 +1,56 @@
 
+2016/11/18 04:10:49 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-11-18_041041]
+  to: [/t/rhoms1/install-2016-11-18_041041]
+  to: [/t/rhoms1/install-beta]
+
+
+2016/11/18 04:07:52 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-11-18_040744]
+  to: [/t/rhoms1/install-2016-11-18_040744]
+  to: [/t/rhoms1/install-beta]
+
+
+2016/11/18 03:21:33 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-11-18_032125]
+  to: [/t/rhoms1/install-2016-11-18_032125]
+  to: [/t/rhoms1/install-beta]
+
+
+2016/11/18 02:59:46 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-11-18_025937]
+  to: [/t/rhoms1/install-2016-11-18_025937]
+  to: [/t/rhoms1/install-beta]
+
+
+2016/11/18 02:59:02 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-11-18_025853]
+  to: [/t/rhoms1/install-2016-11-18_025853]
+  to: [/t/rhoms1/install-beta]
+
+
+
+2016/11/18 02:58:11 ==========================================
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
+#define        PCO_GIT_VERSION "$Id:       PCO rev[2016-11-17 12:54:36 +0100] head[c1037d9][c1037d9dd819d57b4a32b583f70bf767ea906e09] ref[ (HEAD, gitrh/master, master)] at [2016/11/18 02:58:11] $"
+#define       LIMA_GIT_VERSION "$Id:      LIMA rev[2016-10-21 17:15:42 +0200] head[7d896a3][7d896a38135815af8765a61414ac6a33aa9ef78a] ref[ (HEAD, gitrh/pco-1.6.1, pco-1.6.1)] at [2016/11/18 02:58:11] $"
+#define    PROCLIB_GIT_VERSION "$Id:   PROCLIB rev[2016-01-15 15:44:08 +0100] head[3a08863][3a0886386e57a24ced072832d321d2dc43449e0b] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/11/18 02:58:11] $"
+#define  LIBCONFIG_GIT_VERSION "$Id: LIBCONFIG rev[2013-02-07 18:08:29 +0100] head[89c411a][89c411a541d4ab4d66257ccb85749853fd685cbb] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2016/11/18 02:58:11] $"
+#define      TANGO_GIT_VERSION "$Id:     TANGO rev[2016-09-27 17:28:03 +0200] head[75531aa][75531aaf9bcda8b27a09b92cf355307847835d6c] ref[ (HEAD, github/master, github/HEAD)] at [2016/11/18 02:58:11] $"
+#define       SPEC_GIT_VERSION "$Id:      SPEC rev[2016-10-10 09:40:10 +0200] head[65690d3][65690d3b7d24783256b279542a796c8a8a3f795f] ref[ (HEAD, origin/master, origin/HEAD)] at [2016/11/18 02:58:11] $"
+
+
+
 2016/11/17 12:49:48 ==========================================
 scp: copied local directory to segfs and /tmp_14_days:
 from: [../../install/] and [./bat/]

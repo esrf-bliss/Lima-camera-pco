@@ -1485,6 +1485,7 @@ Notes: the command will be rejected, if Recording State is [run]
 			return output;
 		}
 
+#if 0
 		//----------------------------------------------------------------------------------------------------------
 		key = keys[ikey] = "?";     
 		keys_desc[ikey++] = "(R) this help / list of the talk cmds";     
@@ -1500,6 +1501,60 @@ Notes: the command will be rejected, if Recording State is [run]
 		sprintf_s(ptr, ptrMax - ptr, "ERROR unknown cmd [%s]", cmd);
 		return output;
 }
+#endif
+
+
+		//----------------------------------------------------------------------------------------------------------
+		// this must be the last cmd
+		//----------------------------------------------------------------------------------------------------------
+		if(ikey >= NRCMDS) 
+		{
+			char *msg =  "FATAL ERROR - too many talk cmds - increase NRCMDS & recompile";
+			DEB_ALWAYS() << msg;		
+			throw LIMA_HW_EXC(Error, msg);
+		}
+
+		key = keys[ikey] = "?";     
+		keys_desc[ikey++] = "(R) this help / list of the talk cmds";     
+		if(_stricmp(cmd, key) == 0){
+			int i, j, ikeyMax;
+			char *ptri, *ptrj;
+			size_t len = 0;
+
+			ikeyMax = ikey;
+
+			for(i = 0; i < ikeyMax; i++) 
+			{
+				for(j = i; j < ikeyMax; j++) 
+				{
+					ptri = keys[i]; ptrj = keys[j];
+					if(_stricmp(ptri,ptrj) > 0)
+					{
+						keys[j] = ptri;
+						keys[i] = ptrj;
+						ptri = keys_desc[i];
+						keys_desc[i] = keys_desc[j];
+						keys_desc[j] = ptri;
+					}
+				}
+				len = max(len, (strlen(keys[i])));
+			}
+
+			for(i = 0; i < ikeyMax; i++) 
+			{
+				ptr += sprintf_s(ptr, ptrMax - ptr, "%*s - %s\n", -(int) len, keys[i], keys_desc[i]);
+			}
+			ptr += sprintf_s(ptr, ptrMax - ptr, "--- nrCmds[%d][%d]\n", ikeyMax, NRCMDS);
+			return output;
+		}
+
+
+		sprintf_s(ptr, ptrMax - ptr, "ERROR unknown cmd [%s]", cmd);
+		return output;
+}
+
+
+
 
 
 //====================================================================
