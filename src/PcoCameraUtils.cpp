@@ -245,7 +245,7 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 		char *tok[NRTOK];
 		int tokNr;
 		char *ptr, *ptrMax;
-		int segmentPco = m_pcoData->activeRamSegment;
+		int segmentPco = m_pcoData->wActiveRamSegment;
 		int segmentArr = segmentPco -1;
 		
 		ptr = output; *ptr = 0;
@@ -278,8 +278,15 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 		}
 
 		//----------------------------------------------------------------------------------------------------------
+		key = keys[ikey] = "getVersionFile";     
+		keys_desc[ikey++] = "(R) reads INSTALL_VERSION.txt";     
+		if(_stricmp(cmd, key) == 0){
+			_getDllPath(FILE_PCO_DLL, ptr, ptrMax -ptr);
+			return output;
+		}
+		//----------------------------------------------------------------------------------------------------------
 		key = keys[ikey] = "expDelayTime";     
-		keys_desc[ikey++] = "(R) exposure and delay time";
+		keys_desc[ikey++] = "(R) exposure & delay time (actual & valid ranges)";
 		if(_stricmp(cmd, key) == 0){
 			_camInfo(ptr, ptrMax, CAMINFO_EXP);
 			return output;
@@ -329,6 +336,19 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 			return output;
 		}
 
+		//----------------------------------------------------------------------------------------------------------
+		key = keys[ikey] = "timestampAction";     
+		keys_desc[ikey++] = "(R) action timestamps";     
+		if(_stricmp(cmd, key) == 0){
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "            now [%s]\n", getTimestamp(Iso));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "    constructor [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsConstructor)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "     last reset [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsReset)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "last prepareAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsPrepareAcq)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "  last startAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsStartAcq)));
+			ptr += sprintf_s(ptr, ptrMax - ptr,  "   last stopAcq [%s]\n", getTimestamp(Iso, _getActionTimestamp(tsStopAcq)));
+
+			return output;
+		}
 
 		//----------------------------------------------------------------------------------------------------------
 		key = keys[ikey] = "clTransferParam";     
@@ -347,7 +367,7 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 				return output;
 			}
 
-			ptr += sprintf_s(ptr, ptrMax - ptr, "%ld", pcoGetFramesMax(m_pcoData->activeRamSegment));
+			ptr += sprintf_s(ptr, ptrMax - ptr, "%ld", pcoGetFramesMax(m_pcoData->wActiveRamSegment));
 			return output;
 		}
 
@@ -898,23 +918,56 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 
 
 		//----------------------------------------------------------------------------------------------------------
+		// dwGeneralCapsDESC1;      // General capabilities:
+        //		Bit 3: Timestamp ASCII only available (Timestamp mode 3 enabled)
+		//		Bit 8: Timestamp not available
+		// m_pcoData->stcPcoDescription.dwGeneralCapsDESC1 & BIT3 / BIT8
+
+		
 		key = keys[ikey] = "timestampMode"; 
 		keys_desc[ikey++] = "(RW) pco timestampMode [<new value (0, 1, 2, 3)>]"; 
 		if(_stricmp(cmd, key) == 0){
 			int error, val;
 			WORD wTimeStampMode;
+			DWORD capsDesc1; 
+			_pco_GetGeneralCapsDESC(capsDesc1, error);
 
-			error = PcoCheckError(__LINE__, __FILE__, PCO_GetTimestampMode(m_handle, &wTimeStampMode));
+			int valMax;
+
+			if(capsDesc1 & BIT8)
+			{
+				ptr += sprintf_s(ptr, ptrMax - ptr, "timestampmode not allowed\n");
+				return output;
+			}
+			valMax = (capsDesc1 & BIT3) ? 3 : 2;
+
+			_pco_GetTimestampMode(wTimeStampMode, error);
+			if(error) 
+			{
+				ptr += sprintf_s(ptr, ptrMax - ptr, "SDK ERROR _pco_GetTimestampMode\n");
+				return output;
+			}
 			ptr += sprintf_s(ptr, ptrMax - ptr, "%d   ", wTimeStampMode);
 
 			if((tokNr == 1)){
 				val = atoi(tok[1]);
-				if((val < 0) ||(val>3)) {
-					ptr += sprintf_s(ptr, ptrMax - ptr, "invalid value [%d] must be (0, 1, 2, 3)",  val);
+				
+				if((val < 0) ||(val>valMax)) {
+					ptr += sprintf_s(ptr, ptrMax - ptr, "invalid value [%d] must be (0 - %d)",  val, valMax);
 				}else {
 					wTimeStampMode = val;
-					error = PcoCheckError(__LINE__, __FILE__, PCO_SetTimestampMode(m_handle, wTimeStampMode));
-					error = PcoCheckError(__LINE__, __FILE__, PCO_GetTimestampMode(m_handle, &wTimeStampMode));
+					_pco_SetTimestampMode(wTimeStampMode, error);
+					if(error) 
+					{
+						ptr += sprintf_s(ptr, ptrMax - ptr, "SDK ERROR _pco_SetTimestampMode\n");
+						return output;
+					}
+					_pco_GetTimestampMode(wTimeStampMode, error);
+					if(error) 
+					{
+						ptr += sprintf_s(ptr, ptrMax - ptr, "SDK ERROR _pco_GetTimestampMode\n");
+						return output;
+					}
 					ptr += sprintf_s(ptr, ptrMax - ptr, "%d   ", wTimeStampMode);
 				}
 			}
@@ -1072,6 +1125,240 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 		}
 
 
+		
+		
+		/***************************************************************
+wSignalFilter: Flags showing the filter option:
+- 0x01: Filter can be switched off (t > ~65ns)
+- 0x02: Filter can be switched to medium (t > ~1us)
+- 0x04: Filter can be switched to high (t > ~100ms)
+Notes: the command will be rejected, if Recording State is [run]
+***************************************************************/
+
+		key = keys[ikey] = "hwioSignalsLin";     //----------------------------------------------------------------
+		keys_desc[ikey++] = "(R) for DIMAX/EDGE only / get hw io signals";     
+		if(_stricmp(cmd, key) == 0){
+			int error, i;
+
+			_pco_GetHWIOSignal(error);
+			if(error) {
+				ptr += sprintf_s(ptr, ptrMax - ptr, "ERROR [%d]\n", error);
+				//return output;
+			}
+			//ptr += sprintf_s(ptr, ptrMax - ptr, "signals [%d] [%d]\n", m_pcoData->wNrPcoHWIOSignal0, m_pcoData->wNrPcoHWIOSignal);
+			
+			for(i=0; i< m_pcoData->wNrPcoHWIOSignal; i++) 
+			{
+			    ptr += sprintf_s(ptr, ptrMax - ptr,"\n\n#======================== descriptor [%d]\n",i);
+			    
+			    WORD wSelected = 0;
+				ptr += sprintf_s(ptr, ptrMax - ptr, 
+					"sigNames[%s] [%s] [%s] [%s] idx[%d]/[%d] sigNum[%d] \n"
+					"-def:     def[0x%x] type[0x%x] pol[0x%x] filt[0x%x]\n"
+#if 0
+					"-sig:    enab[0x%x] type[0x%x] pol[0x%x] filt[0x%x] signalSelected[0x%x]\n" 
+#endif
+					"-sig:    name[%s]\n\n", 
+					m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[0],
+					m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[1],
+					m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[2],
+					m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[3],
+					i, m_pcoData->wNrPcoHWIOSignal,
+//++					m_pcoData->stcPcoHWIOSignal[i][wSelected].wSignalNum,
+					m_pcoData->stcPcoHWIOSignal[i].wSignalNum,
+
+					m_pcoData->stcPcoHWIOSignalDesc[i].wSignalDefinitions,
+					m_pcoData->stcPcoHWIOSignalDesc[i].wSignalTypes,
+					m_pcoData->stcPcoHWIOSignalDesc[i].wSignalPolarity,
+					m_pcoData->stcPcoHWIOSignalDesc[i].wSignalFilter,
+
+#if 0
+					m_pcoData->stcPcoHWIOSignal[i][wSelected].wEnabled,
+					m_pcoData->stcPcoHWIOSignal[i][wSelected].wType,
+					m_pcoData->stcPcoHWIOSignal[i][wSelected].wPolarity,
+					m_pcoData->stcPcoHWIOSignal[i][wSelected].wFilterSetting,
+					m_pcoData->stcPcoHWIOSignal[i][wSelected].wSelected,
+#endif
+
+					"DUMMY - TO DEFINE"
+//++					&m_pcoData->sPcoHWIOSignalDesc[i][0]
+					//str_printable(&m_pcoData->sPcoHWIOSignalDesc[i][0])
+					//&(m_pcoData->sPcoHWIOSignalDesc[iSignal][0])
+					);
+
+			}
+
+			for(i=0; i< m_pcoData->wNrPcoHWIOSignal; i++) 
+			{
+				WORD val;
+
+
+/***************************************************************
+wSignalDefinitions: Flags showing signal options:
+- 0x01: Signal can be enabled/disabled
+- 0x02: Signal is a status output
+- 0x10: Signal function 1 has got parameter value
+- 0x20: Signal function 2 has got parameter value
+- 0x40: Signal function 3 has got parameter value
+- 0x80: Signal function 4 has got parameter value
+****************************************************************/
+			    ptr += sprintf_s(ptr, ptrMax - ptr,
+					"\n=============================\n"
+					"OPTIONS of the selected signal / descriptor[%d]\n",
+					i);
+
+				val = m_pcoData->stcPcoHWIOSignalDesc[i].wSignalDefinitions;
+				ptr += sprintf_s(ptr, ptrMax - ptr, "   def[0x%x]: ", val); 
+                if(val & 0x01) ptr += sprintf_s(ptr, ptrMax - ptr, "[Signal can be enabled/disabled]");				
+                if(val & 0x02) ptr += sprintf_s(ptr, ptrMax - ptr, "[Signal is a status output]");				
+                if(val & 0x10) ptr += sprintf_s(ptr, ptrMax - ptr, "[Signal function 1 has got parameter value]");				
+                if(val & 0x20) ptr += sprintf_s(ptr, ptrMax - ptr, "[Signal function 2 has got parameter value]");				
+                if(val & 0x40) ptr += sprintf_s(ptr, ptrMax - ptr, "[Signal function 3 has got parameter value]");				
+                if(val & 0x80) ptr += sprintf_s(ptr, ptrMax - ptr, "[Signal function 4 has got parameter value]");				
+				ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+					
+
+/***************************************************************
+wSignalTypes: Flags showing which signal type is available:
+- 0x01: TTL
+- 0x02: High Level TTL
+- 0x04: Contact Mode
+- 0x08: RS485 differential
+***************************************************************/
+				val = m_pcoData->stcPcoHWIOSignalDesc[i].wSignalTypes;
+				ptr += sprintf_s(ptr, ptrMax - ptr, "   type[0x%x]: ", val); 
+                if(val & 0x01) ptr += sprintf_s(ptr, ptrMax - ptr, "[TTL]");				
+                if(val & 0x02) ptr += sprintf_s(ptr, ptrMax - ptr, "[High Level TTL]");				
+                if(val & 0x04) ptr += sprintf_s(ptr, ptrMax - ptr, "[Contact Mode]");				
+                if(val & 0x08) ptr += sprintf_s(ptr, ptrMax - ptr, "[RS485 differential]");				
+				ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+
+
+/***************************************************************
+wSignalPolarity: Flags showing which signal polarity can be selected:
+- 0x01: Low level active
+- 0x02: High Level active
+- 0x04: Rising edge active
+- 0x08: Falling edge active
+***************************************************************/
+				val = m_pcoData->stcPcoHWIOSignalDesc[i].wSignalPolarity;
+				ptr += sprintf_s(ptr, ptrMax - ptr, "   pol[0x%x]: ", val); 
+                if(val & 0x01) ptr += sprintf_s(ptr, ptrMax - ptr, "[Low level active]");				
+                if(val & 0x02) ptr += sprintf_s(ptr, ptrMax - ptr, "[High Level active]");				
+                if(val & 0x04) ptr += sprintf_s(ptr, ptrMax - ptr, "[Rising edge active]");				
+                if(val & 0x08) ptr += sprintf_s(ptr, ptrMax - ptr, "[Falling edge active]");				
+				ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+
+/***************************************************************
+wSignalFilter: Flags showing the filter option:
+- 0x01: Filter can be switched off (t > ~65ns)
+- 0x02: Filter can be switched to medium (t > ~1us)
+- 0x04: Filter can be switched to high (t > ~100ms)
+Notes: the command will be rejected, if Recording State is [run]
+***************************************************************/
+
+				val = m_pcoData->stcPcoHWIOSignalDesc[i].wSignalFilter;
+				ptr += sprintf_s(ptr, ptrMax - ptr, "   filter[0x%x]: ", val); 
+                if(val & 0x01) ptr += sprintf_s(ptr, ptrMax - ptr, "[Filter can be switched off (t > ~65ns)]");				
+                if(val & 0x02) ptr += sprintf_s(ptr, ptrMax - ptr, "[Filter can be switched to medium (t > ~1us)]");				
+                if(val & 0x04) ptr += sprintf_s(ptr, ptrMax - ptr, "[Filter can be switched to high (t > ~100ms)]");				
+				ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+
+
+
+                for(WORD wSelected = 0; wSelected < 3 ; wSelected++)
+                { 
+
+//                    if(m_pcoData->stcPcoHWIOSignal[i][wSelected].wSelected <4)
+                    if(m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[wSelected][0])
+                    {
+    			    ptr += sprintf_s(ptr, ptrMax - ptr,
+						"\n"
+						"[%s] STATUS of the selected signal / descriptor[%d] wSelected[%d]\n",
+						m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[wSelected],
+						i, wSelected);
+
+				        //val = m_pcoData->stcPcoHWIOSignal[i][wSelected].wSelected;
+				        //val = wSelected;
+				        //ptr += sprintf_s(ptr, ptrMax - ptr, "   signalSelected[%d] [%s]\n", 
+				        //    wSelected, m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[wSelected]);				
+
+        /***************************************************************
+        Enabled Flags showing enable state of the signal
+         0x00: Signal is off
+         0x01: Signal is active
+        ***************************************************************/
+
+//++				        val = m_pcoData->stcPcoHWIOSignal[i][wSelected].wEnabled;
+				        val = m_pcoData->stcPcoHWIOSignal[i].wEnabled;
+				        ptr += sprintf_s(ptr, ptrMax - ptr, "   enabled[0x%x]: ", val); 
+						ptr += sprintf_s(ptr, ptrMax - ptr, 
+							val ? "[Signal is active]" : "[Signal is off]");				
+						ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+
+
+        /***************************************************************
+        Type Flags showing which signal type is selected
+         0x01: TTL
+         0x02: High Level TTL
+         0x04: Contact Mode
+         0x08: RS485 differential
+        ***************************************************************/
+//++				        val = m_pcoData->stcPcoHWIOSignal[i][wSelected].wType;
+				        val = m_pcoData->stcPcoHWIOSignal[i].wType;
+				        ptr += sprintf_s(ptr, ptrMax - ptr, "   type[0x%x]: ", val); 
+                        if(val & 0x01) ptr += sprintf_s(ptr, ptrMax - ptr, "[TTL]");				
+                        if(val & 0x02) ptr += sprintf_s(ptr, ptrMax - ptr, "[High Level TTL]");				
+                        if(val & 0x04) ptr += sprintf_s(ptr, ptrMax - ptr, "[Contact Mode]");				
+                        if(val & 0x08) ptr += sprintf_s(ptr, ptrMax - ptr, "[RS485 differential]");				
+				        ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+
+
+        /***************************************************************
+        Polarity Flags showing which signal polarity is selected
+         0x01: High level active
+         0x02: Low level active
+         0x04: Rising edge active
+         0x08: Falling edge active
+        ***************************************************************/
+
+//++				        val = m_pcoData->stcPcoHWIOSignal[i][wSelected].wPolarity;
+				        val = m_pcoData->stcPcoHWIOSignal[i].wPolarity;
+				        ptr += sprintf_s(ptr, ptrMax - ptr, "   pol[0x%x]: ", val); 
+                        if(val & 0x01) ptr += sprintf_s(ptr, ptrMax - ptr, "[Low level active]");				
+                        if(val & 0x02) ptr += sprintf_s(ptr, ptrMax - ptr, "[High Level active]");				
+                        if(val & 0x04) ptr += sprintf_s(ptr, ptrMax - ptr, "[Rising edge active]");				
+                        if(val & 0x08) ptr += sprintf_s(ptr, ptrMax - ptr, "[Falling edge active]");				
+				        ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+
+
+        /***************************************************************
+        FilterSetting Flags showing the filter option which is selected
+         0x01: Filter can be switched off (t > ~65ns)
+         0x02: Filter can be switched to medium (t > ~1 u)
+         0x04: Filter can be switched to high (t > ~100ms)
+        Selected In case the HWIOSignaldescription shows more than one SignalNames, this parameter can be
+        used to select a different signal, e.g. ’Status Busy’ or ’Status Exposure’.
+        ***************************************************************/
+
+//++				        val = m_pcoData->stcPcoHWIOSignal[i][wSelected].wFilterSetting;
+				        val = m_pcoData->stcPcoHWIOSignal[i].wFilterSetting;
+				        ptr += sprintf_s(ptr, ptrMax - ptr, "   filter[0x%x]: ", val); 
+                        if(val & 0x01) ptr += sprintf_s(ptr, ptrMax - ptr, "[Filter can be switched off (t > ~65ns)]");				
+                        if(val & 0x02) ptr += sprintf_s(ptr, ptrMax - ptr, "[Filter can be switched to medium (t > ~1us)]");				
+                        if(val & 0x04) ptr += sprintf_s(ptr, ptrMax - ptr, "[Filter can be switched to high (t > ~100ms)]");				
+				        ptr += sprintf_s(ptr, ptrMax - ptr, "\n"); 
+
+
+                    }
+				}
+					//print_hex_dump_buff(&m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[0][0], 24*4);
+			}
+
+			
+			return output;
+		}
+
 		//----------------------------------------------------------------------------------------------------------
 		key = keys[ikey] = "hwioSignals";     
 		keys_desc[ikey++] = "(R) for DIMAX/EDGE only / get hw io signals";     
@@ -1201,14 +1488,50 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 			return output;
 		}
 
+
 		//----------------------------------------------------------------------------------------------------------
+		// this must be the last cmd
+		//----------------------------------------------------------------------------------------------------------
+#if 0
+		if(ikey >= NRCMDS) 
+		{
+			char *msg =  "FATAL ERROR - too many talk cmds - increase NRCMDS & recompile";
+			DEB_ALWAYS() << msg;		
+			throw LIMA_HW_EXC(Error, msg);
+		}
+#endif
+
 		key = keys[ikey] = "?";     
 		keys_desc[ikey++] = "(R) this help / list of the talk cmds";     
 		if(_stricmp(cmd, key) == 0){
-			for(int i = 0; i < ikey; i++) {
-				ptr += sprintf_s(ptr, ptrMax - ptr, "%18s - %s\n", keys[i], keys_desc[i]);
+			int i, j, ikeyMax;
+			char *ptri, *ptrj;
+			size_t len = 0;
+
+			ikeyMax = ikey;
+
+			for(i = 0; i < ikeyMax; i++) 
+			{
+				for(j = i; j < ikeyMax; j++) 
+				{
+					ptri = keys[i]; ptrj = keys[j];
+					if(_stricmp(ptri,ptrj) > 0)
+					{
+						keys[j] = ptri;
+						keys[i] = ptrj;
+						ptri = keys_desc[i];
+						keys_desc[i] = keys_desc[j];
+						keys_desc[j] = ptri;
+					}
+				}
+				len = max(len, (strlen(keys[i])));
 			}
-			ptr += sprintf_s(ptr, ptrMax - ptr, "--- nrCmds[%d][%d]\n", ikey, NRCMDS);
+
+			for(i = 0; i < ikeyMax; i++) 
+			{
+				ptr += sprintf_s(ptr, ptrMax - ptr, "%*s - %s\n", -(int) len, keys[i], keys_desc[i]);
+			}
+			ptr += sprintf_s(ptr, ptrMax - ptr, "--- nrCmds[%d][%d]\n", ikeyMax, NRCMDS);
 			return output;
 		}
 
@@ -1216,6 +1539,9 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 		sprintf_s(ptr, ptrMax - ptr, "ERROR unknown cmd [%s]", cmd);
 		return output;
 }
+
+
+
 
 
 //====================================================================
@@ -1647,26 +1973,74 @@ int _getFileVerStruct(const TCHAR* pzFileName, int* ima, int* imi, int* imb, TCH
   return 0;
 }
 
-char * _getDllPath(const char* pzFileName, char *path, int strLen)
+#define LEN_DRIVE	7
+#define LEN_DIR		MAX_PATH
+
+//====================================================================
+//====================================================================
+char * _getDllPath(const char* pzFileName, char *path, size_t strLen)
 {
-	GetModuleFileName(GetModuleHandle(pzFileName), path, strLen);
-	printf("========= [%s]\n", path);
+	errno_t err;
+
+	char drive[LEN_DRIVE+1];
+	char dir[LEN_DIR+1];
+	char _pathFn[MAX_PATH+1];
+	char _pathFnInstall[MAX_PATH+1];
+	char *ptr;
+	size_t nr;
+	FILE *stream;
+
+	*path = 0;
+
+	GetModuleFileName(GetModuleHandle(pzFileName), _pathFn, MAX_PATH);
+
+	err = _splitpath_s(_pathFn, drive, LEN_DRIVE, dir, LEN_DIR, NULL, 0, NULL, 0);
+
+	size_t l = strlen(dir);
+	ptr = dir + l -2;
+	while(*ptr != '\\') ptr--;
+	*ptr = 0;
+
+	ptr = path;
+	err = _makepath_s(_pathFnInstall, MAX_PATH, drive, dir, FILENAME_INSTALL_VERSION, FILEEXT_INSTALL_VERSION);
+	printf("----- path[%s] path1[%s] drive[%s] dir[%s]\n", _pathFn, _pathFnInstall, drive, dir);
+	nr = sprintf_s(ptr, strLen-1,"%s\n", _pathFnInstall);
+    ptr += nr;
+	strLen -= nr;
+
+	err  = fopen_s( &stream, _pathFnInstall, "r" );
+#if 0
+	if(err == 0) {
+		if( fgets( path, strLen, stream ) == NULL){
+			*ptr = 0;
+		}
+	}
+#endif
+	nr = fread(ptr, 1, strLen-1, stream); 
+	ptr[nr] = 0;
+    fclose( stream );
 	return path;
 }
 
 
 
-char * _getPcoSdkVersion(char *infoBuff, int strLen)
+char * _getPcoSdkVersion(char *infoBuff, int strLen, char *lib)
 {
 	int ima, imi, imb;
-	char *lib = PCOSDK_FILENAME;
+	//char *lib = PCOSDK_FILENAME;
 	int nr;
 	char *ptr = infoBuff;
 
 	nr = sprintf_s(ptr, strLen, "file[%s] ver[", lib);
 
-	_getFileVerStruct(lib, &ima, &imi, &imb, ptr+nr, strLen-nr-2);
-	strncat_s(ptr, strLen, "]", _TRUNCATE);
+	if(_getFileVerStruct(lib, &ima, &imi, &imb, ptr+nr, strLen-nr-2))
+	{
+		strncat_s(ptr, strLen, "NOT FOUND", _TRUNCATE);
+	}
+	else
+	{
+		strncat_s(ptr, strLen, "]", _TRUNCATE);
+	}
 
 	return infoBuff ;
 }
@@ -1711,11 +2085,13 @@ char * Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
 	
 	//--------------- general info
 	if(flag & CAMINFO_GENERAL) {
+
 		ptr += sprintf_s(ptr, ptrMax - ptr, "* general info \n");
 
 		
-		ptr += sprintf_s(ptr, ptrMax - ptr, "* ... GigE IP [%d.%d.%d.%d]\n", 
-			m_pcoData->ipField[0], m_pcoData->ipField[1], m_pcoData->ipField[2], m_pcoData->ipField[3]);
+		// OBSOLETE after sdk 120
+		//ptr += sprintf_s(ptr, ptrMax - ptr, "* ... GigE IP [%d.%d.%d.%d]\n", 
+		//	m_pcoData->ipField[0], m_pcoData->ipField[1], m_pcoData->ipField[2], m_pcoData->ipField[3]);
 		
 		double pixSizeX, pixSizeY;
 		_get_PixelSize(pixSizeX, pixSizeY);
@@ -1902,7 +2278,7 @@ char * Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
     //------ DIMAX
 	if( (flag & CAMINFO_DIMAX) && (_isCameraType(Dimax | Pco2k | Pco4k)) ){
 		unsigned int bytesPerPix; getBytesPerPixel(bytesPerPix);
-		int segmentPco = m_pcoData->activeRamSegment;
+		int segmentPco = m_pcoData->wActiveRamSegment;
 		int segmentArr = segmentPco -1;
 
 		ptr += sprintf_s(ptr, ptrMax - ptr, "*** DIMAX - 2k - 4k info \n");
@@ -1962,7 +2338,7 @@ char * Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
 		WORD wTimeStampMode;
 		char *mode;
 		int error;
-		error = PcoCheckError(__LINE__, __FILE__, PCO_GetTimestampMode(m_handle, &wTimeStampMode));
+		_pco_GetTimestampMode(wTimeStampMode, error);
 		if(error) wTimeStampMode = 100;
 		switch(wTimeStampMode) {
 			case 0: mode = "no stamp in image"; break;

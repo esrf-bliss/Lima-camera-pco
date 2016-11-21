@@ -1,66 +1,66 @@
---------------------------------- FROM [sdkPco_118]
+--------------------------------- FROM [sdkPco_120]
 ---------------------------------   TO [sdkPco]
-Thu Apr 21 14:17:43 RDT 2016
+Tue Oct  4 12:34:00 RDT 2016
 
 ... copying  [sdkPco/PcoSdkVersion.h]
-7f1c875dd3be0fbc684ee54515397739 *sdkPco/PcoSdkVersion.h
--rw-r--r--    1 homsrego Administ       60 Apr 21 12:40 sdkPco/PcoSdkVersion.h
+1d041a50a22aa2be8623c42e3950d636 *sdkPco/PcoSdkVersion.h
+-rw-r--r--    1 homsrego Administ       60 Oct  4 12:33 sdkPco/PcoSdkVersion.h
 
 ... copying  [sdkPco/bin/SC2_Cam.dll]
-24761a29258a6e5882a51add6c786db3 *sdkPco/bin/SC2_Cam.dll
--rwxr-xr-x    1 homsrego Administ   381440 Apr 14 11:05 sdkPco/bin/SC2_Cam.dll
+80351c2c99e1876d69817b8865f75dab *sdkPco/bin/SC2_Cam.dll
+-rwxr-xr-x    1 homsrego Administ   402944 Sep  8 08:16 sdkPco/bin/SC2_Cam.dll
 
 ... copying  [sdkPco/bin/sc2_cl_me4.dll]
-d61038e9d4fd7c726bec82e7835e31f3 *sdkPco/bin/sc2_cl_me4.dll
--rwxr-xr-x    1 homsrego Administ   286208 Apr 14 11:05 sdkPco/bin/sc2_cl_me4.dll
+4b1b94842cf84ae1c716a153310e9b4a *sdkPco/bin/sc2_cl_me4.dll
+-rwxr-xr-x    1 homsrego Administ   311808 Jul 26 08:31 sdkPco/bin/sc2_cl_me4.dll
 
 ... copying  [sdkPco/lib/SC2_Cam.lib]
-bccd5bc50e029574c3582522e620679b *sdkPco/lib/SC2_Cam.lib
--rw-r--r--    1 homsrego Administ    49142 Apr 14 11:05 sdkPco/lib/SC2_Cam.lib
+b0353c9102f26ff382a396847a1c6a63 *sdkPco/lib/SC2_Cam.lib
+-rw-r--r--    1 homsrego Administ    49266 Sep  8 08:16 sdkPco/lib/SC2_Cam.lib
 
 ... copying  [sdkPco/bin64/SC2_Cam.dll]
-7b13b847efd2d02ab2cb8b6341e4230d *sdkPco/bin64/SC2_Cam.dll
--rwxr-xr-x    1 homsrego Administ   425472 Apr 14 11:05 sdkPco/bin64/SC2_Cam.dll
+5ee6e68643a5a6f529eac32cd5671a81 *sdkPco/bin64/SC2_Cam.dll
+-rwxr-xr-x    1 homsrego Administ   440832 Sep  8 08:16 sdkPco/bin64/SC2_Cam.dll
 
 ... copying  [sdkPco/bin64/sc2_cl_me4.dll]
-dbf27f7ffe531ddc90e675602366bc7b *sdkPco/bin64/sc2_cl_me4.dll
--rwxr-xr-x    1 homsrego Administ   304128 Apr 14 11:05 sdkPco/bin64/sc2_cl_me4.dll
+0dde0d5ead6961b7f6e7012713051ce6 *sdkPco/bin64/sc2_cl_me4.dll
+-rwxr-xr-x    1 homsrego Administ   334848 Jul 26 08:31 sdkPco/bin64/sc2_cl_me4.dll
 
 ... copying  [sdkPco/lib64/SC2_Cam.lib]
-ef127eddcbb5be4b894796edeeb4fb10 *sdkPco/lib64/SC2_Cam.lib
--rw-r--r--    1 homsrego Administ    45136 Apr 14 11:05 sdkPco/lib64/SC2_Cam.lib
+0ea07f45648080b77ea6f9903706608b *sdkPco/lib64/SC2_Cam.lib
+-rw-r--r--    1 homsrego Administ    45314 Sep  8 08:16 sdkPco/lib64/SC2_Cam.lib
 
 ... copying dir [sdkPco]
-total 176
--rw-r--r--    1 homsrego Administ     2542 Apr 14 11:05 PCO_Structures.h
--rw-r--r--    1 homsrego Administ    38854 Apr 14 11:05 PCO_err.h
--rw-r--r--    1 homsrego Administ    37415 Apr 14 11:05 PCO_errt.h
--rw-r--r--    1 homsrego Administ     4550 Apr 14 11:05 Pco_ConvDlgExport.h
--rw-r--r--    1 homsrego Administ     6630 Apr 14 11:05 Pco_ConvExport.h
--rw-r--r--    1 homsrego Administ     9235 Apr 14 11:05 Pco_ConvStructures.h
--rw-r--r--    1 homsrego Administ   124357 Apr 14 11:05 SC2_CamExport.h
--rw-r--r--    1 homsrego Administ    10522 Apr 14 11:05 SC2_DialogExport.h
--rw-r--r--    1 homsrego Administ    10539 Apr 14 11:05 SC2_SDKAddendum.h
--rw-r--r--    1 homsrego Administ    44496 Apr 14 11:05 sc2_SDKStructures.h
--rw-r--r--    1 homsrego Administ     5519 Apr 14 11:05 sc2_common.h
--rw-r--r--    1 homsrego Administ    57655 Apr 14 11:05 sc2_defs.h
-24761a29258a6e5882a51add6c786db3 *sdkPco/bin/SC2_Cam.dll
-d61038e9d4fd7c726bec82e7835e31f3 *sdkPco/bin/sc2_cl_me4.dll
-7b13b847efd2d02ab2cb8b6341e4230d *sdkPco/bin64/SC2_Cam.dll
-dbf27f7ffe531ddc90e675602366bc7b *sdkPco/bin64/sc2_cl_me4.dll
-001e53237fac0660aeb4091624f26ba0 *sdkPco/include/Pco_ConvDlgExport.h
-c0a22e2d703f75b78366732061095e4f *sdkPco/include/Pco_ConvExport.h
-02927354a905586ee46b0ed264f73a3d *sdkPco/include/Pco_ConvStructures.h
-230c35b4a6a1a65a24466405ad160f01 *sdkPco/include/PCO_err.h
-af9d50121c2f2b252b35054e643f1a7e *sdkPco/include/PCO_errt.h
+total 182
+-rw-r--r--    1 homsrego Administ     2542 Aug 31  2010 PCO_Structures.h
+-rw-r--r--    1 homsrego Administ    39033 Nov 10  2015 PCO_err.h
+-rw-r--r--    1 homsrego Administ    37619 Nov 10  2015 PCO_errt.h
+-rw-r--r--    1 homsrego Administ     4633 Apr 17  2015 Pco_ConvDlgExport.h
+-rw-r--r--    1 homsrego Administ     8938 Mar 10  2015 Pco_ConvExport.h
+-rw-r--r--    1 homsrego Administ     9832 May 20  2015 Pco_ConvStructures.h
+-rw-r--r--    1 homsrego Administ   128007 Jul 25 16:24 SC2_CamExport.h
+-rw-r--r--    1 homsrego Administ    10522 Aug 29  2014 SC2_DialogExport.h
+-rw-r--r--    1 homsrego Administ    10719 Mar 19  2015 SC2_SDKAddendum.h
+-rw-r--r--    1 homsrego Administ    45231 Jul 25 16:35 sc2_SDKStructures.h
+-rw-r--r--    1 homsrego Administ     5519 Jul 15  2014 sc2_common.h
+-rw-r--r--    1 homsrego Administ    62213 Jul 25 16:21 sc2_defs.h
+80351c2c99e1876d69817b8865f75dab *sdkPco/bin/SC2_Cam.dll
+4b1b94842cf84ae1c716a153310e9b4a *sdkPco/bin/sc2_cl_me4.dll
+5ee6e68643a5a6f529eac32cd5671a81 *sdkPco/bin64/SC2_Cam.dll
+0dde0d5ead6961b7f6e7012713051ce6 *sdkPco/bin64/sc2_cl_me4.dll
+4426d752e0d22d236bd6925f896778ad *sdkPco/include/Pco_ConvDlgExport.h
+b370ef77abafdfd072574f7fb073fca6 *sdkPco/include/Pco_ConvExport.h
+8fdc6c067d2a238d4471f1115bd8d796 *sdkPco/include/Pco_ConvStructures.h
+af46d198de3037b5040aa0884b326d88 *sdkPco/include/PCO_err.h
+83227d3c76a0ee80e584f5880fdf1710 *sdkPco/include/PCO_errt.h
 1f2a3c56167094883ebb96a510b47efa *sdkPco/include/PCO_Structures.h
-626e60b7e507585c0444fa23dd3438a3 *sdkPco/include/SC2_CamExport.h
+2271bcc48f01d5fbf31146411bcc8b34 *sdkPco/include/SC2_CamExport.h
 4b5c251043115e18ee6af5cefb7be74f *sdkPco/include/sc2_common.h
-a0e1b6ef00c51c997a08367f5a5dd048 *sdkPco/include/sc2_defs.h
+a45ec26171fe15af653cc2a3871d5603 *sdkPco/include/sc2_defs.h
 276244167010a08c38e15b2510ac4931 *sdkPco/include/SC2_DialogExport.h
-78141a2c3a054d5ad5baa5e220ce8c2b *sdkPco/include/SC2_SDKAddendum.h
-a619577b0800392dcc4b242b34e039ce *sdkPco/include/sc2_SDKStructures.h
-bccd5bc50e029574c3582522e620679b *sdkPco/lib/SC2_Cam.lib
-ef127eddcbb5be4b894796edeeb4fb10 *sdkPco/lib64/SC2_Cam.lib
-7f1c875dd3be0fbc684ee54515397739 *sdkPco/PcoSdkVersion.h
-822ae32b80e9a5d61e3ef4c31b4fd91b *sdkPco/PcoSdkVersion.log
+019d844fb588cc7a5772a2daf5d97bf1 *sdkPco/include/SC2_SDKAddendum.h
+eee455cbc44ee64272f1338c5ffe1f35 *sdkPco/include/sc2_SDKStructures.h
+b0353c9102f26ff382a396847a1c6a63 *sdkPco/lib/SC2_Cam.lib
+0ea07f45648080b77ea6f9903706608b *sdkPco/lib64/SC2_Cam.lib
+1d041a50a22aa2be8623c42e3950d636 *sdkPco/PcoSdkVersion.h
+ca42ee4ad6771b462869d6fca6eb0ce1 *sdkPco/PcoSdkVersion.log

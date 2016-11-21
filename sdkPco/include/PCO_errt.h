@@ -95,12 +95,12 @@
 static char* PCO_ERROR_COMMON_TXT[] = 
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "Function call with wrong parameter.",           // 0xA0000001  PCO_ERROR_WRONGVALUE 
-  "Handle is invalid.",                            // 0xA0000002  PCO_ERROR_INVALIDHANDLE 
-  "No memory available.",                          // 0xA0000003  PCO_ERROR_NOMEMORY 
+  "Function call with wrong parameter.",           // 0xA0000001  PCO_ERROR_WRONGVALUE
+  "Handle is invalid.",                            // 0xA0000002  PCO_ERROR_INVALIDHANDLE
+  "No memory available.",                          // 0xA0000003  PCO_ERROR_NOMEMORY
 
-  "A file handle could not be opened.",            // 0xA0000004  PCO_ERROR_NOFILE 
-  "Timeout in function.",                          // 0xA0000005  PCO_ERROR_TIMEOUT 
+  "A file handle could not be opened.",            // 0xA0000004  PCO_ERROR_NOFILE
+  "Timeout in function.",                          // 0xA0000005  PCO_ERROR_TIMEOUT
   "A buffer is to small.",                         // 0xA0000006  PCO_ERROR_BUFFERSIZE
   "The called module is not initialized.",         // 0xA0000007  PCO_ERROR_NOTINIT
   "Disk full.",                                    // 0xA0000008  PCO_ERROR_DISKFULL
@@ -114,6 +114,7 @@ static char* PCO_ERROR_COMMON_TXT[] =
   "Validation of context failed",                  // 0xA0000010  PCO_ERROR_VALIDATION
   "Wrong library version",                         // 0xA0000011  PCO_ERROR_LIBRARYVERSION
   "Wrong camera version",                          // 0xA0000012  PCO_ERROR_CAMERAVERSION
+  "Option is not available",                       // 0xA0000013  PCO_ERROR_NOTAVAILABLE
 };
 
 const int COMMON_MSGNUM = sizeof(PCO_ERROR_COMMON_TXT) / sizeof(PCO_ERROR_COMMON_TXT[0]);
@@ -131,8 +132,8 @@ static char* PCO_ERROR_DRIVER_TXT[] =
   "",                                              // 0x80002003  
   "",                                              // 0x80002004  
   "Wrong driver for this OS.",                     // 0x80002005  PCO_ERROR_DRIVER_WRONGOS
-  "Open driver or driver class failed.",           // 0x80002006  PCO_ERROR_DRIVER_NODRIVER    
-  "I/O operation failed.",                         // 0x80002007  PCO_ERROR_DRIVER_IOFAILURE    
+  "Open driver or driver class failed.",           // 0x80002006  PCO_ERROR_DRIVER_NODRIVER
+  "I/O operation failed.",                         // 0x80002007  PCO_ERROR_DRIVER_IOFAILURE
 
   "Error in telegram checksum.",                   // 0x80002008  PCO_ERROR_DRIVER_CHECKSUMERROR
   "Invalid Camera mode.",                          // 0x80002009  PCO_ERROR_DRIVER_INVMODE
@@ -153,9 +154,9 @@ static char* PCO_ERROR_DRIVER_TXT[] =
   "Device is disconnected or power off.",          // 0x80002015  PCO_ERROR_DRIVER_DEVICEOFF
   "Necessary system resource not available.",      // 0x80002016  PCO_ERROR_DRIVER_RESOURCE
   "Busreset occured during system call.",          // 0x80002017  PCO_ERROR_DRIVER_BUSRESET
-  "Image(s) lost in transfer",                     // 0x80002018  PCO_ERROR_DRIVER_BUFFER_LOSTIMAGE  
+  "Image(s) lost in transfer",                     // 0x80002018  PCO_ERROR_DRIVER_BUFFER_LOSTIMAGE
 
-  "", "", "", "", "", "", "",                  // 0x80002019 - 0x8000201F
+  "", "", "", "", "", "", "",                      // 0x80002019 - 0x8000201F
 
   "A call to a windows-function fails.",           // 0x80002020  PCO_ERROR_DRIVER_SYSERR
   "",                                              // 0x80002021  
@@ -192,17 +193,17 @@ const int DRIVER_MSGNUM = sizeof(PCO_ERROR_DRIVER_TXT) / sizeof(PCO_ERROR_DRIVER
 static char* PCO_ERROR_SDKDLL_TXT[] = 
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "wSize of an embedded buffer is to small.",      // 0x80003001  PCO_ERROR_SDKDLL_NESTEDBUFFERSIZE   
-  "wSize of a buffer is to small.",                // 0x80003002  PCO_ERROR_SDKDLL_BUFFERSIZE   
-  "A dialog is not available.",                    // 0x80003003  PCO_ERROR_SDKDLL_DIALOGNOTAVAILABLE   
-  "Option is not available.",                      // 0x80003004  PCO_ERROR_SDKDLL_NOTAVAILABLE   
+  "wSize of an embedded buffer is to small.",      // 0x80003001  PCO_ERROR_SDKDLL_NESTEDBUFFERSIZE
+  "wSize of a buffer is to small.",                // 0x80003002  PCO_ERROR_SDKDLL_BUFFERSIZE
+  "A dialog is not available.",                    // 0x80003003  PCO_ERROR_SDKDLL_DIALOGNOTAVAILABLE
+  "Option is not available.",                      // 0x80003004  PCO_ERROR_SDKDLL_NOTAVAILABLE
   "A call to a windows-function fails.",           // 0x80003005  PCO_ERROR_SDKDLL_SYSERR
-  "Memory area is invalid.",                       // 0x80003006  PCO_ERROR_SDKDLL_BADMEMORY   
+  "Memory area is invalid.",                       // 0x80003006  PCO_ERROR_SDKDLL_BADMEMORY
   "",                                              // 0x80003007    
-  "Number of available buffers is exhausted.",     // 0x80003008  PCO_ERROR_SDKDLL_BUFCNTEXHAUSTED   
-  "Dialog is already open.",                       // 0x80003009  PCO_ERROR_SDKDLL_ALREADYOPENED   
-  "Error while destroying dialog.",                // 0x8000300A  PCO_ERROR_SDKDLL_ERRORDESTROYWND   
-  "A requested buffer is not available.",          // 0x8000300B  PCO_ERROR_SDKDLL_BUFFERNOTVALID  
+  "Number of available buffers is exhausted.",     // 0x80003008  PCO_ERROR_SDKDLL_BUFCNTEXHAUSTED
+  "Dialog is already open.",                       // 0x80003009  PCO_ERROR_SDKDLL_ALREADYOPENED
+  "Error while destroying dialog.",                // 0x8000300A  PCO_ERROR_SDKDLL_ERRORDESTROYWND
+  "A requested buffer is not available.",          // 0x8000300B  PCO_ERROR_SDKDLL_BUFFERNOTVALID
   "The buffer nr is out of range.",                // 0x8000300C  PCO_ERROR_SDKDLL_WRONGBUFFERNR
   "A DLL could not be found.",                     // 0x8000300D  PCO_ERROR_SDKDLL_DLLNOTFOUND  
   "Buffer already assigned to another buffernr.",  // 0x8000300E  PCO_ERROR_SDKDLL_BUFALREADYASSIGNED
@@ -223,12 +224,12 @@ const int SDKDLL_MSGNUM = sizeof(PCO_ERROR_SDKDLL_TXT) / sizeof(PCO_ERROR_SDKDLL
 static char* PCO_ERROR_APPLICATION_TXT[] = 
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "Error while waiting for a picture.",            // 0x80004001  PCO_ERROR_APPLICATION_PICTURETIMEOUT   
-  "Error while saving file.",                      // 0x80004002  PCO_ERROR_APPLICATION_SAVEFILE 
-  "A function inside a DLL could not be found.",   // 0x80004003  PCO_ERROR_APPLICATION_FUNCTIONNOTFOUND 
+  "Error while waiting for a picture.",            // 0x80004001  PCO_ERROR_APPLICATION_PICTURETIMEOUT
+  "Error while saving file.",                      // 0x80004002  PCO_ERROR_APPLICATION_SAVEFILE
+  "A function inside a DLL could not be found.",   // 0x80004003  PCO_ERROR_APPLICATION_FUNCTIONNOTFOUND
 
-  "A DLL could not be found.",                     // 0x80004004  PCO_ERROR_APPLICATION_DLLNOTFOUND 
-  "The board number is out of range.",             // 0x80004005  PCO_ERROR_APPLICATION_WRONGBOARDNR 
+  "A DLL could not be found.",                     // 0x80004004  PCO_ERROR_APPLICATION_DLLNOTFOUND
+  "The board number is out of range.",             // 0x80004005  PCO_ERROR_APPLICATION_WRONGBOARDNR
   "The decive does not support this function.",    // 0x80004006  PCO_ERROR_APPLICATION_FUNCTIONNOTSUPPORTED
   "Started Math with different resolution than reference.",// 0x80004007 PCO_ERROR_APPLICATION_WRONGRES
   "Disk full.",                                    // 0x80004008  PCO_ERROR_APPLICATION_DISKFULL
@@ -246,66 +247,66 @@ const int APPLICATION_MSGNUM = sizeof(PCO_ERROR_APPLICATION_TXT) / sizeof(PCO_ER
 static char* PCO_ERROR_FIRMWARE_TXT[] = 
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "Timeout in telegram.",                          // 0x80001001  PCO_ERROR_FIRMWARE_TELETIMEOUT   
-  "Wrong checksum in telegram.",                   // 0x80001002  PCO_ERROR_FIRMWARE_WRONGCHECKSUM   
-  "No acknowledge.",                               // 0x80001003  PCO_ERROR_FIRMWARE_NOACK   
+  "Timeout in telegram.",                          // 0x80001001  PCO_ERROR_FIRMWARE_TELETIMEOUT
+  "Wrong checksum in telegram.",                   // 0x80001002  PCO_ERROR_FIRMWARE_WRONGCHECKSUM
+  "No acknowledge.",                               // 0x80001003  PCO_ERROR_FIRMWARE_NOACK
 
-  "Wrong size in array.",                          // 0x80001004  PCO_ERROR_FIRMWARE_WRONGSIZEARR   
-  "Data is inkonsistent.",                         // 0x80001005  PCO_ERROR_FIRMWARE_DATAINKONSISTENT   
+  "Wrong size in array.",                          // 0x80001004  PCO_ERROR_FIRMWARE_WRONGSIZEARR
+  "Data is inkonsistent.",                         // 0x80001005  PCO_ERROR_FIRMWARE_DATAINKONSISTENT
   "Unknown command telegram.",                     // 0x80001006  PCO_ERROR_FIRMWARE_UNKNOWN_COMMAND
   "",                                              // 0x80001007  
 
-  "FPGA init failed.",                             // 0x80001008  PCO_ERROR_FIRMWARE_INITFAILED   
-  "FPGA configuration failed.",                    // 0x80001009  PCO_ERROR_FIRMWARE_CONFIGFAILED   
+  "FPGA init failed.",                             // 0x80001008  PCO_ERROR_FIRMWARE_INITFAILED
+  "FPGA configuration failed.",                    // 0x80001009  PCO_ERROR_FIRMWARE_CONFIGFAILED
   "High temperature.",                             // 0x8000100A  PCO_ERROR_FIRMWARE_HIGH_TEMPERATURE
   "Supply voltage out of range.",                  // 0x8000100B  PCO_ERROR_FIRMWARE_VOLTAGEOUTOFRANGE
 
-  "No response from I2C Device.",                  // 0x8000100C  PCO_ERROR_FIRMWARE_I2CNORESPONSE  
-  "Checksum in code area is wrong.",               // 0x8000100D  PCO_ERROR_FIRMWARE_CHECKSUMCODEFAILED  
-  "An address is out of range.",                   // 0x8000100E  PCO_ERROR_FIRMWARE_ADDRESSOUTOFRANGE  
-  "No device is open for update.",                 // 0x8000100F  PCO_ERROR_FIRMWARE_NODEVICEOPENED  
+  "No response from I2C Device.",                  // 0x8000100C  PCO_ERROR_FIRMWARE_I2CNORESPONSE
+  "Checksum in code area is wrong.",               // 0x8000100D  PCO_ERROR_FIRMWARE_CHECKSUMCODEFAILED
+  "An address is out of range.",                   // 0x8000100E  PCO_ERROR_FIRMWARE_ADDRESSOUTOFRANGE
+  "No device is open for update.",                 // 0x8000100F  PCO_ERROR_FIRMWARE_NODEVICEOPENED
 
-  "The delivered buffer is to small.",             // 0x80001010  PCO_ERROR_FIRMWARE_BUFFERTOSMALL   
-  "To much data delivered to function.",           // 0x80001011  PCO_ERROR_FIRMWARE_TOMUCHDATA   
-  "Error while writing to camera.",                // 0x80001012  PCO_ERROR_FIRMWARE_WRITEERROR   
-  "Error while reading from camera.",              // 0x80001013  PCO_ERROR_FIRMWARE_READERROR   
+  "The delivered buffer is to small.",             // 0x80001010  PCO_ERROR_FIRMWARE_BUFFERTOSMALL
+  "To much data delivered to function.",           // 0x80001011  PCO_ERROR_FIRMWARE_TOMUCHDATA
+  "Error while writing to camera.",                // 0x80001012  PCO_ERROR_FIRMWARE_WRITEERROR
+  "Error while reading from camera.",              // 0x80001013  PCO_ERROR_FIRMWARE_READERROR
 
-  "Was not able to render graph.",                 // 0x80001014  PCO_ERROR_FIRMWARE_NOTRENDERED   
-  "The handle is not known.",                      // 0x80001015  PCO_ERROR_FIRMWARE_NOHANDLEAVAILABLE   
-  "Value is out of allowed range.",                // 0x80001016  PCO_ERROR_FIRMWARE_DATAOUTOFRANGE   
-  "Desired function not possible.",                // 0x80001017  PCO_ERROR_FIRMWARE_NOTPOSSIBLE   
+  "Was not able to render graph.",                 // 0x80001014  PCO_ERROR_FIRMWARE_NOTRENDERED
+  "The handle is not known.",                      // 0x80001015  PCO_ERROR_FIRMWARE_NOHANDLEAVAILABLE
+  "Value is out of allowed range.",                // 0x80001016  PCO_ERROR_FIRMWARE_DATAOUTOFRANGE
+  "Desired function not possible.",                // 0x80001017  PCO_ERROR_FIRMWARE_NOTPOSSIBLE
 
-  "SDRAM type read from SPD unknown.",             // 0x80001018  PCO_ERROR_FIRMWARE_UNSUPPORTED_SDRAM   
-  "Different SDRAM modules mounted.",              // 0x80001019  PCO_ERROR_FIRMWARE_DIFFERENT_SDRAMS   
-  "For CMOS sensor two modules needed.",           // 0x8000101A  PCO_ERROR_FIRMWARE_ONLY_ONE_SDRAM   
-  "No SDRAM mounted.",                             // 0x8000101B  PCO_ERROR_FIRMWARE_NO_SDRAM_MOUNTED   
+  "SDRAM type read from SPD unknown.",             // 0x80001018  PCO_ERROR_FIRMWARE_UNSUPPORTED_SDRAM
+  "Different SDRAM modules mounted.",              // 0x80001019  PCO_ERROR_FIRMWARE_DIFFERENT_SDRAMS
+  "For CMOS sensor two modules needed.",           // 0x8000101A  PCO_ERROR_FIRMWARE_ONLY_ONE_SDRAM
+  "No SDRAM mounted.",                             // 0x8000101B  PCO_ERROR_FIRMWARE_NO_SDRAM_MOUNTED
 
-  "Segment size is too large.",                    // 0x8000101C  PCO_ERROR_FIRMWARE_SEGMENTS_TOO_LARGE   
-  "Segment is out of range.",                      // 0x8000101D  PCO_ERROR_FIRMWARE_SEGMENT_OUT_OF_RANGE   
-  "Value is out of range.",                        // 0x8000101E  PCO_ERROR_FIRMWARE_VALUE_OUT_OF_RANGE    
-  "Image read not possible.",                      // 0x8000101F  PCO_ERROR_FIRMWARE_IMAGE_READ_NOT_POSSIBLE   
+  "Segment size is too large.",                    // 0x8000101C  PCO_ERROR_FIRMWARE_SEGMENTS_TOO_LARGE
+  "Segment is out of range.",                      // 0x8000101D  PCO_ERROR_FIRMWARE_SEGMENT_OUT_OF_RANGE
+  "Value is out of range.",                        // 0x8000101E  PCO_ERROR_FIRMWARE_VALUE_OUT_OF_RANGE
+  "Image read not possible.",                      // 0x8000101F  PCO_ERROR_FIRMWARE_IMAGE_READ_NOT_POSSIBLE
 
-  "Command/data not supported by this hardware.",  // 0x80001020  PCO_ERROR_FIRMWARE_NOT_SUPPORTED            
-  "Starting record failed due not armed.",         // 0x80001021  PCO_ERROR_FIRMWARE_ARM_NOT_SUCCESSFUL       
-  "Arm is not possible while record active.",      // 0x80001022  PCO_ERROR_FIRMWARE_RECORD_MUST_BE_OFF       
-  "",                                              // 0x80001023             
+  "Command/data not supported by this hardware.",  // 0x80001020  PCO_ERROR_FIRMWARE_NOT_SUPPORTED
+  "Starting record failed due not armed.",         // 0x80001021  PCO_ERROR_FIRMWARE_ARM_NOT_SUCCESSFUL
+  "Arm is not possible while record active.",      // 0x80001022  PCO_ERROR_FIRMWARE_RECORD_MUST_BE_OFF
+  "",                                              // 0x80001023  
 
   "",                                              // 0x80001024  
-  "Segment too small for image.",                  // 0x80001025  PCO_ERROR_FIRMWARE_SEGMENT_TOO_SMALL        
-  "COC built is too large for internal memory.",   // 0x80001026  PCO_ERROR_FIRMWARE_COC_BUFFER_TO_SMALL      
-  "COC has invalid data at fix position.",         // 0x80001027  PCO_ERROR_FIRMWARE_COC_DATAINKONSISTENT     
+  "Segment too small for image.",                  // 0x80001025  PCO_ERROR_FIRMWARE_SEGMENT_TOO_SMALL
+  "COC built is too large for internal memory.",   // 0x80001026  PCO_ERROR_FIRMWARE_COC_BUFFER_TO_SMALL
+  "COC has invalid data at fix position.",         // 0x80001027  PCO_ERROR_FIRMWARE_COC_DATAINKONSISTENT
 
   "Correction data not valid.",                    // 0x80001028  PCO_ERROR_FIRMWARE_CORRECTION_DATA_INVALID
-  "CCD calibration not finished.",                 // 0x80001029  PCO_ERROR_FIRMWARE_CCDCAL_NOT_FINISHED       
-  "",                                              // 0x8000102A  
+  "CCD calibration not finished.",                 // 0x80001029  PCO_ERROR_FIRMWARE_CCDCAL_NOT_FINISHED
+  "Image Transfer pending",                        // 0x8000102A  
   "",                                              // 0x8000102B  
 
-  "",                                              // 0x8000102C        
+  "",                                              // 0x8000102C  
   "",                                              // 0x8000102D  
   "",                                              // 0x8000102E  
   "",                                              // 0x8000102F  
 
-  "Camera trigger setting invalid.",               // 0x80001030  PCO_ERROR_FIRMWARE_COC_TRIGGER_INVALID 
+  "Camera trigger setting invalid.",               // 0x80001030  PCO_ERROR_FIRMWARE_COC_TRIGGER_INVALID
   "Camera pixel rate invalid.",                    // 0x80001031  PCO_ERROR_FIRMWARE_COC_PIXELRATE_INVALID
   "Camera powerdown setting invalid.",             // 0x80001032  PCO_ERROR_FIRMWARE_COC_POWERDOWN_INVALID
   "Camera sensorformat invalid.",                  // 0x80001033  PCO_ERROR_FIRMWARE_COC_SENSORFORMAT_INVALID
@@ -315,11 +316,12 @@ static char* PCO_ERROR_FIRMWARE_TXT[] =
   "Camera delay setting invalid.",                 // 0x80001037  PCO_ERROR_FIRMWARE_COC_DELAY_INVALID
   "Camera exposure setting invalid.",              // 0x80001038  PCO_ERROR_FIRMWARE_COC_EXPOS_INVALID
   "Camera timebase setting invalid.",              // 0x80001039  PCO_ERROR_FIRMWARE_COC_TIMEBASE_INVALID
-  "ROI is not symmetrical.",                       // 0x8000103A  PCO_ERROR_FIRMWARE_ROI_NOT_SYMMETRICAL
-  "ROI steps do not match",                        // 0x8000103B  PCO_ERROR_FIRMWARE_ROI_STEPPING
-  "ROI setting is wrong",                          // 0x8000103C  PCO_ERROR_FIRMWARE_ROI_SETTING
-
-  "",                                              // 0x8000103F
+  "Acquire mode setting invalid.",                 // 0x8000103A  PCO_ERROR_FIRMWARE_ACQUIRE_MODE_INVALID
+  "Interface parameter setting invalid.",          // 0x8000103B  PCO_ERROR_FIRMWARE_IF_SETTINGS_INVALID
+  "ROI setting is wrong",                          // 0x8000103C  PCO_ERROR_FIRMWARE_ROI_NOT_SYMMETRICAL
+  "ROI steps do not match",                        // 0x8000103D  PCO_ERROR_FIRMWARE_ROI_STEPPING
+  "ROI setting is wrong",                          // 0x8000103E  PCO_ERROR_FIRMWARE_ROI_SETTING
+  "",                                              // 0x8000103F  
 
   "COC modulate period time invalid.",             // 0x80001040 PCO_ERROR_FIRMWARE_COC_PERIOD_INVALID
   "COC modulate monitor time invalid",             // 0x80001041 PCO_ERROR_FIRMWARE_COC_MONITOR_INVALID
@@ -365,7 +367,7 @@ static char* PCO_ERROR_FIRMWARE_TXT[] =
   "Flash loader block invalid.",                   // 0x8000108c  PCO_ERROR_FIRMWARE_GIGE_DOWNLOAD_INVALID_LDR         
   "", "", "",                                      // 0x8000108d - 0x8000108F
   "Image packet lost.",                            // 0x80001090 PCO_ERROR_FIRMWARE_GIGE_DRIVER_IMG_PKT_LOST
-  "GiGE Data bandwidth conflict.",		   // 0x80001091 PCO_ERROR_FIRMWARE_GIGE_BANDWIDTH_CONFLICT
+  "GiGE Data bandwidth conflict.",                 // 0x80001091 PCO_ERROR_FIRMWARE_GIGE_BANDWIDTH_CONFLICT
   "", "", "", "", "",                              // 0x80001092 - 0x80001096
   "", "", "", "", "",                              // 0x80001097 - 0x8000109B
   "", "", "", "",                                  // 0x8000109C - 0x8000109F
@@ -540,6 +542,7 @@ void PCO_GetErrorText(DWORD dwerr, char* pbuf, DWORD dwlen)
       {
         case PCO_ERROR_CAMWARE:    devicetxt = "CamWare";    break;
         case PCO_ERROR_PROGRAMMER: devicetxt = "Programmer";    break;
+        case PCO_ERROR_SDKAPPLICATION: devicetxt = "SDK Application";    break;
         default: devicetxt = "Unknown device";
       }
 

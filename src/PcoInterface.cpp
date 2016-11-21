@@ -99,6 +99,8 @@ void Interface::reset(ResetLevel reset_level)
 
   int intLevel = reset_level;
 
+  m_cam->_setActionTimestamp(tsReset);
+
   DEB_ALWAYS() << fnId << ": " DEB_VAR2(reset_level, intLevel);
 
   m_sync->stopAcq();
@@ -115,6 +117,9 @@ void Interface::prepareAcq()
 	DEF_FNID;
 
 	DEB_ALWAYS() << _sprintComment(fnId, "[ENTRY]");
+
+	m_cam->_setActionTimestamp(tsPrepareAcq);
+
 	if(m_buffer)
 		m_buffer->prepareAcq();
 }
@@ -127,6 +132,8 @@ void Interface::startAcq()
   DEF_FNID;
 
 	DEB_ALWAYS() << _sprintComment(fnId, "[ENTRY]");
+
+	m_cam->_setActionTimestamp(tsStartAcq);
 
   if(m_buffer)
     m_buffer->getBuffer().setStartTimestamp(Timestamp::now());
@@ -141,7 +148,8 @@ void Interface::stopAcq()
   DEF_FNID;
 
 	DEB_ALWAYS() << _sprintComment(fnId, "[ENTRY]");
-  m_sync->stopAcq();
+	m_cam->_setActionTimestamp(tsStopAcq);
+	m_sync->stopAcq();
 }
 
 //=========================================================================================================

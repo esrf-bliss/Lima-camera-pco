@@ -45,8 +45,15 @@
 #define CAMINFO_CAMERALINK		(0x1LL << 16)
 #define CAMINFO_CAMERATYPE		(0x1LL << 17)
 
+#define FILE_PCO_DLL				"liblimapco.dll"
+#define FILENAME_INSTALL_VERSION	"INSTALL_VERSION"
+#define FILEEXT_INSTALL_VERSION		"txt"
 
-
+char * _getComputerName(char *infoBuff, DWORD  bufCharCount);
+char * _getUserName(char *infoBuff, DWORD  bufCharCount);
+char * _getVSconfiguration(char *infoBuff, DWORD  bufCharCount);
+char * _getPcoSdkVersion(char *infoBuff, int strLen, char *lib);
+char * _getDllPath(const char* pzFileName, char *path, size_t strLen);
 
 
 #endif

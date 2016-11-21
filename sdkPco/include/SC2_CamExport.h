@@ -146,7 +146,7 @@ extern "C" {                           //  Assume C declarations for C++
 #endif  //C++
 
 #define PCO_SDK_VERMAJOR 1             // Shows the current version of the sc2_cam.dll
-#define PCO_SDK_VERMINOR 18
+#define PCO_SDK_VERMINOR 20
 
 // VERY IMPORTANT INFORMATION:
 /*******************************************************************/
@@ -1113,22 +1113,50 @@ SC2_SDK_FUNC int WINAPI PCO_GetSensorSignalStatus(HANDLE hCam, DWORD* dwStatus, 
 
 SC2_SDK_FUNC int WINAPI PCO_GetHWLEDSignal(HANDLE hCam, DWORD* dwHWLEDSignal);
 SC2_SDK_FUNC int WINAPI PCO_SetHWLEDSignal(HANDLE hCam, DWORD dwHWLEDSignal);
+
 SC2_SDK_FUNC int WINAPI PCO_GetCmosLineTiming(HANDLE hCam, WORD* wParameter, WORD* wTimeBase,
                                               DWORD* dwLineTime, DWORD* dwReserved, WORD wReservedLen);
-// DWORD * dwReserved -> DWORD pointer for future use (can be NULL)
-// WORD wReservedLen -> WORD variable to set the lentght of the dwReserved array in DWORDS
+// The line timing mode is a third possibility to set the exposure and delay timing of a camera. In order to 
+// use this mode the line timing parameter has to be set to CMOS_LINETIMING_PARAM_ON.The
+// camera will automatically generate the timing for each line to achieve the given line time.
+// In: HANDLE hCam -> Handle to a previously opened camera.
+//     WORD* wParameter -> WORD pointer to receive the on/off state (off=0; on=1 / CMOS_LINETIMING_PARAM_(OFF/ON))
+//     WORD* wTimeBase -> WORD pointer to receive the timebase (ns=0; us=1; ms=2)
+//     DWORD* dwLineTime -> DWORD pointer to receive the line time [wTimeBase]
+//     DWORD* dwReserved -> DWORD pointer for future use (can be NULL)
+//     WORD wReservedLen -> WORD variable to set the lenght of the dwReserved array in DWORDS
+
 SC2_SDK_FUNC int WINAPI PCO_SetCmosLineTiming(HANDLE hCam, WORD wParameter, WORD wTimeBase,
                                               DWORD dwLineTime, DWORD* dwReserved, WORD wReservedLen);
-// DWORD * dwReserved -> DWORD pointer for future use (can be NULL)
-// WORD wReservedLen -> WORD variable to set the lentght of the dwReserved array in DWORDS
+// The line timing mode is a third possibility to set the exposure and delay timing of a camera. In order to 
+// use this mode the line timing parameter has to be set to CMOS_LINETIMING_PARAM_ON.The
+// camera will automatically generate the timing for each line to achieve the given line time.
+// In: HANDLE hCam -> Handle to a previously opened camera.
+//     WORD wParameter -> WORD to set the on/off state (off=0; on=1 / CMOS_LINETIMING_PARAM_(OFF/ON))
+//     WORD wTimeBase -> WORD to set the timebase (ns=0; us=1; ms=2)
+//     DWORD dwLineTime -> DWORD to set the line time [wTimeBase]
+//     DWORD* dwReserved -> DWORD pointer for future use (can be NULL)
+//     WORD wReservedLen -> WORD variable to set the lenght of the dwReserved array in DWORDS
+
 SC2_SDK_FUNC int WINAPI PCO_GetCmosLineExposureDelay(HANDLE hCam, DWORD* dwExposureLines, DWORD* dwDelayLines,
                                                      DWORD* dwReserved, WORD wReservedLen);
-// DWORD * dwReserved -> DWORD pointer for future use (can be NULL)
-// WORD wReservedLen -> WORD variable to set the lentght of the dwReserved array in DWORDS
+// This command gets the exposure and delay time for a frame. It is only available when the line timing 
+// parameter is set to CMOS_LINETIMING_PARAM_ON.
+// In: HANDLE hCam -> Handle to a previously opened camera.
+//     DWORD* dwExposureLines -> DWORD pointer to receive the number of lines for exposure
+//     DWORD* dwDelayLines -> DWORD pointer to receive the number of lines for delay
+//     DWORD* dwReserved -> DWORD pointer for future use (can be NULL)
+//     WORD wReservedLen -> WORD variable to set the lenght of the dwReserved array in DWORDS
+
 SC2_SDK_FUNC int WINAPI PCO_SetCmosLineExposureDelay(HANDLE hCam, DWORD dwExposureLines, DWORD dwDelayLines,
                                                      DWORD* dwReserved, WORD wReservedLen);
-// DWORD * dwReserved -> DWORD pointer for future use (can be NULL)
-// WORD wReservedLen -> WORD variable to set the lentght of the dwReserved array in DWORDS
+// This command sets the exposure and delay time for a frame. It is only available when the line timing 
+// parameter is set to CMOS_LINETIMING_PARAM_ON.
+// In: HANDLE hCam -> Handle to a previously opened camera.
+//     DWORD dwExposureLines -> DWORD to set the number of lines for exposure
+//     DWORD dwDelayLines -> DWORD to set the number of lines for delay
+//     DWORD* dwReserved -> DWORD pointer for future use (can be NULL)
+//     WORD wReservedLen -> WORD variable to set the lenght of the dwReserved array in DWORDS
 
 /////////////////////////////////////////////////////////////////////
 /////// End: Timing commands ////////////////////////////////////////
@@ -1534,6 +1562,7 @@ SC2_SDK_FUNC int WINAPI PCO_GetInterfaceOutputFormat(HANDLE ph,
 // Gets the output interface settings of cameras with different interfaces.
 // This option is only available with a pco.dimax
 // In: HANDLE ph -> Handle to a previously opened camera.
+//     Parameters for pco.dimax:
 //     WORD *wDestInterface -> WORD variable to get and set the desired interface.
 //                      0: reserved
 //                      1: HD/SDI
@@ -1542,6 +1571,15 @@ SC2_SDK_FUNC int WINAPI PCO_GetInterfaceOutputFormat(HANDLE ph,
 //                      0: Output is disabled
 //                      1: HD/SDI, 1080p25, RGB
 //                      2: HD/SDI, 1080p25, arbitrary raw mode
+//     Parameters for pco.edge:
+//     WORD wDestInterface -> WORD variable to set the desired interface.
+//                      2: SET_INTERFACE_CAMERALINK
+//     WORD wFormat -> WORD variable to set the interface format
+//                      0x0000: SCCMOS_FORMAT_TOP_BOTTOM (Mode E)
+//                      0x0100: SCCMOS_FORMAT_TOP_CENTER_BOTTOM_CENTER (Mode A)
+//                      0x0200: SCCMOS_FORMAT_CENTER_TOP_CENTER_BOTTOM (Mode B)
+//                      0x0300: SCCMOS_FORMAT_CENTER_TOP_BOTTOM_CENTER (Mode C)
+//                      0x0400: SCCMOS_FORMAT_TOP_CENTER_CENTER_BOTTOM (Mode D)
 //     WORD *wReserved: Reserved for future use, set *wReserved to zero
 // Out: int -> Error message.
 
@@ -1553,6 +1591,7 @@ SC2_SDK_FUNC int WINAPI PCO_SetInterfaceOutputFormat(HANDLE ph,
 // Sets the output interface settings of cameras with different interfaces.
 // This option is only available with a pco.dimax
 // In: HANDLE ph -> Handle to a previously opened camera.
+//     Parameters for pco.dimax:
 //     WORD wDestInterface -> WORD variable to set the desired interface.
 //                      0: reserved
 //                      1: HD/SDI
@@ -1561,6 +1600,15 @@ SC2_SDK_FUNC int WINAPI PCO_SetInterfaceOutputFormat(HANDLE ph,
 //                      0: Output is disabled
 //                      1: HD/SDI, 1080p25, RGB
 //                      2: HD/SDI, 1080p25, arbitrary raw mode
+//     Parameters for pco.edge:
+//     WORD wDestInterface -> WORD variable to set the desired interface.
+//                      2: SET_INTERFACE_CAMERALINK
+//     WORD wFormat -> WORD variable to set the interface format
+//                      0x0000: SCCMOS_FORMAT_TOP_BOTTOM (Mode E)
+//                      0x0100: SCCMOS_FORMAT_TOP_CENTER_BOTTOM_CENTER (Mode A)
+//                      0x0200: SCCMOS_FORMAT_CENTER_TOP_CENTER_BOTTOM (Mode B)
+//                      0x0300: SCCMOS_FORMAT_CENTER_TOP_BOTTOM_CENTER (Mode C)
+//                      0x0400: SCCMOS_FORMAT_TOP_CENTER_CENTER_BOTTOM (Mode D)
 //     WORD wReserved: Reserved for future use, set wReserved to zero
 // Out: int -> Error message.
 
@@ -1845,7 +1893,7 @@ SC2_SDK_FUNC int WINAPI PCO_CamLinkSetImageParameters(HANDLE ph, WORD wxres, WOR
 // with all other interface types of pco.
 // If there is a change in buffer size (ROI, binning) and/or ROI relocation this function must
 // be called with the new x and y resolution. Additionally this function has to be called,
-// if you switch to another camRAM segment with different x and y size or ROI and like to get images.
+// if you switch to another camera internal memory segment with different x and y size or ROI and like to get images.
 // In: HANDLE ph -> Handle to a previously opened camera.
 //     WORD wxres -> X Resolution of the images to be transferred
 //     WORD wyres -> Y Resolution of the images to be transferred
@@ -1859,13 +1907,13 @@ SC2_SDK_FUNC int WINAPI PCO_SetImageParameters(HANDLE ph, WORD wxres, WORD wyres
 // PCO_CamLinkSetImageParameters
 // If there is a change in buffer size (ROI, binning) and/or ROI relocation this function must
 // be called with the new x and y resolution. Additionally this function has to be called,
-// if you switch to another camRAM segment with different x and y size or ROI and like to get images.
+// if you switch to another camera internal memory segment with different x and y size or ROI and like to get images.
 // In: HANDLE ph -> Handle to a previously opened camera.
 //     WORD wxres -> X Resolution of the images to be transferred
 //     WORD wyres -> Y Resolution of the images to be transferred
 //     DWORD dwflags -> Flags to select the correct soft-ROI for interface preparation
 //                      Set IMAGEPARAMETERS_READ_FROM_SEGMENTS when the next image operation will read images
-//                      from one of the CamRAM segments (if available).
+//                      from one of the camera internal memory segments (if available).
 //                      Set IMAGEPARAMETERS_READ_WHILE_RECORDING when the next image operation is a recording
 //     void* param -> Pointer to a structure for future use (set to NULL); Currently not used.
 //     int ilen -> int to hold the length of the param structure for future use (set to 0); Currently not used.
@@ -1881,8 +1929,9 @@ SC2_SDK_FUNC int WINAPI PCO_SetTimeouts(HANDLE ph, void *buf_in,unsigned int siz
 // [2]: transfer-timeout, 1000ms default, Time to wait till the transfer channel expires.
 // Out: int -> Error message.
 
-SC2_SDK_FUNC int WINAPI PCO_GetGigEIPAddress(HANDLE ph,
-                         BYTE *BField0, BYTE *BField1, BYTE *BField2, BYTE *BField3);
+// Obsolete: Please use tools provided by pco (GigeCalib)
+//SC2_SDK_FUNC int WINAPI PCO_GetGigEIPAddress(HANDLE ph,
+//                         BYTE *BField0, BYTE *BField1, BYTE *BField2, BYTE *BField3);
 // Gets the IP address of the camera, e.g. 192.168.1.20
 // In: HANDLE ph -> Handle to a previously opened camera.
 //     BYTE *BField0 -> Pointer to a BYTE, to receive the upper part of the IP adr., e.g. 192.
@@ -1892,8 +1941,9 @@ SC2_SDK_FUNC int WINAPI PCO_GetGigEIPAddress(HANDLE ph,
 //     WORD size_in -> WORD variable which holds the maximum length of the string.
 // Out: int -> Error message.
 
-SC2_SDK_FUNC int WINAPI PCO_SetGigEIPAddress(HANDLE ph, DWORD dwFlags,
-                         BYTE BField0, BYTE BField1, BYTE BField2, BYTE BField3);
+// Obsolete: Please use tools provided by pco (GigeCalib)
+//SC2_SDK_FUNC int WINAPI PCO_SetGigEIPAddress(HANDLE ph, DWORD dwFlags,
+//                         BYTE BField0, BYTE BField1, BYTE BField2, BYTE BField3);
 // Sets the IP address of the camera, e.g. 192.168.1.20
 // In: HANDLE ph -> Handle to a previously opened camera.
 //     DWORD dwFlags -> DWORD flags, to avoid Messagebox set 0x01; others must be zero
@@ -1978,6 +2028,8 @@ SC2_SDK_FUNC int WINAPI PCO_ResetLib();
 // Resets the sc2_cam internal enumerator and unloads all loaded interface dlls.
 
 SC2_SDK_FUNC int WINAPI PCO_EnableSoftROI(HANDLE ph, WORD wSoftROIFlags, void* /*param*/, int /*ilen*/);
+// ATTENTION: This is an initialization function. Please call after opening the camera and do not change
+// this parameter during runtime.
 // Enables Soft-ROI functionality for Soft-ROI capable interfaces. In case it is necessary
 // to get a smaller ROI-granularity (e.g. in x-direction it is only possible to set
 // the ROI in steps of 160 pixels with a pco.edge 5.5) this function enables smaller
