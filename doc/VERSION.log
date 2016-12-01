@@ -1,4 +1,52 @@
 
+2017/01/09 13:06:12 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2017-01-09_130606]
+  to: [/t/rhoms1/install-2017-01-09_130606]
+  to: [/t/rhoms1/install-beta]
+
+2017/01/09 13:05:02 ==========================================
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
+#define        PCO_GIT_VERSION "$Id:       PCO rev[2017-01-09 13:02:47 +0100] head[5b89e7c][5b89e7c6ff3649cf2f5f55a11a991efda3099bb7] ref[ (HEAD, gitrh/pco-1.603, pco-1.603)] at [2017/01/09 13:05:01] $"
+#define       LIMA_GIT_VERSION "$Id:      LIMA rev[2016-10-03 10:21:55 +0200] head[268f03c][268f03c8ade70b296bb86317a2310c24ca4d4707] ref[ (HEAD, gitrh/core-1.6, github/core-1.6, core-1.6)] at [2017/01/09 13:05:01] $"
+#define    PROCLIB_GIT_VERSION "$Id:   PROCLIB rev[2016-01-15 15:44:08 +0100] head[3a08863][3a0886386e57a24ced072832d321d2dc43449e0b] ref[ (HEAD, github/master, github/HEAD, master)] at [2017/01/09 13:05:01] $"
+#define  LIBCONFIG_GIT_VERSION "$Id: LIBCONFIG rev[2013-02-07 18:08:29 +0100] head[89c411a][89c411a541d4ab4d66257ccb85749853fd685cbb] ref[ (HEAD, github/master, github/HEAD, master)] at [2017/01/09 13:05:01] $"
+#define      TANGO_GIT_VERSION "$Id:     TANGO rev[2016-09-27 17:28:03 +0200] head[75531aa][75531aaf9bcda8b27a09b92cf355307847835d6c] ref[ (HEAD, github/master, github/HEAD, master)] at [2017/01/09 13:05:01] $"
+#define       SPEC_GIT_VERSION "$Id:      SPEC rev[2016-10-10 09:40:10 +0200] head[65690d3][65690d3b7d24783256b279542a796c8a8a3f795f] ref[ (HEAD, github/master, github/HEAD, master)] at [2017/01/09 13:05:01] $"
+
+2017/01/09 12:36:07 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2017-01-09_123602]
+  to: [/t/rhoms1/install-2017-01-09_123602]
+  to: [/t/rhoms1/install-beta]
+
+- fix the start recording (dimax) to be compatible with edge/cameralink
+
+2016/12/09 20:48:29 ==========================================
+scp: copied local directory to segfs and /tmp_14_days:
+from: [../../install/] and [./bat/]
+  to: [blissadm@lid00a:/segfs/bliss/projects/LIMA/build/depot_win/win_vc9/pco/install-2016-12-09_204823]
+  to: [/t/rhoms1/install-2016-12-09_204823]
+  to: [/t/rhoms1/install-beta]
+
+
+- _pco_acq_thread_edge - hw error event timeout
+- xferImag - included property acqTimeoutRetry (also in talk) / acqStop
+- attributes functions (without talk)
+
+2016/11/21 14:44:13 ==========================================
+#define        PCO_SDK_VERSION "$Id:    PCOSDK [1.20] $"
+#define        PCO_GIT_VERSION "$Id:       PCO rev[2016-11-21 12:32:06 +0100] head[398ce63][398ce63f665b03c72996dd061c78f65ee9212a9d] ref[ (HEAD, tag: pco-win64-1.602, gitrh/pco-1.603, github/master, github/HEAD, pco-1.603, master)] at [2016/11/21 14:44:13] $"
+#define       LIMA_GIT_VERSION "$Id:      LIMA rev[2016-10-03 10:21:55 +0200] head[268f03c][268f03c8ade70b296bb86317a2310c24ca4d4707] ref[ (HEAD, gitrh/core-1.6, github/core-1.6, core-1.6)] at [2016/11/21 14:44:13] $"
+#define    PROCLIB_GIT_VERSION "$Id:   PROCLIB rev[2016-01-15 15:44:08 +0100] head[3a08863][3a0886386e57a24ced072832d321d2dc43449e0b] ref[ (HEAD, github/master, github/HEAD, master)] at [2016/11/21 14:44:13] $"
+#define  LIBCONFIG_GIT_VERSION "$Id: LIBCONFIG rev[2013-02-07 18:08:29 +0100] head[89c411a][89c411a541d4ab4d66257ccb85749853fd685cbb] ref[ (HEAD, github/master, github/HEAD, master)] at [2016/11/21 14:44:13] $"
+#define      TANGO_GIT_VERSION "$Id:     TANGO rev[2016-09-27 17:28:03 +0200] head[75531aa][75531aaf9bcda8b27a09b92cf355307847835d6c] ref[ (HEAD, github/master, github/HEAD, master)] at [2016/11/21 14:44:13] $"
+#define       SPEC_GIT_VERSION "$Id:      SPEC rev[2016-10-10 09:40:10 +0200] head[65690d3][65690d3b7d24783256b279542a796c8a8a3f795f] ref[ (HEAD, github/master, github/HEAD, master)] at [2016/11/21 14:44:13] $"
+
+
+
 2016/11/18 19:00:00 ==========================================
 scp: copied local directory to segfs and /tmp_14_days:
 from: [../../install/] and [./bat/]

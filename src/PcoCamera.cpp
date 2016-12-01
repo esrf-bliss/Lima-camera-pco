@@ -396,6 +396,7 @@ Camera::Camera(const char *params) :
 
 	char *value, *key;
 	bool ret;
+	int iValue;
 
 	/***
 	key = "test";
@@ -406,6 +407,11 @@ Camera::Camera(const char *params) :
 	key = "testMode";
 	ret = paramsGet(key, value);
 	if(ret) {m_pcoData->testCmdMode = _atoi64(value);}
+
+	key = "acqTimeoutRetry";
+	ret = paramsGet(key, value);
+	iValue = ret ? atoi(value) : 3;
+	m_pcoData->acqTimeoutRetry = (iValue < 0 ) ? 0 : iValue;
 
 	DEB_ALWAYS()
 		<< ALWAYS_NL << DEB_VAR1(m_pcoData->version) 
@@ -427,7 +433,7 @@ void Camera::_init(){
 
 	DEB_ALWAYS() << _sprintComment(fnId, "[ENTRY]");
 
-	char msg[MSG_SIZE + 1];
+	char msg[MSG4K + 1];
 	//char *pMsg;
 	int error=0;
 	char *errMsg;
@@ -436,10 +442,10 @@ void Camera::_init(){
 	_armRequired(true);
 
 	m_log.clear();
-	sprintf_s(msg, MSG_SIZE, "*** Pco log %s\n", getTimestamp(Iso));
+	sprintf_s(msg, sizeof(msg), "*** Pco log %s\n", getTimestamp(Iso));
 	m_log.append(msg);
 
-	DEB_ALWAYS() <<_getDllPath(FILE_PCO_DLL, msg, MSG_SIZE);
+	DEB_ALWAYS() <<_getDllPath(FILE_PCO_DLL, msg, sizeof(msg));
 
 	//PCO_FN0(error, pMsg,PCO_ResetLib);
 
@@ -975,7 +981,8 @@ void Camera::startAcq()
 
 	if(!_isRunAfterAssign())
 	{
-		//_pco_SetRecordingState(1, error);
+		DEB_ALWAYS() << "========================= recordingState 1 - BEFORE ASSIGN (startAcq)";
+		_pco_SetRecordingState(1, error);
 	}
 
 	if(_isCameraType(Edge)){
@@ -992,9 +999,7 @@ void Camera::startAcq()
 	}
 #endif
 
-//	if(_isCameraType(Dimax)){
 	if(_isCameraType(Dimax | Pco2k | Pco4k)){
-		_pco_SetRecordingState(1, error);
 		if(iRequestedFrames > 0 ) {
 			if((trig_mode  == ExtTrigSingle) ) {
 				_beginthread( _pco_acq_thread_dimax_trig_single, 0, (void*) this);
@@ -1058,11 +1063,8 @@ double usElapsedTimeTicsPerSec() {
 
 }
 
-
-
 //==========================================================================================================
 //==========================================================================================================
-
 void _pco_acq_thread_dimax(void *argin) {
 	DEF_FNID;
 
@@ -1105,7 +1107,6 @@ void _pco_acq_thread_dimax(void *argin) {
 
 	bool nb_frames_fixed = false;
 	int nb_frames; 	m_sync->getNbFrames(nb_frames);
-	//m_pcoData->traceAcq.nrImgRequested = nb_frames;
 	m_pcoData->traceAcq.nrImgRequested0 = nb_frames;
 
 	m_sync->setAcqFrames(0);
@@ -1211,7 +1212,6 @@ void _pco_acq_thread_dimax(void *argin) {
 
 		msElapsedTimeSet(tStart);  // reset for xfer
 
-
 		if(nb_acq_frames < nb_frames) m_sync->setNbFrames(nb_acq_frames);
 
 //		if(m_buffer->_getRequestStop()) {
@@ -1245,8 +1245,7 @@ void _pco_acq_thread_dimax(void *argin) {
 
 	} // if nb_frames_fixed
 	
-	
-	
+
 	//m_sync->setExposing(status);
 	m_pcoData->dwMaxImageCnt[wSegment-1] =
 			m_pcoData->traceAcq.maxImgCount = _dwMaxImageCnt;
@@ -1580,6 +1579,22 @@ void _pco_acq_thread_edge(void *argin) {
 
 	
 	m_sync->setStarted(false); // updated
+
+
+	switch(status) 
+	{
+		case pcoAcqRecordTimeout:
+		case pcoAcqWaitTimeout:
+		case pcoAcqWaitError:
+		case pcoAcqError:
+		case pcoAcqPcoError:
+		//Event *ev = new Event(Hardware,Event::Error,Event::Camera,Event::Default, "timeout");
+		Event *ev = new Event(Hardware,Event::Error,Event::Camera,Event::CamFault, "timeout");
+		m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
+			  break;
+
+
+	}
 
 	_endthread();
 }
@@ -2675,7 +2690,6 @@ void Camera::_setCameraState(long long flag, bool val)
 bool Camera::_isRunAfterAssign()
 {
 	return (_isCameraType(Edge) && _isInterfaceType(ifCameralink));
-	//return false;
 }
 
 //=================================================================================================
@@ -2695,3 +2709,4 @@ void Camera::_setActionTimestamp(int action)
 		m_pcoData->action_timestamp.ts[action] = time(NULL);
 	}
 }
+

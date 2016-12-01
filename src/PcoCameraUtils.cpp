@@ -224,6 +224,7 @@ void stcPcoData::traceMsg(char *s){
 	snprintf(ptr, LEN_TRACEACQ_MSG - lg,"%s> %s", dt, s);
 }
 
+static char buff[BUFF_INFO_SIZE +16];
 char *Camera::talk(char *cmd){
 	DEB_MEMBER_FUNCT();
 
@@ -235,7 +236,7 @@ char *Camera::talk(char *cmd){
 }
 
 #define NRTOK 5
-#define NRCMDS 50
+#define NRCMDS 200
 char *Camera::_talk(char *_cmd, char *output, int lg){
 	DEB_MEMBER_FUNCT();
 		char cmdBuff[BUFF_INFO_SIZE +1];
@@ -611,7 +612,6 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 		keys_desc[ikey++] = "DISABLED / debug tool";     
 		if(_stricmp(cmd, key) == 0){
 
-
 			if((tokNr >= 1) &&  (_stricmp(tok[1], "mode")==0)){
 				ptr += sprintf_s(ptr, ptrMax - ptr, "testCmdMode [0x%llx]",  m_pcoData->testCmdMode);
 				if(tokNr >= 2){
@@ -633,7 +633,7 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 			
 			
 			//--- test of close
-			if( (_stricmp(tok[1], "cb")==0)){
+			if((tokNr >= 1) &&  (_stricmp(tok[1], "close")==0)){
 				int error;
 				char *msg;
 
@@ -650,8 +650,8 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 			}
 
 			
-			//--- test of callback
-			if( (_stricmp(tok[1], "cb")==0)){
+			//--- test of callback   "testCmd cb"
+			if((tokNr >= 1) &&  (_stricmp(tok[1], "cb")==0)){
 				Event *ev = new Event(Hardware,Event::Error,Event::Camera,Event::Default, "test cb");
 				m_HwEventCtrlObj->reportEvent(ev);
 				ptr += sprintf_s(ptr, ptrMax - ptr, "%s> done\n", tok[1]);
@@ -762,6 +762,22 @@ char *Camera::_talk(char *_cmd, char *output, int lg){
 
 		}
 
+		//----------------------------------------------------------------------------------------------------------
+		key = keys[ikey] = "acqTimeoutRetry";     
+		keys_desc[ikey++] = "(RW) max Timeout retries during acq (0 - infinite)";
+		if(_stricmp(cmd, key) == 0){
+			
+			
+			if(tokNr >= 1) {
+				int ival = atoi(tok[1]);
+				m_pcoData->acqTimeoutRetry = ival < 0 ? 0 : ival;
+			}
+
+			ptr += sprintf_s(ptr, ptrMax - ptr, "%d", m_pcoData->acqTimeoutRetry);
+			return output;
+
+
+		}
 
 		//----------------------------------------------------------------------------------------------------------
 		key = keys[ikey] = "getCheckImgNrResults";     
@@ -1492,14 +1508,6 @@ Notes: the command will be rejected, if Recording State is [run]
 		//----------------------------------------------------------------------------------------------------------
 		// this must be the last cmd
 		//----------------------------------------------------------------------------------------------------------
-#if 0
-		if(ikey >= NRCMDS) 
-		{
-			char *msg =  "FATAL ERROR - too many talk cmds - increase NRCMDS & recompile";
-			DEB_ALWAYS() << msg;		
-			throw LIMA_HW_EXC(Error, msg);
-		}
-#endif
 
 		key = keys[ikey] = "?";     
 		keys_desc[ikey++] = "(R) this help / list of the talk cmds";     
@@ -1534,7 +1542,6 @@ Notes: the command will be rejected, if Recording State is [run]
 			ptr += sprintf_s(ptr, ptrMax - ptr, "--- nrCmds[%d][%d]\n", ikeyMax, NRCMDS);
 			return output;
 		}
-
 
 		sprintf_s(ptr, ptrMax - ptr, "ERROR unknown cmd [%s]", cmd);
 		return output;
@@ -2588,4 +2595,371 @@ int _get_time_from_imageTimestamp(void *buf,int shift,SYSTEMTIME *st)
 	st->wMilliseconds=us/100;
 
 	return 0;
+}
+
+
+
+
+
+
+//====================================================================
+//====================================================================
+
+void Camera::getRollingShutter(int &val)
+{
+	int error;
+	bool rolling;
+
+	if(!_isCameraType(Edge)) 
+	{
+		val = -1;
+		return;
+	} 
+	rolling = _get_shutter_rolling_edge(error);
+	val = rolling;
+
+}
+
+
+void Camera::setRollingShutter(int val)
+{
+	int error;
+	bool rolling, rollingNew;
+
+	if(!_isCameraType(Edge)) {
+		return;
+	}
+
+	rolling = _get_shutter_rolling_edge(error);
+			
+	rollingNew = !!val;
+
+	if(rollingNew != rolling){
+		_set_shutter_rolling_edge(rollingNew, error);
+	}
+}
+
+//====================================================================
+//====================================================================
+
+
+void Camera::getPixelRate(int &val)
+{
+	DWORD pixRate, pixRateNext; int error;
+
+	_pco_GetPixelRate(pixRate, pixRateNext, error);
+	val = pixRate;
+}
+
+void Camera::setPixelRate(int val)
+{
+	int error;
+
+	DWORD pixRate = val;
+	_presetPixelRate(pixRate, error);
+}
+
+//====================================================================
+//====================================================================
+void Camera::getAcqTimeoutRetry(int &val)
+{
+	val = m_pcoData->acqTimeoutRetry;
+}
+
+void Camera::setAcqTimeoutRetry(int val)
+{
+	m_pcoData->acqTimeoutRetry = val < 0 ? 0 : val;
+}
+//====================================================================
+//====================================================================
+void Camera::getAdc(int &adc)
+{
+	int adc_working, adc_max, error;
+
+	error = _pco_GetADCOperation(adc_working, adc_max);
+	adc = adc_working;
+}
+
+void Camera::setAdc(int adc_new)
+{
+	int error;
+	int adc_working;
+
+	error = _pco_SetADCOperation(adc_new, adc_working);
+}
+
+void Camera::getAdcMax(int &adc)
+{
+	int error;
+	int adc_working, adc_max;
+
+	error = _pco_GetADCOperation(adc_working, adc_max);
+
+	adc = adc_max;
+}
+
+//====================================================================
+//====================================================================
+void Camera::getCocRunTime(double &coc)
+{
+	coc = m_pcoData->cocRunTime;
+}
+
+void Camera::getFrameRate(double &framerate)
+{
+	framerate = m_pcoData->frameRate;
+}
+
+//====================================================================
+//====================================================================
+void Camera::getLastImgRecorded(int & img)
+{
+
+	img =  m_pcoData->traceAcq.nrImgRecorded;
+}
+
+void Camera::getLastImgAcquired(int & img)
+{
+
+	img =  m_pcoData->traceAcq.nrImgAcquired;
+}
+//====================================================================
+//====================================================================
+void Camera::getMaxNbImages(int & nr)
+{
+	nr = (!_isCameraType(Dimax | Pco2k | Pco4k )) ?  -1 : pcoGetFramesMax(m_pcoData->wActiveRamSegment);
+}
+
+void Camera::getPcoLogsEnabled(int & enabled)
+{
+	enabled =  m_pcoData->pcoLogActive;
+}
+
+//=================================================================================================
+//=================================================================================================
+void Camera::getCamType(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+	_camInfo(ptr, ptrMax, CAMINFO_CAMERATYPE);
+	o_sn = buff;
+}
+
+void Camera::getCamInfo(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+	_camInfo(ptr, ptrMax, CAMINFO_ALL);
+	o_sn = buff;
+}
+
+void Camera::getVersion(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+	_camInfo(ptr, ptrMax, CAMINFO_VERSION);
+	o_sn = buff;
+}
+
+//====================================================================
+//====================================================================
+
+void Camera::getClTransferParam(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+	_camInfo(ptr, ptrMax, CAMINFO_CAMERALINK);
+	o_sn = buff;
+}
+
+void Camera::getPixelRateInfo(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+	_camInfo(ptr, ptrMax, CAMINFO_PIXELRATE);
+	o_sn = buff;
+}
+
+void Camera::getLastError(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+	sprintf_s(ptr, ptrMax - ptr, "[x%08x] [%s]\n", 
+				m_pcoData->pcoError, m_pcoData->pcoErrorMsg);
+	o_sn = buff;
+}
+
+//====================================================================
+//====================================================================
+void Camera::getTraceAcq(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+
+	time_t _timet;
+
+	if(0 && !(_isCameraType(Dimax | Pco2k | Pco4k))) {
+		ptr += sprintf_s(ptr, ptrMax - ptr, "* ERROR - only for DIMAX / 2K");
+		o_sn = buff;
+		return;
+	}
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"\n"
+		"* fnId[%s] nrEvents[%d]\n"
+		"* ... fnIdXfer[%s]\n",
+		m_pcoData->traceAcq.fnId,
+		PCO_BUFFER_NREVENTS,
+		m_pcoData->traceAcq.fnIdXfer);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, "* ... testCmdMode [0x%llx]\n",  m_pcoData->testCmdMode);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* msExposure[%g] msDelay[%g]\n",
+		m_pcoData->traceAcq.sExposure * 1000.,
+		m_pcoData->traceAcq.sDelay * 1000.);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... msLimaExposure[%g] Pco exposure[%d] base[%d]\n",
+		m_pcoData->traceAcq.dLimaExposure * 1000.,
+		m_pcoData->traceAcq.iPcoExposure, 
+		m_pcoData->traceAcq.iPcoExposureBase);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... msLimaDelay[%g] Pco delay[%d] base[%d]\n",
+		m_pcoData->traceAcq.dLimaDelay * 1000.,
+		m_pcoData->traceAcq.iPcoDelay, 
+		m_pcoData->traceAcq.iPcoDelayBase);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, "* pcoBin horz[%d] vert[%d]\n",  
+			m_pcoData->traceAcq.iPcoBinHorz, 
+			m_pcoData->traceAcq.iPcoBinVert);
+
+
+	Point top_left = m_RoiLima.getTopLeft();
+	Point bot_right = m_RoiLima.getBottomRight();
+	Size size = m_RoiLima.getSize();			
+	unsigned int bytesPerPix; getBytesPerPixel(bytesPerPix);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, "* limaRoi xy0[%d,%d] xy1[%d,%d] size[%d,%d]\n",  
+			top_left.x, top_left.y,
+			bot_right.x, bot_right.y,
+			size.getWidth(), size.getHeight());
+
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, "* ... pcoRoi x[%d,%d] y[%d,%d]\n",  
+			m_pcoData->traceAcq.iPcoRoiX0, 
+			m_pcoData->traceAcq.iPcoRoiX1, 
+			m_pcoData->traceAcq.iPcoRoiY0, 
+			m_pcoData->traceAcq.iPcoRoiY1);
+
+
+	long long imgSize = size.getWidth()* size.getHeight() * bytesPerPix;
+	long long totSize = imgSize * m_pcoData->traceAcq.nrImgRequested;
+	double mbTotSize =  totSize/(1024.*1024.);
+	double totTime = m_pcoData->traceAcq.msXfer / 1000.;
+	double xferSpeed = mbTotSize / totTime;
+	double framesPerSec = m_pcoData->traceAcq.nrImgRequested / totTime;
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... imgSize[%lld B] totSize[%lld B][%g MB]\n",  
+		imgSize, totSize, mbTotSize);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* nrImgRequested[%d] nrImgAcquired[%d]\n",
+		m_pcoData->traceAcq.nrImgRequested,
+		m_pcoData->traceAcq.nrImgAcquired);
+
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... nrImgRequested0[%d] nrImgRecorded[%d] maxImgCount[%d]\n",
+		m_pcoData->traceAcq.nrImgRequested0,
+		m_pcoData->traceAcq.nrImgRecorded,
+		m_pcoData->traceAcq.maxImgCount);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr,	
+		"* limaTriggerMode[%s]\n",
+		m_pcoData->traceAcq.sLimaTriggerMode);
+	ptr += sprintf_s(ptr, ptrMax - ptr,	
+		"* ... pcoTriggerMode[%s] [%d]\n",
+		m_pcoData->traceAcq.sPcoTriggerMode,
+		m_pcoData->traceAcq.iPcoTriggerMode);
+	ptr += sprintf_s(ptr, ptrMax - ptr,	
+		"* ... pcoAcqMode[%s] [%d]\n",
+		m_pcoData->traceAcq.sPcoAcqMode,
+		m_pcoData->traceAcq.iPcoAcqMode);
+
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* msStartAcqStart[%ld]  msStartAcqEnd[%ld]\n",
+		m_pcoData->traceAcq.msStartAcqStart, m_pcoData->traceAcq.msStartAcqEnd);
+	
+
+	for(int _i = 0; _i < LEN_TRACEACQ_TRHEAD; _i++){
+		char *desc = m_pcoData->traceAcq.usTicks[_i].desc;
+		if(desc != NULL) {
+			ptr += sprintf_s(ptr, ptrMax - ptr, 
+				"* ... usTicks[%d][%5.3f] (ms)   (%s)\n", 
+				_i, m_pcoData->traceAcq.usTicks[_i].value/1000.,
+				desc);
+	
+		}
+	}
+
+	_timet = m_pcoData->traceAcq.endRecordTimestamp;
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* msImgCoc[%.3g] fps[%.3g] msTout[%ld] msTotal[%ld]\n",
+		m_pcoData->traceAcq.msImgCoc, 
+		1000. / m_pcoData->traceAcq.msImgCoc,
+		m_pcoData->traceAcq.msTout,
+		m_pcoData->traceAcq.msTotal);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... msRecordLoop[%ld] msRecord[%ld] endRecord[%s]\n",
+		m_pcoData->traceAcq.msRecordLoop,
+		m_pcoData->traceAcq.msRecord,
+		_timet ? getTimestamp(Iso, _timet) : "");
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... msXfer[%ld] endXfer[%s]\n",
+		m_pcoData->traceAcq.msXfer,
+		getTimestamp(Iso, m_pcoData->traceAcq.endXferTimestamp));
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... xferTimeTot[%g s] xferSpeed[%g MB/s][%g fps]\n",  
+		totTime, xferSpeed, framesPerSec);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"* ... checkImgNr pco[%d] lima[%d] diff[%d]\n",  
+		m_pcoData->traceAcq.checkImgNrPco,
+		m_pcoData->traceAcq.checkImgNrLima,
+		m_pcoData->traceAcq.checkImgNrPco -	m_pcoData->traceAcq.checkImgNrLima);
+
+	ptr += sprintf_s(ptr, ptrMax - ptr, 
+		"%s\n", m_pcoData->traceAcq.msg);
+
+	o_sn = buff;
+}
+//====================================================================
+//====================================================================
+void Camera::getPixelRateValidValues(std::string &o_sn) 
+{
+	char *ptr = buff;
+	char *ptrMax = buff + sizeof(buff);
+	DWORD dwPixRate, dwPixRateNext ; int error, i, nr;
+
+    _pco_GetPixelRate(dwPixRate, dwPixRateNext, error);
+
+	for(nr = i=0; i<4; i++) {
+		dwPixRate = m_pcoData->stcPcoDescription.dwPixelRateDESC[i];
+		if(dwPixRate){
+			nr++;
+			ptr += sprintf_s(ptr, ptrMax - ptr, "%ld  ",dwPixRate);
+		}  
+	}	
+
+	if(nr == 0)			
+		ptr += sprintf_s(ptr, ptrMax - ptr, "%d  ",nr);
+
+	o_sn = buff;
 }
