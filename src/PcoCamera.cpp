@@ -1000,6 +1000,7 @@ void Camera::startAcq()
 #endif
 
 	if(_isCameraType(Dimax | Pco2k | Pco4k)){
+		_pco_SetRecordingState(1, error);
 		if(iRequestedFrames > 0 ) {
 			if((trig_mode  == ExtTrigSingle) ) {
 				_beginthread( _pco_acq_thread_dimax_trig_single, 0, (void*) this);
@@ -2709,4 +2710,3 @@ void Camera::_setActionTimestamp(int action)
 		m_pcoData->action_timestamp.ts[action] = time(NULL);
 	}
 }
-
