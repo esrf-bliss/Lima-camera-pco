@@ -386,7 +386,7 @@ int BufferCtrlObj::_xferImag()
 	char msg[RING_LOG_BUFFER_SIZE+1];
     char *pmsg = msg;
 	m_cam->m_tmpLog->flush(-1);
-	int maxWaitTimeout = 3;
+	int maxWaitTimeout ; m_cam->getAcqTimeoutRetry(maxWaitTimeout);
 
 	bool checkImgNr = false;
 	int imgNrDiff = 0;
@@ -434,12 +434,13 @@ int BufferCtrlObj::_xferImag()
 	msElapsedTimeSet(tStart);
 	m_pcoData->traceAcq.nrImgRequested = dwRequestedFrames;
 
+#if 0
 	if(!m_cam->_isRunAfterAssign()) 
 	{
 		DEB_ALWAYS() << "========================= recordingState 1 - BEFORE ASSIGN";
 		m_cam->_pco_SetRecordingState(1, error);
 	}
-
+#endif
 	
 // --------------- prepare the first buffer 
 // ------- in PCO DIMAX only 1 image can be retreived
@@ -460,7 +461,8 @@ int BufferCtrlObj::_xferImag()
 
 			bool recording = m_cam->_getCameraState(CAMSTATE_RECORD_STATE);
 			bool runAfterAssign = m_cam->_isRunAfterAssign();
-			if((recording && !runAfterAssign) || (!recording && runAfterAssign))
+
+			if((!runAfterAssign) || (!recording && runAfterAssign))
 			{
 				if(error = _assignImage2Buffer(dwFrameFirst2assign, dwFrameLast2assign, dwRequestedFrames, bufIdx,live_mode)) 
 				{
@@ -487,7 +489,7 @@ int BufferCtrlObj::_xferImag()
 	{
 		DWORD sleepMs = 1;
 		::Sleep(sleepMs);
-		DEB_ALWAYS() << "========================= recordingState 1 - AFTER ASSIGN";
+		DEB_ALWAYS() << "========================= recordingState 1 - AFTER ASSIGN (_xferImag)";
 		if(m_cam->_getDebug(DBG_WAITOBJ))
 		{
 			pmsg = "... EDGE - recordingState 1" ; m_cam->m_tmpLog->add(pmsg); DEB_ALWAYS() << pmsg;
@@ -636,9 +638,7 @@ _RETRY:
 				m_cam->m_tmpLog->add(msg);
 			}
 #endif
-
-
-			if(m_cam->_getCameraState(CAMSTATE_RECORD_STATE))
+			if( (m_cam->_getCameraState(CAMSTATE_RECORD_STATE) && m_cam->_isRunAfterAssign()) || (!m_cam->_isRunAfterAssign()) )
 			{
 				if(error = _assignImage2Buffer(dwFrameFirst2assign, dwFrameLast2assign, dwRequestedFrames, bufIdx, live_mode)) {
 					return pcoAcqPcoError;
@@ -648,7 +648,6 @@ _RETRY:
 			{
 				DEB_ALWAYS() << "ERROR _assignImage2Buffer with recordState = 0 / IGNORED!!!!";
 			}
-			
 		}
 
 #ifdef DEBUG_XFER_IMAG
@@ -661,6 +660,9 @@ _RETRY:
     } // for(bufIdx = 0; bufIdx < PCO_BUFFER_NREVENTS; bufIdx++)
 
 _RETRY_WAIT:
+
+		if((m_sync->_getRequestStop(_nrStop) == stopRequest) && (_nrStop > MAX_NR_STOP)) {goto _EXIT_STOP;}
+
 // --------------- check if there is some buffer ready
 		if(m_cam->_getDebug(DBG_WAITOBJ)){
 			pmsg = "... WaitForMultipleObjects - waiting" ; m_cam->m_tmpLog->add(pmsg); DEB_ALWAYS() << pmsg;
@@ -708,10 +710,10 @@ _RETRY_WAIT:
 			goto _RETRY;
 
         case WAIT_TIMEOUT: 
-			maxWaitTimeout--;
+			maxWaitTimeout--; 
 			if(m_cam->_getDebug(DBG_WAITOBJ)){m_cam->m_tmpLog->dumpPrint(true);}
 			printf("=== %s> WAITOBJ ERROR - TIMEOUT [%d]\n", fnId, maxWaitTimeout);
-			if(maxWaitTimeout > 0 ) goto _RETRY_WAIT;
+			if(maxWaitTimeout) goto _RETRY_WAIT; // retry when >0 (counting down up to 0) / <0 infinite
 			return pcoAcqWaitTimeout;
 
         default: 
@@ -855,7 +857,8 @@ int BufferCtrlObj::_xferImag_getImage()
 	int error;
 	bool live_mode;
 	DWORD dwFrameIdxFirst, dwFrameIdxLast;
-	int maxWaitTimeout = 10;
+	int maxWaitTimeout ; m_cam->getAcqTimeoutRetry(maxWaitTimeout);
+
 	WORD _wBitPerPixel;
 	char *sErr;
 	void *ptrLimaBuffer;
@@ -1073,7 +1076,7 @@ int BufferCtrlObj::_xferImag_getImage_edge()
 	int error;
 	bool live_mode;
 	DWORD dwFrameIdxFirst, dwFrameIdxLast;
-	int maxWaitTimeout = 10;
+	int maxWaitTimeout ; m_cam->getAcqTimeoutRetry(maxWaitTimeout);
 	WORD _wBitPerPixel;
 	char *sErr;
 	void *ptrLimaBuffer;
@@ -1156,6 +1159,7 @@ int BufferCtrlObj::_xferImag_getImage_edge()
 		{
 			char *pmsg = "... EDGE - recordingState 1" ; m_cam->m_tmpLog->add(pmsg); DEB_ALWAYS() << pmsg;
 		}
+		DEB_ALWAYS() << "========================= recordingState 1 - AFTER ASSIGN (_xferImag_getImage_edge";
 		m_cam->_pco_SetRecordingState(1, error);
 	}
 
@@ -1328,7 +1332,7 @@ int BufferCtrlObj::_xferImagMult()
 	int error;
 	bool live_mode;
 	DWORD dwFrameIdxFirst, dwFrameIdxLast;
-	int maxWaitTimeout = 10;
+	int maxWaitTimeout ; m_cam->getAcqTimeoutRetry(maxWaitTimeout);
 	WORD _wBitPerPixel;
 	char *sErr;
 	void *ptrLimaBuffer;

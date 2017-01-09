@@ -319,6 +319,11 @@ struct stcPcoData {
 
 	int testForceFrameFirst0;
 	bool pcoLogActive;
+
+	int acqTimeoutRetry; // max nr of timeout during acq (wait for mult obj)
+
+	long reserved[32];
+
 };
 
 enum enumChange {
@@ -428,6 +433,7 @@ namespace lima
 		double pcoGetFrameRate() { return m_pcoData->frameRate; }
 
 
+		PcoHwEventCtrlObj *_getPcoHwEventCtrlObj() {return m_HwEventCtrlObj;}
 		BufferCtrlObj* _getBufferCtrlObj() { return m_buffer;}
 		SyncCtrlObj*	_getSyncCtrlObj() { return m_sync;}
 		struct stcPcoData * _getPcoData() {return  m_pcoData; }
@@ -541,7 +547,47 @@ namespace lima
 		bool _isRunAfterAssign();
 
 
-      public:
+	  public:
+		//----------- attributes
+
+		void getAcqTimeoutRetry(int &val);
+		void setAcqTimeoutRetry(int val);
+
+		void getAdc(int &val);
+        void setAdc(int val);
+        void getAdcMax(int &val);
+
+		
+		void getCamInfo(std::string &o_sn) ;
+		void getCamType(std::string &o_sn) ;
+		void getVersion(std::string &o_sn) ;
+		void getPixelRateInfo(std::string &o_sn) ;
+		void getClTransferParam(std::string &o_sn) ;
+		void getLastError(std::string &o_sn) ;
+		void getTraceAcq(std::string &o_sn) ;
+		void getPixelRateValidValues(std::string &o_sn) ;
+
+
+		void getCocRunTime(double &coc);
+		void getFrameRate(double &framerate);
+		
+
+
+		void getLastImgRecorded(int & img);
+		void getLastImgAcquired(int & img);
+
+		void getMaxNbImages(int & nr);
+		void  getPcoLogsEnabled(int & enabled);
+
+
+		void getPixelRate(int & val);
+		void setPixelRate(int val);
+
+		void getRollingShutter(int & val);
+		void setRollingShutter(int val);
+
+
+	  public:
 		//----------- pco sdk functions
 		WORD _pco_GetActiveRamSegment(); // {return m_pcoData->wActiveRamSegment;}
 
@@ -576,6 +622,9 @@ namespace lima
 		void _pco_GetTimestampMode(WORD &mode, int &err);
 		void _pco_GetGeneralCapsDESC(DWORD &capsDesc1, int &err);
 		void _pco_GetTransferParameter(void* buffer, int ilen, int &err);
+
+
+
 
     };
   }
