@@ -373,15 +373,18 @@ int BufferCtrlObj::_assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast,
 #endif
 
     unsigned int uiMaxWidth, uiMaxHeight;
-    WORD wArmWidth, wArmHeight, wBitPerPixel;
 
+    WORD wArmWidth = m_pcoData->m_wArmWidth;
+    WORD wArmHeight = m_pcoData->m_wArmHeight;
+    WORD _wMaxWidth = m_pcoData->m_wMaxWidth;
+    WORD _wMaxHeight = m_pcoData->m_wMaxHeight;
+    WORD wBitPerPixel;
     unsigned int bytesPerPixel;
 
-    WORD _wMaxWidth, _wMaxHeight;
+    //WORD _wMaxWidth, _wMaxHeight;
     m_cam->_pco_GetSizes(&wArmWidth, &wArmHeight, &_wMaxWidth, &_wMaxHeight,
                          error);
     m_cam->getMaxWidthHeight(uiMaxWidth, uiMaxHeight);
-
     m_cam->getBytesPerPixel(bytesPerPixel);
     m_cam->getBitsPerPixel(wBitPerPixel);
 
@@ -667,6 +670,20 @@ int BufferCtrlObj::_xferImag()
     int maxWaitTimeout;
     m_cam->getAcqTimeoutRetry(maxWaitTimeout);
 
+
+
+    WORD wArmWidth, wArmHeight;
+    WORD _wMaxWidth, _wMaxHeight;
+    unsigned int bytesPerPixel;
+    WORD wBitPerPixel;
+
+    m_cam->_pco_GetSizes(&wArmWidth, &wArmHeight, &_wMaxWidth, &_wMaxHeight,
+                         error);
+    m_cam->getBytesPerPixel(bytesPerPixel);
+    m_cam->getBitsPerPixel(wBitPerPixel);
+    // DWORD dwLen = wArmWidth * wArmHeight * bytesPerPixel;
+
+
     unsigned long long dbgWaitobj = m_cam->_getDebug(DBG_WAITOBJ);
     unsigned long long dbgTraceFifo = m_cam->_getDebug(DBG_TRACE_FIFO);
 
@@ -709,8 +726,8 @@ int BufferCtrlObj::_xferImag()
     // --------------- ENTRY MSG
     // -----------------------------------------------------------------------------------------
     DEB_ALWAYS() << "\n... "
-                 << DEB_VAR4(requested_nb_frames, dwRequestedFrames, live_mode,
-                             forcedFifo)
+                 << DEB_VAR6(requested_nb_frames, dwRequestedFrames, live_mode,
+                             forcedFifo, dbgTraceFifo, dbgWaitobj)
                  << m_cam->_sprintComment(
                         false, fnId, "[WaitForMultipleObjects]", "[ENTRY]");
 
@@ -810,14 +827,6 @@ int BufferCtrlObj::_xferImag()
         } // if((!runAfterAssign)
     }     // for(int i = 0; i <m_cam->m_pco_buffer_nrevents;
 
-    WORD wArmWidth, wArmHeight;
-    unsigned int bytesPerPixel;
-
-    WORD _wMaxWidth, _wMaxHeight;
-    m_cam->_pco_GetSizes(&wArmWidth, &wArmHeight, &_wMaxWidth, &_wMaxHeight,
-                         error);
-    m_cam->getBytesPerPixel(bytesPerPixel);
-    // DWORD dwLen = wArmWidth * wArmHeight * bytesPerPixel;
 
     // Edge cam must be started just after assign buff to avoid lost of img
     if (m_cam->_isRunAfterAssign())
@@ -844,6 +853,7 @@ int BufferCtrlObj::_xferImag()
     bool bCamRAM = m_cam->_isCameraType(camRAM);
     for (dwFrameIdx = 1; dwFrameIdx <= dwRequestedFrames;)
     {
+        DEB_TRACE() << "[LOOP] --- " <<DEB_VAR4(fnId, dwFrameIdx, dwRequestedFrames, forcedFifo);
         if (dbgWaitobj)
         {
             char msg[256];
@@ -1150,11 +1160,6 @@ int BufferCtrlObj::_xferImag()
         WORD wSegment;
         DWORD dwImgToRead, dwFirstImg, dwImgIdx;
 
-        WORD _wArmWidth, _wArmHeight, _wBitPerPixel;
-        WORD _wMaxWidth, _wMaxHeight;
-        m_cam->_pco_GetSizes(&_wArmWidth, &_wArmHeight, &_wMaxWidth,
-                             &_wMaxHeight, error);
-        m_cam->getBitsPerPixel(_wBitPerPixel);
 
         // ------------- stop the recording and clear buffers
         m_cam->_pco_SetRecordingState(0, error);
@@ -1189,7 +1194,8 @@ int BufferCtrlObj::_xferImag()
             // ------------- _pco_GetImageEx only allows read 1 img, so
             // dwFirstImg = dwLastImg
             m_cam->_pco_GetImageEx(wSegment, dwImgIdx, dwImgIdx, sBufNr,
-                                   _wArmWidth, _wArmHeight, _wBitPerPixel,
+                                   m_pcoData->m_wArmWidth, m_pcoData->m_wArmHeight, 
+                                   wBitPerPixel,
                                    error);
 
             int xferRet = _xferImag_buff2lima(dwFrameIdx, bufIdx);
@@ -2384,6 +2390,13 @@ int BufferCtrlObj::_xferImagDoubleImage()
     int maxWaitTimeout;
     m_cam->getAcqTimeoutRetry(maxWaitTimeout);
 
+    WORD wArmWidth, wArmHeight;
+    unsigned int bytesPerPixel;
+    WORD _wMaxWidth, _wMaxHeight;
+    m_cam->_pco_GetSizes(&wArmWidth, &wArmHeight, &_wMaxWidth, &_wMaxHeight,
+                         error);
+    m_cam->getBytesPerPixel(bytesPerPixel);
+
     unsigned long long dbgWaitobj = m_cam->_getDebug(DBG_WAITOBJ);
 
     int iLimaFrame;
@@ -2506,13 +2519,6 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
     } // for i nr events
 
-    WORD wArmWidth, wArmHeight;
-    unsigned int bytesPerPixel;
-
-    WORD _wMaxWidth, _wMaxHeight;
-    m_cam->_pco_GetSizes(&wArmWidth, &wArmHeight, &_wMaxWidth, &_wMaxHeight,
-                         error);
-    m_cam->getBytesPerPixel(bytesPerPixel);
 
     // Edge cam must be started just after assign buff to avoid lost of img
     if (m_cam->_isRunAfterAssign())

@@ -3160,6 +3160,7 @@ void Camera::getBytesPerPixel(unsigned int &pixbytes)
 void Camera::getBitsPerPixel(WORD &pixbits)
 {
     pixbits = m_pcoData->stcPcoDescription.wDynResDESC;
+    m_pcoData->m_wBitPerPixel = pixbits;
 }
 
 //=================================================================================================
@@ -3206,9 +3207,19 @@ void Camera::_pco_GetSizes(WORD *wXResActual, WORD *wYResActual, WORD *wXResMax,
     if (error)
     {
         DEB_ALWAYS() << "ERROR - PCO_GetSizes";
-        *wXResActual = *wYResActual = 0;
+        //*wXResActual = *wYResActual = 0;
+        *wXResActual = m_pcoData->m_wArmWidth;
+        *wYResActual = m_pcoData->m_wArmHeight;
+        *wXResMax = m_pcoData->m_wMaxWidth;
+        *wYResMax = m_pcoData->m_wMaxHeight;
     }
 #endif
+
+    m_pcoData->m_wArmWidth = *wXResActual;
+    m_pcoData->m_wArmHeight = *wYResActual;
+    m_pcoData->m_wMaxWidth = *wXResMax;
+    m_pcoData->m_wMaxHeight = *wYResMax;
+
 
     return;
 }

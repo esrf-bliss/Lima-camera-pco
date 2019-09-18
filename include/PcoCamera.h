@@ -572,6 +572,9 @@ namespace lima
             DWORD dwMaxImageCnt[4];
 
             WORD wRoiX0Now, wRoiY0Now, wRoiX1Now, wRoiY1Now;
+            
+            WORD m_wArmWidth, m_wArmHeight, m_wMaxWidth, m_wMaxHeight;
+            WORD m_wBitPerPixel;
 
             WORD wCamType;
             DWORD dwSerialNumber;
