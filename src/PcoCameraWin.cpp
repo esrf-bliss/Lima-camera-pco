@@ -768,6 +768,8 @@ void _pco_acq_thread_dimax_live(void *argin)
     long msXfer;
     int requestStop = stopNone;
 
+    pcoAcqStatus status;
+
     m_cam->_sprintComment(true, fnId, "[ENTRY]");
 
     HANDLE m_handle = m_cam->getHandle();
@@ -778,7 +780,21 @@ void _pco_acq_thread_dimax_live(void *argin)
     m_pcoData->msAcqRec = 0;
     m_pcoData->msAcqRecTimestamp = getTimestamp();
 
-    pcoAcqStatus status = (pcoAcqStatus)m_buffer->_xferImag();
+    //status = (pcoAcqStatus)m_buffer->_xferImag();
+    
+    if ( !(m_pcoData->testCmdMode & TESTCMDMODE_DIMAX_XFERMULTI))
+    {
+        // _xferImagMult [PCO_GetImageEx]
+        status = (pcoAcqStatus)m_buffer->_xferImagMult();
+    }
+    else
+    {
+        // TODO wDoubleImage
+        
+        // _xferImag [WaitForMultipleObjects]
+        status = (pcoAcqStatus) m_buffer->_xferImag();
+    }
+    
     m_sync->setExposing(status);
     // m_sync->stopAcq();
     const char *msg = m_cam->_pco_SetRecordingState(0, error);
