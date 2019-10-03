@@ -629,6 +629,9 @@ void Camera::_AcqThread::threadFunction_Edge()
 
         m_cam.m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
         msElapsedTimeSet(tXferStart);
+        m_cam.m_pcoData->traceAcq.endXferTimestamp = 
+            m_cam.m_pcoData->msAcqXferTimestamp = 0;
+
 
         // m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].desc = "xfer to lima
         // / total execTime";
