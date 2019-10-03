@@ -555,6 +555,8 @@ void Camera::_AcqThread::threadFunction_Edge()
 
     const char *_msgAbort = "notSet";
     TIME_USEC tStart;
+    TIME_USEC tXferStart;
+    
     long long usStart, usStartTot;
 
     m_cam.m_pcoData->traceAcq.fnId = fnId;
@@ -626,6 +628,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         m_cam.m_pcoData->traceAcq.fnTimestampEntry = getTimestamp();
 
         m_cam.m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
+        msElapsedTimeSet(tXferStart);
 
         // m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].desc = "xfer to lima
         // / total execTime";
@@ -860,6 +863,10 @@ void Camera::_AcqThread::threadFunction_Edge()
         m_cam._stopAcq(false);
 
         printf("\n");
+        
+        m_cam.m_pcoData->traceAcq.endXferTimestamp = 
+            m_cam.m_pcoData->msAcqXferTimestamp = getTimestamp();
+        m_cam.m_pcoData->traceAcq.msXfer = msElapsedTime(tXferStart);
 
         m_cam.m_pcoData->traceAcq.usTicks[traceAcq_pcoSdk].value +=
             usElapsedTime(usStart);

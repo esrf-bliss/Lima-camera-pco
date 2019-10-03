@@ -318,17 +318,17 @@ void Camera::getTraceAcq(std::string &o_sn)
         m_pcoData->traceAcq.maxImgCount);
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "* limaTriggerMode[%s]\n",
-                         m_pcoData->traceAcq.sLimaTriggerMode);
+                m_pcoData->traceAcq.sLimaTriggerMode);
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "* ... pcoTriggerMode[%s] [%d]\n",
-                         m_pcoData->traceAcq.sPcoTriggerMode,
-                         m_pcoData->traceAcq.iPcoTriggerMode);
+                m_pcoData->traceAcq.sPcoTriggerMode,
+                m_pcoData->traceAcq.iPcoTriggerMode);
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "* ... pcoAcqMode[%s] [%d]\n",
-                         m_pcoData->traceAcq.sPcoAcqMode,
-                         m_pcoData->traceAcq.iPcoAcqMode);
+                m_pcoData->traceAcq.sPcoAcqMode,
+                m_pcoData->traceAcq.iPcoAcqMode);
 
     ptr += __sprintfSExt(
-        ptr, ptrMax - ptr, "* msStartAcqStart[%ld]  msStartAcqEnd[%ld]\n",
-        m_pcoData->traceAcq.msStartAcqStart, m_pcoData->traceAcq.msStartAcqEnd);
+                ptr, ptrMax - ptr, "* msStartAcqStart[%ld]  msStartAcqEnd[%ld]\n",
+                m_pcoData->traceAcq.msStartAcqStart, m_pcoData->traceAcq.msStartAcqEnd);
 
     for (int _i = 0; _i < LEN_TRACEACQ_TRHEAD; _i++)
     {
@@ -344,34 +344,35 @@ void Camera::getTraceAcq(std::string &o_sn)
     _timet = m_pcoData->traceAcq.endRecordTimestamp;
 
     ptr += __sprintfSExt(
-        ptr, ptrMax - ptr,
-        "* msImgCoc[%.3g] fps[%.3g] msTout[%ld] msTotal[%ld]\n",
-        m_pcoData->traceAcq.msImgCoc, 1000. / m_pcoData->traceAcq.msImgCoc,
-        m_pcoData->traceAcq.msTout, m_pcoData->traceAcq.msTotal);
+                ptr, ptrMax - ptr,
+                "* msImgCoc[%.3g] fps[%.3g] msTout[%ld] msTotal[%ld]\n",
+                m_pcoData->traceAcq.msImgCoc, 1000. / m_pcoData->traceAcq.msImgCoc,
+                m_pcoData->traceAcq.msTout, m_pcoData->traceAcq.msTotal);
 
     ptr += __sprintfSExt(
-        ptr, ptrMax - ptr,
-        "* ... msRecordLoop[%ld] msRecord[%ld] endRecord[%s]\n",
-        m_pcoData->traceAcq.msRecordLoop, m_pcoData->traceAcq.msRecord,
-        _timet ? getTimestamp(Iso, _timet) : "");
+                ptr, ptrMax - ptr,
+                "* ... msRecordLoop[%ld] msRecord[%ld] endRecord[%s]\n",
+                m_pcoData->traceAcq.msRecordLoop, m_pcoData->traceAcq.msRecord,
+                _timet ? getTimestamp(Iso, _timet) : "");
 
+    time_t tsEnd = m_pcoData->traceAcq.endXferTimestamp;
     ptr +=
         __sprintfSExt(ptr, ptrMax - ptr, "* ... msXfer[%ld] endXfer[%s]\n",
-                      m_pcoData->traceAcq.msXfer,
-                      getTimestamp(Iso, m_pcoData->traceAcq.endXferTimestamp));
+                m_pcoData->traceAcq.msXfer,
+                tsEnd == 0 ? "noSet" : getTimestamp(Iso, tsEnd));
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                         "* ... xferTimeTot[%g s] xferSpeed[%g MB/s][%g fps]\n",
-                         totTime, xferSpeed, framesPerSec);
+                "* ... xferTimeTot[%g s] xferSpeed[%g MB/s][%g fps]\n",
+                totTime, xferSpeed, framesPerSec);
 
     ptr += __sprintfSExt(
-        ptr, ptrMax - ptr,
-        "* ... checkImgNr[%s] pco[%d] lima[%d] diff[%d] order[%d]\n",
-        m_pcoData->traceAcq.checkImgNr ? "true" : "false",
-        m_pcoData->traceAcq.checkImgNrPco, 
-        m_pcoData->traceAcq.checkImgNrLima,
-        m_pcoData->traceAcq.checkImgNrPco - m_pcoData->traceAcq.checkImgNrLima,
-        m_pcoData->traceAcq.checkImgNrOrder);
+                ptr, ptrMax - ptr,
+                "* ... checkImgNr[%s] pco[%d] lima[%d] diff[%d] order[%d]\n",
+                m_pcoData->traceAcq.checkImgNr ? "true" : "false",
+                m_pcoData->traceAcq.checkImgNrPco, 
+                m_pcoData->traceAcq.checkImgNrLima,
+                m_pcoData->traceAcq.checkImgNrPco - m_pcoData->traceAcq.checkImgNrLima,
+                m_pcoData->traceAcq.checkImgNrOrder);
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", m_pcoData->traceAcq.msg);
 

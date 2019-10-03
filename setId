@@ -11,7 +11,8 @@
 
 FILE="./include/PcoGitVersion.h"
 SDK_WIN_H="./sdkPco/PcoSdkVersion.h"
-SDK_LIN_H="./sdkPcoLin/include/PcoSdkVersion.h"
+#SDK_LIN_H="./sdkPcoLin/include/PcoSdkVersion.h"
+SDK_LIN_H="./sdkPcoLin/PcoSdkVersion.h"
 LOG="./doc/VERSION.log"
 
 DT=`date +"%Y/%m/%d %H:%M:%S"`
@@ -35,9 +36,10 @@ DIR="${LIMA_DIR}/third-party/bitshuffle"
 BITSHUFFLEREV=`cd ${DIR} ; git log -n 1 --date=iso --format=format:"rev[%ad] head[%h][%H] ref[%d]" HEAD || echo "ERROR"`
 BITSHUFFLEPATH=`cd ${DIR} ; pwd`
 
-DIR="${LIMA_DIR}/third-party/hdf5"
-HDF5REV=`cd ${DIR} ; git log -n 1 --date=iso --format=format:"rev[%ad] head[%h][%H] ref[%d]" HEAD || echo "ERROR"`
-HDF5PATH=`cd ${DIR} ; pwd`
+#DIR="${LIMA_DIR}/third-party/hdf5"
+#HDF5REV=`cd ${DIR} ; git log -n 1 --date=iso --format=format:"rev[%ad] head[%h][%H] ref[%d]" HEAD || echo "ERROR"`
+#HDF5PATH=`cd ${DIR} ; pwd`
+HDF5REV="noSET"
 
 DIR="${LIMA_DIR}/third-party/libconfig"
 LIBCONFIGREV=`cd ${DIR} ; git log -n 1 --date=iso --format=format:"rev[%ad] head[%h][%H] ref[%d]" HEAD || echo "ERROR"`

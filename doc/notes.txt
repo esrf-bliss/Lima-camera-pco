@@ -4,6 +4,62 @@
 #===================================================
 #===================================================
 
+
+
+#===================================================
+# 2019/10/03 - traceAcq (linux) to update
+#===================================================
+
+* fnId[threadFunction_Edge] nrEvents[0]
+
+* ... fnIdXfer[(null)]
+
+* ... testCmdMode [0x1]
+
+* msExposure[25] msDelay[0]
+* ... msLimaExposure[0] Pco exposure[0] base[0]
+* ... msLimaDelay[0] Pco delay[0] base[0]
+* pcoBin horz[0] vert[0]
+* limaRoi xy0[0,0] xy1[2559,2159] size[2560,2160]
+* ... pcoRoi x[0,0] y[0,0]
+* ... imgSize[11059200 B] totSize[1105920000 B][1054.69 MB]
+
+* nrImgRequested[100] nrImgAcquired[0]
+    m_pcoData->traceAcq.nrImgRequested, m_pcoData->traceAcq.nrImgAcquired);
+
+* ... nrImgRequested0[0] nrImgRecorded[0] maxImgCount[0]
+
+* limaTriggerMode[(null)]
+* ... pcoTriggerMode[(null)] [0]
+* ... pcoAcqMode[(null)] [0]
+
+* msStartAcqStart[0]  msStartAcqEnd[3107]
+* ... usTicks[0][3107.363] (ms)   (total execTime)
+* ... usTicks[1][9.272] (ms)   (Lima execTime)
+* ... usTicks[3][3097.486] (ms)   (SDK execTime)
+* ... usTicks[4][2.232] (ms)   (PCO_GetRecordingState execTime)
+* ... usTicks[5][62.909] (ms)   (PCO_SetRecordingState execTime)
+* ... usTicks[6][0.000] (ms)   (PCO_CancelImages execTime)
+
+* msImgCoc[29.7] fps[33.6] msTout[0] msTotal[0]
+* ... msRecordLoop[0] msRecord[0] endRecord[]
+
+* ... msXfer[0] endXfer[2019/10/03 15:37:19]
+        ok m_pcoData->traceAcq.msXfer,
+        getTimestamp(Iso, m_pcoData->traceAcq.endXferTimestamp));
+
+* ... xferTimeTot[0 s] xferSpeed[inf MB/s][inf fps]
+        totTime, xferSpeed, framesPerSec);
+        ok totTime = m_pcoData->traceAcq.msXfer / 1000.;
+        ok xferSpeed = mbTotSize / totTime;
+        ok framesPerSec = m_pcoData->traceAcq.nrImgRequested / totTime;
+
+* ... checkImgNr[true] pco[100] lima[100] diff[0] order[0]
+        ok
+
+
+
+
 #===================================================
 # 2018/09/04 / upgrade of the firmware of pco edge hs (bm05)
 #  new fw for CLHS doesn't allow LUT functions
