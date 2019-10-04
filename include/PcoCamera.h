@@ -344,6 +344,7 @@ typedef struct
     const char *sPcoTriggerMode;
     const char *sLimaTriggerMode;
     int iPcoTriggerMode;
+    bool bExtTrig;
 
     const char *sPcoAcqMode;
     int iPcoAcqMode;

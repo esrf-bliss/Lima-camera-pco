@@ -288,14 +288,13 @@ void Camera::getTraceAcq(std::string &o_sn)
     getBytesPerPixel(bytesPerPix);
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                         "* limaRoi xy0[%d,%d] xy1[%d,%d] size[%d,%d]\n",
-                         top_left.x, top_left.y, bot_right.x, bot_right.y,
-                         size.getWidth(), size.getHeight());
-
-    ptr += __sprintfSExt(
-        ptr, ptrMax - ptr, "* ... pcoRoi x[%d,%d] y[%d,%d]\n",
-        m_pcoData->traceAcq.iPcoRoiX0, m_pcoData->traceAcq.iPcoRoiX1,
-        m_pcoData->traceAcq.iPcoRoiY0, m_pcoData->traceAcq.iPcoRoiY1);
+            "* limaRoi xy0[%d,%d] xy1[%d,%d] size[%d,%d]\n",
+            top_left.x, top_left.y, bot_right.x, bot_right.y,
+            size.getWidth(), size.getHeight());
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* ... pcoRoi x[%d,%d] y[%d,%d]\n",
+            m_pcoData->traceAcq.iPcoRoiX0, m_pcoData->traceAcq.iPcoRoiX1,
+            m_pcoData->traceAcq.iPcoRoiY0, m_pcoData->traceAcq.iPcoRoiY1);
 
     long long imgSize = size.getWidth() * size.getHeight() * bytesPerPix;
     long long totSize = imgSize * m_pcoData->traceAcq.nrImgRequested;
@@ -303,40 +302,45 @@ void Camera::getTraceAcq(std::string &o_sn)
     double totTime = m_pcoData->traceAcq.msXfer / 1000.;
     double xferSpeed = mbTotSize / totTime;
     double framesPerSec = m_pcoData->traceAcq.nrImgRequested / totTime;
+    
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* nrImgRequested[%d] nrImgAcquired[%d]\n",
+            m_pcoData->traceAcq.nrImgRequested, 
+            m_pcoData->traceAcq.nrImgAcquired);
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                         "* ... imgSize[%lld B] totSize[%lld B][%g MB]\n",
-                         imgSize, totSize, mbTotSize);
+            "* ... nrImgRequested0[%d] nrImgRecorded[%d] maxImgCount[%d]\n",
+            m_pcoData->traceAcq.nrImgRequested0, 
+            m_pcoData->traceAcq.nrImgRecorded,
+            m_pcoData->traceAcq.maxImgCount);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr,
+            "* ... imgSize[%lld B] totSize[%lld B][%g MB]\n",
+            imgSize, totSize, mbTotSize);
 
-    ptr += __sprintfSExt(
-        ptr, ptrMax - ptr, "* nrImgRequested[%d] nrImgAcquired[%d]\n",
-        m_pcoData->traceAcq.nrImgRequested, m_pcoData->traceAcq.nrImgAcquired);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* limaTriggerMode[%s]  extTrig[%d]\n",
+            m_pcoData->traceAcq.sLimaTriggerMode,
+            m_pcoData->traceAcq.bExtTrig);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* ... pcoTriggerMode[%s] [%d] extTrig[%d]\n",
+            m_pcoData->traceAcq.sPcoTriggerMode,
+            m_pcoData->traceAcq.iPcoTriggerMode);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* ... pcoAcqMode[%s] [%d]\n",
+            m_pcoData->traceAcq.sPcoAcqMode,
+            m_pcoData->traceAcq.iPcoAcqMode);
 
-    ptr += __sprintfSExt(
-        ptr, ptrMax - ptr,
-        "* ... nrImgRequested0[%d] nrImgRecorded[%d] maxImgCount[%d]\n",
-        m_pcoData->traceAcq.nrImgRequested0, m_pcoData->traceAcq.nrImgRecorded,
-        m_pcoData->traceAcq.maxImgCount);
-
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "* limaTriggerMode[%s]\n",
-                m_pcoData->traceAcq.sLimaTriggerMode);
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "* ... pcoTriggerMode[%s] [%d]\n",
-                m_pcoData->traceAcq.sPcoTriggerMode,
-                m_pcoData->traceAcq.iPcoTriggerMode);
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "* ... pcoAcqMode[%s] [%d]\n",
-                m_pcoData->traceAcq.sPcoAcqMode,
-                m_pcoData->traceAcq.iPcoAcqMode);
-
-    ptr += __sprintfSExt(
-                ptr, ptrMax - ptr, "* msStartAcqStart[%ld]  msStartAcqEnd[%ld]\n",
-                m_pcoData->traceAcq.msStartAcqStart, m_pcoData->traceAcq.msStartAcqEnd);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* msStartAcqStart[%ld]  msStartAcqEnd[%ld]\n",
+            m_pcoData->traceAcq.msStartAcqStart, 
+            m_pcoData->traceAcq.msStartAcqEnd);
 
     for (int _i = 0; _i < LEN_TRACEACQ_TRHEAD; _i++)
     {
         const char *desc = m_pcoData->traceAcq.usTicks[_i].desc;
         if (desc != NULL)
         {
-            ptr += __sprintfSExt(
-                ptr, ptrMax - ptr, "* ... usTicks[%d][%5.3f] (ms)   (%s)\n", _i,
+            ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+                "* ... usTicks[%d][%5.3f] (ms)   (%s)\n", _i,
                 m_pcoData->traceAcq.usTicks[_i].value / 1000., desc);
         }
     }

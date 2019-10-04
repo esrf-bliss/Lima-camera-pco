@@ -884,6 +884,8 @@ void Camera::prepareAcq()
 
     int error;
 
+    m_pcoData->traceAcqClean();
+
     int iRequestedFrames;
     // live video requested frames = 0
     m_sync->getNbFrames(iRequestedFrames);

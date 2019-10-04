@@ -241,6 +241,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
         usElapsedTimeSet(usStartTot);
         m_cam.m_pcoData->traceAcq.fnId = fnId;
         m_cam.m_pcoData->traceAcq.fnTimestampEntry = getTimestamp();
+        m_cam.m_pcoData->traceAcq.fnIdXfer = fnId;
 
         m_cam.m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
 
@@ -626,6 +627,8 @@ void Camera::_AcqThread::threadFunction_Edge()
         usElapsedTimeSet(usStartTot);
         m_cam.m_pcoData->traceAcq.fnId = fnId;
         m_cam.m_pcoData->traceAcq.fnTimestampEntry = getTimestamp();
+        m_cam.m_pcoData->traceAcq.fnIdXfer = fnId;
+
 
         m_cam.m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
         msElapsedTimeSet(tXferStart);
@@ -1384,8 +1387,6 @@ void Camera::startAcq()
     m_acq_frame_nb = -1;
     m_pcoData->pcoError = 0;
     m_pcoData->pcoErrorMsg[0] = 0;
-
-    m_pcoData->traceAcqClean();
 
     TIME_USEC tStart;
     msElapsedTimeSet(tStart);

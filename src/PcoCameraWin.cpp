@@ -995,8 +995,6 @@ void Camera::startAcq()
     m_pcoData->pcoError = 0;
     m_pcoData->pcoErrorMsg[0] = 0;
 
-    m_pcoData->traceAcqClean();
-
     TIME_USEC tStart;
     msElapsedTimeSet(tStart);
 

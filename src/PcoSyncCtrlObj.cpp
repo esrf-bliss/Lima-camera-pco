@@ -259,21 +259,24 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             throw LIMA_HW_EXC(NotSupported, "Invalid value");
     }
 
-    m_pcoData->traceAcq.sLimaTriggerMode = sLimaTriggerMode;
-
-    m_pcoData->traceAcq.iPcoTriggerMode = _pcoTrigMode;
-    m_pcoData->traceAcq.sPcoTriggerMode = sPcoTriggerMode;
-    m_pcoData->traceAcq.iPcoAcqMode = pcoAcqMode;
-    m_pcoData->traceAcq.sPcoAcqMode = sPcoAcqMode;
-    m_pcoData->traceAcq.iPcoAcqMode = pcoAcqMode;
-    m_pcoData->traceAcq.sPcoAcqMode = sPcoAcqMode;
-
+    
     err = 0;
     pcoTrigMode = _pcoTrigMode;
     pcoAcqMode = _pcoAcqMode;
     extTrig = ext_trig;
-    DEB_ALWAYS() << "\n ... " << DEB_VAR1(sLimaTriggerMode) << "\n ... "
-                 << DEB_VAR3(sPcoTriggerMode, pcoTrigMode, extTrig) << "\n ... "
+
+    m_pcoData->traceAcq.sLimaTriggerMode = sLimaTriggerMode;
+    m_pcoData->traceAcq.bExtTrig = extTrig;
+
+    m_pcoData->traceAcq.sPcoTriggerMode = sPcoTriggerMode;
+    m_pcoData->traceAcq.iPcoTriggerMode = pcoTrigMode;
+
+    m_pcoData->traceAcq.sPcoAcqMode = sPcoAcqMode;
+    m_pcoData->traceAcq.iPcoAcqMode = pcoAcqMode;
+
+
+    DEB_ALWAYS() << "\n ... " << DEB_VAR2(sLimaTriggerMode, extTrig) << "\n ... "
+                 << DEB_VAR2(sPcoTriggerMode, pcoTrigMode) << "\n ... "
                  << DEB_VAR2(sPcoAcqMode, pcoAcqMode);
 
     return;
