@@ -518,6 +518,10 @@ void Camera::_AcqThread::threadFunction_Dimax()
             usElapsedTime(usStart);
         usElapsedTimeSet(usStart);
 
+        m_cam.m_pcoData->msAcqAll = 
+            m_cam.m_pcoData->traceAcq.msTotal=
+            msElapsedTime(tStart);
+
         m_cam.m_pcoData->traceAcq.fnTimestampExit = getTimestamp();
         m_cam.m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
         m_cam.m_pcoData->traceAcq.usTicks[traceAcq_execTimeTot].value =
@@ -909,6 +913,10 @@ void Camera::_AcqThread::threadFunction_Edge()
         m_cam.m_pcoData->traceAcq.usTicks[traceAcq_pcoSdk].value +=
             usElapsedTime(usStart);
         usElapsedTimeSet(usStart);
+
+        m_cam.m_pcoData->msAcqAll = 
+            m_cam.m_pcoData->traceAcq.msTotal=
+            msElapsedTime(tStart);
 
         m_cam.m_pcoData->traceAcq.fnTimestampExit = getTimestamp();
         m_cam.m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);

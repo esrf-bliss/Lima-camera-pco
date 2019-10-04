@@ -249,33 +249,36 @@ void Camera::getTraceAcq(std::string &o_sn)
     }
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                         "\n"
-                         "* fnId[%s] nrEvents[%d]\n"
-                         "* ... fnIdXfer[%s]\n",
-                         m_pcoData->traceAcq.fnId, m_pco_buffer_nrevents,
-                         m_pcoData->traceAcq.fnIdXfer);
+            "\n"
+            "* fnId[%s] nrEvents[%d]\n"
+            "* ... fnIdXfer[%s]\n",
+            m_pcoData->traceAcq.fnId, m_pco_buffer_nrevents,
+            m_pcoData->traceAcq.fnIdXfer);
 
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "* ... testCmdMode [0x%llx]\n",
-                         m_pcoData->testCmdMode);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* ... testCmdMode [0x%llx]\n",
+            m_pcoData->testCmdMode);
 
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "* msExposure[%g] msDelay[%g]\n",
-                         m_pcoData->traceAcq.sExposure * 1000.,
-                         m_pcoData->traceAcq.sDelay * 1000.);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* msExposure[%g] msDelay[%g]\n",
+            m_pcoData->traceAcq.sExposure * 1000.,
+            m_pcoData->traceAcq.sDelay * 1000.);
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                         "* ... msLimaExposure[%g] Pco exposure[%d] base[%d]\n",
-                         m_pcoData->traceAcq.dLimaExposure * 1000.,
-                         m_pcoData->traceAcq.iPcoExposure,
-                         m_pcoData->traceAcq.iPcoExposureBase);
+            "* ... msLimaExposure[%g] Pco(exp[%d] base[%d])\n",
+            m_pcoData->traceAcq.dLimaExposure * 1000.,
+            m_pcoData->traceAcq.iPcoExposure,
+            m_pcoData->traceAcq.iPcoExposureBase);
 
-    ptr += __sprintfSExt(
-        ptr, ptrMax - ptr, "* ... msLimaDelay[%g] Pco delay[%d] base[%d]\n",
-        m_pcoData->traceAcq.dLimaDelay * 1000., m_pcoData->traceAcq.iPcoDelay,
-        m_pcoData->traceAcq.iPcoDelayBase);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* ... msLimaDelay[%g] Pco(delay[%d] base[%d])\n",
+            m_pcoData->traceAcq.dLimaDelay * 1000., m_pcoData->traceAcq.iPcoDelay,
+            m_pcoData->traceAcq.iPcoDelayBase);
 
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "* pcoBin horz[%d] vert[%d]\n",
-                         m_pcoData->traceAcq.iPcoBinHorz,
-                         m_pcoData->traceAcq.iPcoBinVert);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* pcoBin horz[%d] vert[%d]\n",
+            m_pcoData->traceAcq.iPcoBinHorz,
+            m_pcoData->traceAcq.iPcoBinVert);
 
     Roi limaRoi;
     int error;
@@ -321,7 +324,7 @@ void Camera::getTraceAcq(std::string &o_sn)
             m_pcoData->traceAcq.sLimaTriggerMode,
             m_pcoData->traceAcq.bExtTrig);
     ptr += __sprintfSExt(ptr, ptrMax - ptr, 
-            "* ... pcoTriggerMode[%s] [%d] extTrig[%d]\n",
+            "* ... pcoTriggerMode[%s] [%d]\n",
             m_pcoData->traceAcq.sPcoTriggerMode,
             m_pcoData->traceAcq.iPcoTriggerMode);
     ptr += __sprintfSExt(ptr, ptrMax - ptr, 
@@ -340,45 +343,47 @@ void Camera::getTraceAcq(std::string &o_sn)
         if (desc != NULL)
         {
             ptr += __sprintfSExt(ptr, ptrMax - ptr, 
-                "* ... usTicks[%d][%5.3f] (ms)   (%s)\n", _i,
-                m_pcoData->traceAcq.usTicks[_i].value / 1000., desc);
+                    "* ... usTicks[%d][%5.3f] (ms)   (%s)\n", _i,
+                    m_pcoData->traceAcq.usTicks[_i].value / 1000., desc);
         }
     }
 
     _timet = m_pcoData->traceAcq.endRecordTimestamp;
 
-    ptr += __sprintfSExt(
-                ptr, ptrMax - ptr,
-                "* msImgCoc[%.3g] fps[%.3g] msTout[%ld] msTotal[%ld]\n",
-                m_pcoData->traceAcq.msImgCoc, 1000. / m_pcoData->traceAcq.msImgCoc,
-                m_pcoData->traceAcq.msTout, m_pcoData->traceAcq.msTotal);
-
-    ptr += __sprintfSExt(
-                ptr, ptrMax - ptr,
-                "* ... msRecordLoop[%ld] msRecord[%ld] endRecord[%s]\n",
-                m_pcoData->traceAcq.msRecordLoop, m_pcoData->traceAcq.msRecord,
-                _timet ? getTimestamp(Iso, _timet) : "");
-
-    time_t tsEnd = m_pcoData->traceAcq.endXferTimestamp;
-    ptr +=
-        __sprintfSExt(ptr, ptrMax - ptr, "* ... msXfer[%ld] endXfer[%s]\n",
-                m_pcoData->traceAcq.msXfer,
-                tsEnd == 0 ? "noSet" : getTimestamp(Iso, tsEnd));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr,
+            "* msImgCoc[%.3g] fps[%.3g] msTotal[%ld]\n",
+            m_pcoData->traceAcq.msImgCoc, 
+            1000. / m_pcoData->traceAcq.msImgCoc,
+            m_pcoData->traceAcq.msTotal);
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                "* ... xferTimeTot[%g s] xferSpeed[%g MB/s][%g fps]\n",
-                totTime, xferSpeed, framesPerSec);
+            "* ... msRecLoop[%ld] msRec[%ld] msRecTimeOut[%ld] endRec[%s]\n",
+            m_pcoData->traceAcq.msRecordLoop, 
+            m_pcoData->traceAcq.msRecord,
+            m_pcoData->traceAcq.msTout, 
+            _timet ? getTimestamp(Iso, _timet) : "");
 
-    ptr += __sprintfSExt(
-                ptr, ptrMax - ptr,
-                "* ... checkImgNr[%s] pco[%d] lima[%d] diff[%d] order[%d]\n",
-                m_pcoData->traceAcq.checkImgNr ? "true" : "false",
-                m_pcoData->traceAcq.checkImgNrPco, 
-                m_pcoData->traceAcq.checkImgNrLima,
-                m_pcoData->traceAcq.checkImgNrPco - m_pcoData->traceAcq.checkImgNrLima,
-                m_pcoData->traceAcq.checkImgNrOrder);
+    time_t tsEnd = m_pcoData->traceAcq.endXferTimestamp;
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "* ... msXfer[%ld] endXfer[%s]\n",
+            m_pcoData->traceAcq.msXfer,
+            tsEnd == 0 ? "noSet" : getTimestamp(Iso, tsEnd));
 
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", m_pcoData->traceAcq.msg);
+    ptr += __sprintfSExt(ptr, ptrMax - ptr,
+            "* ... xferTimeTot[%g s] xferSpeed[%g MB/s][%g fps]\n",
+            totTime, xferSpeed, framesPerSec);
+
+    ptr += __sprintfSExt(ptr, ptrMax - ptr,
+            "* ... checkImgNr[%s] pco[%d] lima[%d] diff[%d] order[%d]\n",
+            m_pcoData->traceAcq.checkImgNr ? "true" : "false",
+            m_pcoData->traceAcq.checkImgNrPco, 
+            m_pcoData->traceAcq.checkImgNrLima,
+            m_pcoData->traceAcq.checkImgNrPco - m_pcoData->traceAcq.checkImgNrLima,
+            m_pcoData->traceAcq.checkImgNrOrder);
+
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            "%s\n", 
+            m_pcoData->traceAcq.msg);
 
     o_sn = buff;
 }
