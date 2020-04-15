@@ -165,6 +165,8 @@ void Camera::_AcqThread::threadFunction_Dimax()
 
     const char *_msgAbort = "notSet";
     TIME_USEC tStart;
+    TIME_USEC tXferStart;
+
     long long usStart, usStartTot;
 
     // Camera &m_cam = *this;
@@ -370,6 +372,8 @@ void Camera::_AcqThread::threadFunction_Dimax()
         }     // if(m_cam._isCameraType(Dimax) && continueAcq)
               ///=========== recording phase [end]
 
+        msElapsedTimeSet(tXferStart);
+
         // WORD wActSeg = m_cam._pco_GetActiveRamSegment();
         WORD wActSeg;
         m_cam._pco_GetActiveRamSegment(wActSeg, err);
@@ -481,6 +485,13 @@ void Camera::_AcqThread::threadFunction_Dimax()
         m_cam._stopAcq(false);
 
         printf("\n");
+
+        //------ xfer	
+
+        m_cam.m_pcoData->traceAcq.endXferTimestamp = 
+            m_cam.m_pcoData->msAcqXferTimestamp = getTimestamp();
+        m_cam.m_pcoData->traceAcq.msXfer = msElapsedTime(tXferStart);
+
 
         m_cam.m_pcoData->traceAcq.usTicks[traceAcq_pcoSdk].value +=
             usElapsedTime(usStart);
@@ -1280,14 +1291,14 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
         // dimax recording time
         m_pcoData->msAcqRec = msRecord = msElapsedTime(tStart);
         m_pcoData->traceAcq.msRecord = msRecord; // loop & stop record
-
+        
         m_pcoData->traceAcq.endRecordTimestamp = m_pcoData->msAcqRecTimestamp =
             getTimestamp();
 
         m_pcoData->traceAcq.nrImgAcquired = nb_acq_frames;
         m_pcoData->traceAcq.nrImgRequested = nb_frames;
 
-        msElapsedTimeSet(tStart); // reset for xfer
+        msElapsedTimeSet(tStart); // reset for xfer   TOCHECK
 
         if (nb_acq_frames < nb_frames)
             m_sync->setNbFrames(nb_acq_frames);
@@ -1309,9 +1320,9 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
     m_pcoData->dwMaxImageCnt[wSegment - 1] = m_pcoData->traceAcq.maxImgCount =
         _dwMaxImageCnt;
 
-    // traceAcq info - dimax xfer time
+    // traceAcq info - dimax xfer time ---> not transfer is recording TOCHECK
     m_pcoData->msAcqXfer = msXfer = msElapsedTime(tStart);
-    m_pcoData->traceAcq.msXfer = msXfer;
+    //m_pcoData->traceAcq.msXfer = msXfer;
 
     m_pcoData->msAcqAll = msTotal = msElapsedTime(tStart0);
     m_pcoData->traceAcq.msTotal = msTotal;
