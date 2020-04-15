@@ -410,8 +410,15 @@ bool Camera::paramsGet(const char *key, char *&value)
 //=========================================================================================================
 //=========================================================================================================
 
-// params string:
+// pco -> properties -> params
+//   params   	bitAlignment=MSB
+// 				trigSingleMulti=1
+// 				logBits=FFFF
+// 				logPath=/tmp
+//
+// received params str:
 //      "key1 = value1 ; key2 = value2 ; key3 ; ...."
+//       str=bitAlignment=MSB;trigSingleMulti=1;logBits=FFFF;logPath=/tmp;
 
 void Camera::paramsInit(const char *str)
 {
@@ -484,7 +491,7 @@ void Camera::paramsInit(const char *str)
         char *key, *value;
         key = m_pcoData->params.ptrKey[j];
         value = m_pcoData->params.ptrValue[j];
-        DEB_TRACE() << DEB_VAR2(key, value);
+        DEB_TRACE() << DEB_VAR3(j, key, value);
     }
     DEB_TRACE() << _sprintComment(false, fnId, "[EXIT]");
 };

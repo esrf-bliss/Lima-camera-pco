@@ -38,10 +38,19 @@ if(WIN32)
 
 else()
 
+    set(SISODIR5 $ENV{SISODIR5} CACHE PATH "location of SISO Linux SDK ")
     set(PCO_SDKLIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPcoLin" CACHE PATH "location of PCO Linux SDK")
     set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
 
-    find_path(SISO_INCLUDE sisoboards.h)
+
+    find_path(SISO_INCLUDE NAMES sisoboards.h HINTS ${PCO_SDKLIN_DIR}/include)
+    #find_path(SISO_INCLUDE sisoboards.h)
+
+    message("==========================================================")
+    message("PCO_SDKLIN_DIR: [${PCO_SDKLIN_DIR}]")
+    message("PCO_SDK_LIB_DIR: [${PCO_SDK_LIB_DIR}]")
+    message("SISO_INCLUDE: [${SISO_INCLUDE}]")
+    message("==========================================================")
 
     list(APPEND PCO_INCLUDE_DIRS
         ${SISO_INCLUDE}
@@ -67,9 +76,22 @@ else()
     set(SISOLIB1)
     set(SISOLIB2)
     set(SISOLIB3)
-    find_library(SISOLIB1 fglib5)
-    find_library(SISOLIB2 clsersis)
-    find_library(SISOLIB3 haprt)
+
+    find_library(SISOLIB1 NAMES fglib5 HINTS ${SISODIR5}/lib)
+    find_library(SISOLIB2 NAMES clsersis HINTS ${SISODIR5}/lib)
+    find_library(SISOLIB3 NAMES haprt HINTS ${SISODIR5}/lib)
+
+    #find_library(SISOLIB1 fglib5)
+    #find_library(SISOLIB2 clsersis)
+    #find_library(SISOLIB3 haprt)
+
+    message("==========================================================")
+    #message("SISODIR5: [${SISODIR5}] NOT USED")
+    message("SISODIR5: [${SISODIR5}]")
+    message("SISOLIB1: [${SISOLIB1}]")
+    message("SISOLIB2: [${SISOLIB2}]")
+    message("SISOLIB3: [${SISOLIB3}]")
+    message("==========================================================")
 
     list(APPEND PCO_LIBRARIES 
         ${PCOLIB1} ${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
