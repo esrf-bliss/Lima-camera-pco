@@ -113,18 +113,23 @@ CheckImgNr::~CheckImgNr()
 void CheckImgNr::update(int iLimaFrame, void *ptrImage)
 {
     DEF_FNID;
+
     //printf("--- %s> [ENTRY]\n", fnId);
 
     int pcoImgNr, diff;
+    int iImgNrLima;
 
     if (!checkImgNr)
+    {
+        printf("--- %s> --- BYPASSED - NOT CHECKED\n", fnId);
         return;
-
+    }
+    
     pcoImgNr = _get_imageNr_from_imageTimestamp(ptrImage, alignmentShift);
     if (pcoImgNr <= pcoImgNrLast)
         pcoImgNrOrder++;
     diff = pcoImgNr - iLimaFrame;
-    m_traceAcq->checkImgNrLima = iLimaFrame + 1;
+    m_traceAcq->checkImgNrLima = iImgNrLima = iLimaFrame + 1;
     m_traceAcq->checkImgNrPco = pcoImgNr;
     m_traceAcq->checkImgNrOrder = pcoImgNrOrder;
 
@@ -133,6 +138,11 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
         pcoImgNrDiff = diff;
     }
     pcoImgNrLast = pcoImgNr;
+
+    printf("--- %s> alignment[%d] iImgNrLima[%d], pcoImgNr[%d], diff[%d], pcoImgNrDiff[%d]\n", 
+            fnId, alignmentShift, iImgNrLima, pcoImgNr, diff, pcoImgNrDiff);
+
+
 }
 
 //--------------------------------------------------------------------
@@ -168,6 +178,7 @@ void CheckImgNr::init(STC_traceAcq *traceAcq)
     else
         alignmentShift = 0;
 
+
     return;
 }
 
@@ -195,27 +206,40 @@ void CheckImgNr::init(STC_traceAcq *traceAcq)
 //act_timestamp=image_nr_from_timestamp(adr,shift);
 //*************************************************************************
 
-int CheckImgNr::_get_imageNr_from_imageTimestamp(void *buf, int shift)
+int CheckImgNr::_get_imageNr_from_imageTimestamp(void *buf, int _shift)
 {
     DEF_FNID;
     //printf("--- %s> [ENTRY]\n", fnId);
 
-    unsigned short *b;
-    unsigned short c;
-    int y;
+    unsigned short *wData;  // 2 bytes word
+    unsigned short wBcd;
+    int iDecPlaces;
     int image_nr = 0;
 
     if (bNoTimestamp) return -1;
     
-    b = (unsigned short *)(buf);
-    y = 100 * 100 * 100;
+    wData = (unsigned short *)(buf);
+    
 
-    for (; y > 0; y /= 100)
+    // 100 * 100 * 100  1st word  MS BCD   XX......
+    // 100 * 100        2nd word  .. BCD   ..XX....
+    // 100              3rd word  .. BCD   ....XX..
+    // 1                4th word  LS BCD   ......XX
+    
+    printf("--- [%04x] [%04x] [%04x] [%04x] \n", *wData, *(wData+1),*(wData+2),*(wData+3)); 
+    
+    int shift = 0;
+    
+    for (iDecPlaces = 100 * 100 * 100; iDecPlaces > 0; iDecPlaces /= 100)
     {
-        c = *b >> shift;
-        image_nr += (((c & 0x00F0) >> 4) * 10 + (c & 0x000F)) * y;
-        b++;
-    }
+        wBcd = *wData >> shift;   // shift - aligment  0 | 8
+
+        image_nr += (((wBcd & 0x00F0) >> 4) * 10 + (wBcd & 0x000F)) * iDecPlaces;
+        //                        X.                           .X
+        //                    MS decDig               LS decDig
+    
+        wData++;    // next word
+     }
 
     return image_nr;
 }

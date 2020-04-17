@@ -1,5 +1,170 @@
 
 
+2020/04/17 18:02:17 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 18:02:17] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 18:02:17] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/17 18:02:17] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 18:02:17] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/17 18:02:17] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/17 18:02:17] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/17 18:02:17] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 18:02:17] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/17 17:43:42 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 17:43:42] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 17:43:42] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/17 17:43:42] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 17:43:42] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/17 17:43:42] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/17 17:43:42] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/17 17:43:42] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 17:43:42] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/17 17:17:04 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 17:17:04] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 17:17:04] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/17 17:17:04] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 17:17:04] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/17 17:17:04] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/17 17:17:04] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/17 17:17:04] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 17:17:04] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/17 16:12:21 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 16:12:21] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 16:12:21] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/17 16:12:21] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 16:12:21] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/17 16:12:21] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/17 16:12:21] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/17 16:12:21] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 16:12:21] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/17 16:06:59 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 16:06:58] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 16:06:58] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/17 16:06:58] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/17 16:06:58] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/17 16:06:58] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/17 16:06:58] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/17 16:06:58] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/17 16:06:58] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/16 23:35:32 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 23:35:32] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 23:35:32] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/16 23:35:32] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 23:35:32] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/16 23:35:32] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/16 23:35:32] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/16 23:35:32] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 23:35:32] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/16 19:05:06 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 19:05:06] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 19:05:06] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/16 19:05:06] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 19:05:06] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/16 19:05:06] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/16 19:05:06] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/16 19:05:06] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 19:05:06] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/16 14:33:00 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 14:33:00] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 14:33:00] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/16 14:33:00] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 14:33:00] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/16 14:33:00] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/16 14:33:00] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/16 14:33:00] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 14:33:00] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/16 11:45:14 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 11:45:14] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 11:45:14] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/16 11:45:14] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/16 11:45:14] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/16 11:45:14] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/16 11:45:14] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2019-09-11 10:48:36 +0200] head[df09b4e][df09b4e4a373220c73414965f9a0b5a456b789de] ref[ (HEAD, tag: v1.9.0)] at [2020/04/16 11:45:14] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2020-02-21 14:01:15 +0100] head[b90a90d][b90a90d93d7fd9196c610a74d2a5e65845ecd4e1] ref[ (HEAD, tag: v1.9.3, v1.9.3)] at [2020/04/16 11:45:14] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/15 22:25:33 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/15 22:25:33] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2019-09-16 10:07:49 +0200] head[4bc7441][4bc744170cddcc62137a83b0addd5e78276f486e] ref[ (HEAD, tag: v1.9.1, v1.9.1)] at [2020/04/15 22:25:33] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/15 22:25:33] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/15 22:25:33] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/15 22:25:33] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/15 22:25:33] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2020-03-11 14:40:41 +0100] head[93a1357][93a1357c5efaf66746fb5ed591520d5b881d643c] ref[ (HEAD, origin/master, origin/HEAD, origin/23-expose-maximagesize-as-image_maxsize, master)] at [2020/04/15 22:25:33] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2019-09-16 10:07:49 +0200] head[4bc7441][4bc744170cddcc62137a83b0addd5e78276f486e] ref[ (HEAD, tag: v1.9.1, v1.9.1)] at [2020/04/15 22:25:33] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
+2020/04/15 22:13:45 ==========================================
+#define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
+#define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
+#define        PCO_GIT_VERSION "$Id:         PCO rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/15 22:13:45] [/users/blissadm/lima/lima/camera/pco] $"
+#define       LIMA_GIT_VERSION "$Id:        LIMA rev[2019-09-16 10:07:49 +0200] head[4bc7441][4bc744170cddcc62137a83b0addd5e78276f486e] ref[ (HEAD, tag: v1.9.1, v1.9.1)] at [2020/04/15 22:13:45] [/users/blissadm/lima/lima] $"
+#define    PROCLIB_GIT_VERSION "$Id:     PROCLIB rev[2020-02-17 15:57:16 +0100] head[31929a6][31929a66d930974390a708b6fb648def7acfd4b6] ref[ (HEAD, origin/master, origin/HEAD, master)] at [2020/04/15 22:13:45] [/users/blissadm/lima/lima/third-party/Processlib] $"
+#define  LIBCONFIG_GIT_VERSION "$Id:   LIBCONFIG rev[2020-04-15 22:08:16 +0200] head[26d870e][26d870e3c4a3ccc0456e347d1341f211f9eb2847] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/04/15 22:13:45] [] $"
+#define       HDF5_GIT_VERSION "$Id:        HDF5 noSET at [2020/04/15 22:13:45] [] $"
+#define BITSHUFFLE_GIT_VERSION "$Id:  BITSHUFFLE rev[2017-11-09 08:44:35 -0800] head[9ffba9d][9ffba9de83036a91d345fa2f62fcaedf55f54c5f] ref[ (HEAD, tag: 0.3.4)] at [2020/04/15 22:13:45] [/users/blissadm/lima/lima/third-party/bitshuffle] $"
+#define      TANGO_GIT_VERSION "$Id:       TANGO rev[2020-03-11 14:40:41 +0100] head[93a1357][93a1357c5efaf66746fb5ed591520d5b881d643c] ref[ (HEAD, origin/master, origin/HEAD, origin/23-expose-maximagesize-as-image_maxsize, master)] at [2020/04/15 22:13:45] [/users/blissadm/lima/lima/applications/tango/python] $"
+#define       SPEC_GIT_VERSION "$Id:        SPEC rev[2019-09-16 10:07:49 +0200] head[4bc7441][4bc744170cddcc62137a83b0addd5e78276f486e] ref[ (HEAD, tag: v1.9.1, v1.9.1)] at [2020/04/15 22:13:45] [/users/blissadm/lima/lima/applications/spec] $"
+
+
+
+
 2020/04/15 21:02:46 ==========================================
 #define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
 #define     PCO_SDK_LIN_VERSION "$Id: PCOSDK_LIN [pcoDev.1.1.14] $"
