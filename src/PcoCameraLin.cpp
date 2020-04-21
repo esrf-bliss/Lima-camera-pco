@@ -334,8 +334,8 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 m_cam._waitForRecording(_nb_frames, validCount, maxCount,
                                         error);
 
-                bRequestStop =
-                    (m_cam.m_sync->_getRequestStop(_nrStop) == stopRequest);
+                //bRequestStop = (m_cam.m_sync->_getRequestStop(_nrStop) == stopRequest);
+                bRequestStop = !!(m_cam.m_sync->_getRequestStop(_nrStop));
 
                 if (error || ((DWORD)_nb_frames > maxCount))
                 {
@@ -469,7 +469,8 @@ void Camera::_AcqThread::threadFunction_Dimax()
             ++limaFrameNr;
 
             int _nrStop;
-            if ((m_cam.m_sync->_getRequestStop(_nrStop)) == stopRequest)
+            //if ((m_cam.m_sync->_getRequestStop(_nrStop)) == stopRequest)
+            if (m_cam.m_sync->_getRequestStop(_nrStop))
             {
                 _msgAbort = "STOP REQUEST";
                 DEB_ALWAYS() << _msgAbort;
@@ -486,7 +487,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
 
         printf("\n");
 
-        //------ xfer	
+        //------ xfer statistics	
 
         m_cam.m_pcoData->traceAcq.endXferTimestamp = 
             m_cam.m_pcoData->msAcqXferTimestamp = getTimestamp();
@@ -1339,7 +1340,8 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
 
     // included in 34a8fb6723594919f08cf66759fe5dbd6dc4287e only for dimax (to
     // check for others)
-    m_sync->setStarted(false);
+    
+    //m_sync->setStarted(false); this must be at the end of the thread!!!
 
 #if 0
 	if(requestStop == stopRequest) 
