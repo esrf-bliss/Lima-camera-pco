@@ -2827,19 +2827,27 @@ char *Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
         ptr += __sprintfSExt(ptr, ptrMax - ptr, "* size, roi, ... \n");
         unsigned int maxWidth, maxHeight, Xstep, Ystep, xMinSize, yMinSize;
         getXYdescription(Xstep, Ystep, maxWidth, maxHeight, xMinSize, yMinSize);
+        
+        bool bSymX, bSymY;
+        getRoiSymetrie(bSymX, bSymY);
+        
         WORD _wArmWidth, _wArmHeight, _wMaxWidth, _wMaxHeight;
         _pco_GetSizes(&_wArmWidth, &_wArmHeight, &_wMaxWidth, &_wMaxHeight,
                       err);
 
+        ptr += __sprintfSExt(ptr, ptrMax - ptr, "* ... PCO ROI requirements\n");
         ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "* ... maxWidth=[%d] maxHeight=[%d] \n", maxWidth,
+                             "* ...    XmaxSize=[%d] YmaxSize=[%d] (width/height)\n", maxWidth,
                              maxHeight);
         ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "* ...    Xstep=[%d] Ystep=[%d] (PCO ROI steps)\n",
+                             "* ...    XminSize=[%d] YminSize=[%d]  (width/height)\n", xMinSize,
+                             yMinSize);
+        ptr += __sprintfSExt(ptr, ptrMax - ptr,
+                             "* ...    Xstep=[%d] Ystep=[%d] (the point must be multiple of step)\n",
                              Xstep, Ystep);
         ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "* ... xMinSize=[%d] yMinSize=[%d] \n", xMinSize,
-                             yMinSize);
+                             "* ...    Xsym=[%d] Ysym=[%d] (ROI must be symmetric to the center)\n",
+                             bSymX, bSymY);
 
         ptr += __sprintfSExt(ptr, ptrMax - ptr,
                              "* ... wXResActual=[%d] wYResActual=[%d] \n",

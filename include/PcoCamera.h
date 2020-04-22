@@ -333,7 +333,9 @@ typedef struct
     struct stcLongLongStr usTicks[LEN_TRACEACQ_TRHEAD];
     double msImgCoc;
     double sExposure, sDelay;
+    time_t startRecordTimestamp;
     time_t endRecordTimestamp;
+    time_t startXferTimestamp;
     time_t endXferTimestamp;
     const char *fnId;
     const char *fnIdXfer;

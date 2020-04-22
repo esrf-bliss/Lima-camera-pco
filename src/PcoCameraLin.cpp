@@ -374,6 +374,10 @@ void Camera::_AcqThread::threadFunction_Dimax()
 
         msElapsedTimeSet(tXferStart);
 
+        //time_t tsEnd = m_pcoData->traceAcq.endXferTimestamp;
+
+        m_cam.m_pcoData->traceAcq.startXferTimestamp = getTimestamp();
+
         // WORD wActSeg = m_cam._pco_GetActiveRamSegment();
         WORD wActSeg;
         m_cam._pco_GetActiveRamSegment(wActSeg, err);
@@ -489,8 +493,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
 
         //------ xfer statistics	
 
-        m_cam.m_pcoData->traceAcq.endXferTimestamp = 
-            m_cam.m_pcoData->msAcqXferTimestamp = getTimestamp();
+        m_cam.m_pcoData->traceAcq.endXferTimestamp = getTimestamp();
         m_cam.m_pcoData->traceAcq.msXfer = msElapsedTime(tXferStart);
 
 
@@ -648,8 +651,7 @@ void Camera::_AcqThread::threadFunction_Edge()
 
         m_cam.m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
         msElapsedTimeSet(tXferStart);
-        m_cam.m_pcoData->traceAcq.endXferTimestamp = 
-            m_cam.m_pcoData->msAcqXferTimestamp = 0;
+        m_cam.m_pcoData->traceAcq.endXferTimestamp = 0;
 
 
         // m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].desc = "xfer to lima
@@ -886,8 +888,7 @@ void Camera::_AcqThread::threadFunction_Edge()
 
         printf("\n");
         
-        m_cam.m_pcoData->traceAcq.endXferTimestamp = 
-            m_cam.m_pcoData->msAcqXferTimestamp = getTimestamp();
+        m_cam.m_pcoData->traceAcq.endXferTimestamp = getTimestamp();
         m_cam.m_pcoData->traceAcq.msXfer = msElapsedTime(tXferStart);
 
         m_cam.m_pcoData->traceAcq.usTicks[traceAcq_pcoSdk].value +=
@@ -1169,6 +1170,9 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
 
     msElapsedTimeSet(tStart);
     tStart0 = tStart;
+    
+    m_pcoData->traceAcq.startRecordTimestamp = getTimestamp();
+
 
     long timeout, timeout0, msNowRecordLoop, msXfer, msTotal;
     long msRecord=0;
@@ -1293,8 +1297,7 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
         m_pcoData->msAcqRec = msRecord = msElapsedTime(tStart);
         m_pcoData->traceAcq.msRecord = msRecord; // loop & stop record
         
-        m_pcoData->traceAcq.endRecordTimestamp = m_pcoData->msAcqRecTimestamp =
-            getTimestamp();
+        m_pcoData->traceAcq.endRecordTimestamp = getTimestamp();
 
         m_pcoData->traceAcq.nrImgAcquired = nb_acq_frames;
         m_pcoData->traceAcq.nrImgRequested = nb_frames;
@@ -1328,8 +1331,7 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
     m_pcoData->msAcqAll = msTotal = msElapsedTime(tStart0);
     m_pcoData->traceAcq.msTotal = msTotal;
 
-    m_pcoData->traceAcq.endXferTimestamp = m_pcoData->msAcqXferTimestamp =
-        getTimestamp();
+    m_pcoData->traceAcq.endRecordTimestamp = getTimestamp();
 
     __sprintfSExt(_msg, LEN_MSG,
                   "%s [%d]> [EXIT] imgRecorded[%d] coc[%g] recLoopTime[%ld] "
@@ -1338,10 +1340,6 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
                   timeout, timeout0, msRecord, msXfer, msTotal);
     _traceMsg(_msg);
 
-    // included in 34a8fb6723594919f08cf66759fe5dbd6dc4287e only for dimax (to
-    // check for others)
-    
-    //m_sync->setStarted(false); this must be at the end of the thread!!!
 
 #if 0
 	if(requestStop == stopRequest) 

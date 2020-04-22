@@ -235,10 +235,14 @@ void Camera::getLastError(std::string &o_sn)
 //====================================================================
 void Camera::getTraceAcq(std::string &o_sn)
 {
+    
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
     char *ptr = buff;
     char *ptrMax = buff + sizeof(buff);
 
-    time_t _timet;
+    //time_t _timet;
 
     if (0 && !(_isCameraType(Dimax | Pco2k | Pco4k)))
     {
@@ -348,7 +352,6 @@ void Camera::getTraceAcq(std::string &o_sn)
         }
     }
 
-    _timet = m_pcoData->traceAcq.endRecordTimestamp;
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
             "* msImgCoc[%.3g] fps[%.3g] msTotal[%ld]\n",
@@ -356,18 +359,31 @@ void Camera::getTraceAcq(std::string &o_sn)
             1000. / m_pcoData->traceAcq.msImgCoc,
             m_pcoData->traceAcq.msTotal);
 
+    time_t ts;
+
+    ts = m_pcoData->traceAcq.startRecordTimestamp;
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
-            "* ... msRecLoop[%ld] msRec[%ld] msRecTimeOut[%ld] endRec[%s]\n",
+            "* ... msRecLoop[%ld] msRec[%ld] msRecTimeOut[%ld] startRec[%s]",
             m_pcoData->traceAcq.msRecordLoop, 
             m_pcoData->traceAcq.msRecord,
             m_pcoData->traceAcq.msTout, 
-            _timet ? getTimestamp(Iso, _timet) : "");
+            ts ? getTimestamp(Iso, ts) : "noSet" );
 
-    time_t tsEnd = m_pcoData->traceAcq.endXferTimestamp;
+    ts = m_pcoData->traceAcq.endRecordTimestamp;
+    ptr += __sprintfSExt(ptr, ptrMax - ptr,
+            " endRec[%s]\n",
+            ts ? getTimestamp(Iso, ts) : "noSet" );
+
+    ts = m_pcoData->traceAcq.startXferTimestamp;
     ptr += __sprintfSExt(ptr, ptrMax - ptr, 
-            "* ... msXfer[%ld] endXfer[%s]\n",
+            "* ... msXfer[%ld] startXfer[%s]",
             m_pcoData->traceAcq.msXfer,
-            tsEnd == 0 ? "noSet" : getTimestamp(Iso, tsEnd));
+            ts ? getTimestamp(Iso, ts) : "noSet" );
+
+    ts = m_pcoData->traceAcq.endXferTimestamp;
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, 
+            " endXfer[%s]\n",
+            ts ? getTimestamp(Iso, ts) : "noSet" );
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr,
             "* ... xferTimeTot[%g s] xferSpeed[%g MB/s][%g fps]\n",

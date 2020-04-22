@@ -139,8 +139,8 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
     }
     pcoImgNrLast = pcoImgNr;
 
-    printf("--- %s> alignment[%d] iImgNrLima[%d], pcoImgNr[%d], diff[%d], pcoImgNrDiff[%d]\n", 
-            fnId, alignmentShift, iImgNrLima, pcoImgNr, diff, pcoImgNrDiff);
+    //printf("--- %s> alignment[%d] iImgNrLima[%d], pcoImgNr[%d], diff[%d], pcoImgNrDiff[%d]\n", 
+    //        fnId, alignmentShift, iImgNrLima, pcoImgNr, diff, pcoImgNrDiff);
 
 
 }
@@ -226,7 +226,7 @@ int CheckImgNr::_get_imageNr_from_imageTimestamp(void *buf, int _shift)
     // 100              3rd word  .. BCD   ....XX..
     // 1                4th word  LS BCD   ......XX
     
-    printf("--- [%04x] [%04x] [%04x] [%04x] \n", *wData, *(wData+1),*(wData+2),*(wData+3)); 
+    //printf("--- [%04x] [%04x] [%04x] [%04x] \n", *wData, *(wData+1),*(wData+2),*(wData+3)); 
     
     int shift = 0;
     
