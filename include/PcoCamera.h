@@ -935,7 +935,7 @@ namespace lima
 
             //----------------------------------
 
-            Camera::Status m_status;
+            HwInterface::StatusType::Basic m_status;
 
             //------------- linux sdk
             SHORT sTempCcd, sTempCam, sTempPS;
@@ -1135,8 +1135,7 @@ namespace lima
             void _pco_initHWIOSignal(int mode, WORD wVar,
                                      int &error); // TODO sync
 
-            void setStatus(Camera::Status status, bool force);
-            //void getStatus(Camera::Status &status);
+            void setStatus(HwInterface::StatusType::Basic status, bool force);
             void getStatus(HwInterface::StatusType &);
 
 

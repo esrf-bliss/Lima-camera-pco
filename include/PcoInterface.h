@@ -56,25 +56,10 @@ namespace lima
             virtual void prepareAcq();
             virtual void startAcq();
             virtual void stopAcq();
-            virtual void getStatus(StatusType &status);
+            virtual void getStatus(HwInterface::StatusType &status);
 
             virtual int getNbAcquiredFrames();
             virtual int getNbHwAcquiredFrames();
-
-            double getCocRunTime()
-            {
-                return m_cam->pcoGetCocRunTime();
-            };
-            double getFrameRate()
-            {
-                return m_cam->pcoGetFrameRate();
-            };
-
-            //! get the camera object to access it directly from client
-            Camera *getCamera()
-            {
-                return m_cam;
-            }
 
           private:
             Camera *m_cam;

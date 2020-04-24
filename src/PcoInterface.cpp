@@ -117,7 +117,7 @@ void Interface::prepareAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << m_cam->_sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() << "[ENTRY]";
 
     m_cam->_setActionTimestamp(tsPrepareAcq);
 
@@ -153,7 +153,7 @@ void Interface::stopAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << m_cam->_sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() <<  "[ENTRY]";
 
     m_cam->_setActionTimestamp(tsStopAcq);
     m_cam->stopAcq();
@@ -161,51 +161,30 @@ void Interface::stopAcq()
 
 //=========================================================================================================
 //=========================================================================================================
-void Interface::getStatus(StatusType &status)
+void Interface::getStatus(HwInterface::StatusType &status)
 {
     DEB_MEMBER_FUNCT();
 
 #ifndef __linux__
+#error CHECK FOR WINDOWS COMPLILATION
     if (m_cam->_isConfig())
     {
-        status.acq = AcqConfig;
-        status.det = DetIdle;
+        status.set(HwInterface::StatusType::Config);
     }
     else
     {
-        m_sync->getStatus(status);
+        m_cam->getStatus(status);
     }
 
 #else
-
-    Camera::Status _status = Camera::Ready;
-    //m_cam->getStatus(_status);
+    // linux
+    
+    HwInterface::StatusType::Basic _status = HwInterface::StatusType::Basic::Ready;
 
     AutoMutex aLock(m_cam->m_cond.mutex());
-    _status = m_cam->m_status;
+    status.set(m_cam->m_status);
+
     aLock.unlock();
-    
-    switch (_status)
-    {
-        case Camera::Fault:
-            status.set(HwInterface::StatusType::Fault); // 0
-            break;
-        case Camera::Ready:
-            status.set(HwInterface::StatusType::Ready); // 1
-            break;
-        case Camera::Exposure:
-            status.set(HwInterface::StatusType::Exposure); // 2
-            break;
-        case Camera::Readout:
-            status.set(HwInterface::StatusType::Readout); // 3
-            break;
-        case Camera::Latency:
-            status.set(HwInterface::StatusType::Latency); // 4
-            break;
-        case Camera::Config:
-            status.set(HwInterface::StatusType::Config); // 5
-            break;
-    }
 
 #endif
 

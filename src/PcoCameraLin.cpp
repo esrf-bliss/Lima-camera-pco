@@ -222,7 +222,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
         if (m_cam.m_quit)
             return;
 
-        Camera::Status _statusReturn = Camera::Ready;
+        HwInterface::StatusType::Basic _statusReturn = HwInterface::StatusType::Basic::Ready;
         bool continueAcq = true;
 
         m_cam.m_checkImgNr->init(& m_cam.m_pcoData->traceAcq);
@@ -258,7 +258,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
         m_cam.m_pcoData->traceAcq.nrImgRequested = _nb_frames;
 
         aLock.lock();
-        m_cam.m_status = Camera::Exposure;
+        m_cam.m_status = HwInterface::StatusType::Basic::Exposure;
         m_cam.m_cond_thread.broadcast();
         aLock.unlock();
 
@@ -316,8 +316,8 @@ void Camera::_AcqThread::threadFunction_Dimax()
         if (errTot)
         {
             m_cam.m_pcoData->traceAcq.nrErrors++;
-            //setStatus(Camera::Fault,false);
-            //_statusReturn = Camera::Fault;
+            //setStatus(HwInterface::StatusType::Basic::Fault,false);
+            //_statusReturn = HwInterface::StatusType::Basic::Fault;
             continueAcq = false;
             m_cam.m_wait_flag = true;
             bAbort = true;
@@ -399,7 +399,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
-            m_cam.setStatus(Camera::Readout, false);
+            m_cam.setStatus(HwInterface::StatusType::Basic::Readout, false);
 
             m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].value +=
                 usElapsedTime(usStart);
@@ -623,7 +623,7 @@ void Camera::_AcqThread::threadFunction_Edge()
 
         m_cam.m_checkImgNr->init(& m_cam.m_pcoData->traceAcq);
 
-        Camera::Status _statusReturn = Camera::Ready;
+        HwInterface::StatusType::Basic _statusReturn = HwInterface::StatusType::Basic::Ready;
         bool continueAcq = true;
 
         bool bNoTimestamp;
@@ -660,7 +660,7 @@ void Camera::_AcqThread::threadFunction_Edge()
 
         m_cam.m_pcoData->traceAcq.nrImgRequested = _nb_frames;
 
-        m_cam.m_status = Camera::Exposure;
+        m_cam.m_status = HwInterface::StatusType::Basic::Exposure;
         m_cam.m_cond_thread.broadcast();
         aLock.unlock();
 
@@ -723,8 +723,8 @@ void Camera::_AcqThread::threadFunction_Edge()
         if (errTot)
         {
             m_cam.m_pcoData->traceAcq.nrErrors++;
-            // m_cam.setStatus(Camera::Fault,false);
-            //_statusReturn = Camera::Fault;
+            // m_cam.setStatus(HwInterface::StatusType::Basic::Fault,false);
+            //_statusReturn = HwInterface::StatusType::Basic::Fault;
             continueAcq = false;
             m_cam.m_wait_flag = true;
         }
@@ -752,7 +752,7 @@ void Camera::_AcqThread::threadFunction_Edge()
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
-            m_cam.setStatus(Camera::Readout, false);
+            m_cam.setStatus(HwInterface::StatusType::Basic::Readout, false);
 
             m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].value +=
                 usElapsedTime(usStart);
@@ -793,8 +793,8 @@ void Camera::_AcqThread::threadFunction_Edge()
                 _msgAbort =
                     "ABORT - grab_loop Error break loop at image number ";
                 DEB_ALWAYS() << _msgAbort << DEB_VAR1(pcoFrameNr);
-                //_statusReturn = Camera::Fault;
-                // m_cam.setStatus(Camera::Fault,false);
+                //_statusReturn = HwInterface::StatusType::Basic::Fault;
+                // m_cam.setStatus(HwInterface::StatusType::Basic::Fault,false);
                 continueAcq = false;
                 m_cam.m_wait_flag = true;
                 continueAcq = false;
@@ -983,7 +983,7 @@ Camera::Camera(const std::string &camPar)
     m_config = true;
     DebParams::checkInit();
 
-    setStatus(Camera::Config, true);
+    setStatus(HwInterface::StatusType::Basic::Config, true);
 
     m_msgLog = new ringLog(300);
     m_tmpLog = new ringLog(300);
@@ -1114,7 +1114,7 @@ Camera::Camera(const std::string &camPar)
     m_pcoData->timestamps.constructor = getTimestamp();
 
     m_config = false;
-    setStatus(Camera::Ready, true);
+    setStatus(HwInterface::StatusType::Basic::Ready, true);
 
     // DEB_ALWAYS() << "constructor exit";
 }
@@ -1354,7 +1354,7 @@ void Camera::_stopAcq(bool waitForThread)
     return;
 
     AutoMutex aLock(m_cond_thread.mutex());
-    if (m_status != Camera::Ready)
+    if (m_status != HwInterface::StatusType::Basic::Ready)
     {
         // waitForThread == true / while thread is running
         while (waitForThread && m_thread_running)
@@ -1378,7 +1378,7 @@ void Camera::_stopAcq(bool waitForThread)
         // Camera_->AcquisitionStop.Execute();
 
         DEB_ALWAYS() << "[set Ready]" << DEB_VAR1(waitForThread);
-        setStatus(Camera::Ready, false);
+        setStatus(HwInterface::StatusType::Basic::Ready, false);
     }
     DEB_ALWAYS() << "[return]" << DEB_VAR2(waitForThread, m_status);
 }
@@ -1425,7 +1425,7 @@ void Camera::__startAcq()
     setStarted(true);
     setExposing(pcoAcqRecordStart);
 
-    setStatus(Camera::Exposure, false);
+    setStatus(HwInterface::StatusType::Basic::Exposure, false);
 
     // Start acqusition thread
     AutoMutex aLock(m_cond_thread.mutex());
@@ -1663,13 +1663,13 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
         m_cam.m_thread_running_rolling = true;
         m_cam.m_cond_thread.broadcast();
         m_cam.m_config = true;
-        m_cam.m_status = Camera::Config;
+        m_cam.m_status = HwInterface::StatusType::Basic::Config;
         // aLock.unlock();
 
         if (m_cam.m_quit_rolling)
             return;
 
-            // m_cam.setStatus(Camera::Config,true);
+            // m_cam.setStatus(HwInterface::StatusType::Basic::Config,true);
 
 #if 1
 
@@ -1864,8 +1864,8 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
     continueWhile:
         m_cam.m_wait_flag_rolling = true;
         m_cam.m_config = false;
-        // m_cam.setStatus(Camera::Ready,true);
-        m_cam.m_status = Camera::Ready;
+        // m_cam.setStatus(HwInterface::StatusType::Basic::Ready,true);
+        m_cam.m_status = HwInterface::StatusType::Basic::Ready;
         m_cam.m_cond_thread.broadcast();
 
         DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++ Finished Thread "

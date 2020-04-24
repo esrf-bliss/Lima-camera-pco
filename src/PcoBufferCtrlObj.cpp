@@ -85,7 +85,7 @@ void BufferCtrlObj::prepareAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << m_cam->_sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() << "[ENTRY]";
     _pcoAllocBuffers();
 
     FrameDim dim;

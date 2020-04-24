@@ -492,7 +492,7 @@ void Camera::startAcq()
 
     bool _started = getStarted();
 
-    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() << "[ENTRY]";
 
     if(_started)
     {
@@ -502,8 +502,7 @@ void Camera::startAcq()
 
     _camInfo(msg, msg + sizeof(msg), CAMINFO_ACQ);
 
-    DEB_ALWAYS() << "\n"
-                 << msg << _sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() << msg << " [ENTRY]";
 
     if (m_buffer)
     {
@@ -642,7 +641,7 @@ void Camera::paramsInit(const char *str)
     DEF_FNID;
     DEB_CONSTRUCTOR();
 
-    DEB_TRACE() << _sprintComment(false, fnId, "[ENTRY]") << DEB_VAR1(str);
+    DEB_TRACE() << "[ENTRY] " << DEB_VAR1(str);
 
     int i;
     char *tokNext = NULL;
@@ -710,7 +709,7 @@ void Camera::paramsInit(const char *str)
         value = m_pcoData->params.ptrValue[j];
         DEB_TRACE() << DEB_VAR3(j, key, value);
     }
-    DEB_TRACE() << _sprintComment(false, fnId, "[EXIT]");
+    DEB_TRACE() << "[EXIT]";
 };
 
 //=========================================================================================================
@@ -720,7 +719,7 @@ void Camera::_init()
     DEB_CONSTRUCTOR();
     DEF_FNID;
 
-    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() << "[ENTRY]";
 
     int error = 0;
 
@@ -949,7 +948,7 @@ void Camera::_init()
 
     DEB_TRACE() << m_log;
     DEB_TRACE() << "END OF CAMERA";
-    DEB_ALWAYS() << _sprintComment(false, fnId, "[EXIT]");
+    DEB_ALWAYS() << "[EXIT]";
 }
 
 //=========================================================================================================
@@ -1896,27 +1895,12 @@ void Camera::_setActionTimestamp(int action)
 }
 
 //=================================================================================================
-// to merge
 //=================================================================================================
-
-//=================================================================================================
-//=================================================================================================
-//void Camera::getStatus(Camera::Status &status)
-//{
-    //DEB_MEMBER_FUNCT();
-    //AutoMutex aLock(m_cond.mutex());
-    //status = m_status;
-    //DEB_RETURN() << DEB_VAR1(DEB_HEX(status));
-//}
-
-
-//=========================================================================================================
-//=========================================================================================================
 
 void Camera::getStatus(HwInterface::StatusType &status)
 {
 
-// called by interface / linux
+// called by interface / windows
 
     bool _started = getStarted();
     pcoAcqStatus _exposing = getExposing();
@@ -1936,8 +1920,7 @@ void Camera::getStatus(HwInterface::StatusType &status)
             {
                 case pcoAcqStart:
                 case pcoAcqRecordStart:
-                    status.acq = AcqRunning;
-                    status.det = DetExposure;
+                    status.set(HwInterface::StatusType::Exposure);
                     break;
 
                 case pcoAcqStop:
@@ -1946,9 +1929,7 @@ void Camera::getStatus(HwInterface::StatusType &status)
                 case pcoAcqTransferEnd:
                 case pcoAcqRecordEnd:
                 case pcoAcqTransferStart:
-                    status.acq = AcqRunning;
-                    // status.det = DetIdle;
-                    status.det = DetLatency;
+                    status.set(HwInterface::StatusType::Latency);
                     break;
 
                 case pcoAcqRecordStop:
@@ -1957,8 +1938,7 @@ void Camera::getStatus(HwInterface::StatusType &status)
                 case pcoAcqWaitError:
                 case pcoAcqError:
                 case pcoAcqPcoError:
-                    status.acq = AcqFault;
-                    status.det = DetFault;
+                    status.set(HwInterface::StatusType::Fault);
                     break;
 
                 default:
@@ -1968,8 +1948,7 @@ void Camera::getStatus(HwInterface::StatusType &status)
     }
     else
     { // not started
-        status.acq = AcqReady;
-        status.det = DetIdle;
+        status.set(HwInterface::StatusType::Ready);
     }
 
     if (_getDebug(DBG_STATUS))
@@ -1979,20 +1958,22 @@ void Camera::getStatus(HwInterface::StatusType &status)
 }
 
 
-//=================================================================================================
-//=================================================================================================
-void Camera::setStatus(Camera::Status status, bool force)
+
+
+
+void Camera::setStatus(HwInterface::StatusType::Basic status, bool force)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
     AutoMutex aLock(m_cond.mutex());
 
-    if (force || m_status != Camera::Fault)
+    if (force || m_status != HwInterface::StatusType::Basic::Fault)
         m_status = status;
 
     m_cond.broadcast();
 }
+
 
 //=================================================================================================
 //=================================================================================================

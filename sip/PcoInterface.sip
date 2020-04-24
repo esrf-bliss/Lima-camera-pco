@@ -23,12 +23,6 @@ namespace Pco
     virtual int 	getNbHwAcquiredFrames();
 
 
-    //void _getCocRunTime(double& coc_run_time /Out/);
-        //void _getCocRunTime(double& coc_run_time){ coc_run_time = m_cam->m_cocRunTime ;};
-
-    //void _getFrameRate(double& frame_rate /Out/);
-        //void _getFrameRate(double& frame_rate){ frame_rate = m_cam->m_frameRate ;};
-
   };
   
   
