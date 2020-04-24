@@ -104,13 +104,7 @@ namespace lima
             BufferCtrlObj(Camera *cam);
             void prepareAcq();
             void startAcq();
-            // void getStatus(int &err,bool& exposing) {err = m_status,exposing
-            // = m_exposing;}
-            void getStatus(int &err)
-            {
-                err = m_cam->pcoGetError();
-            }
-            // void setStatus(int status) {m_status = status;}
+
 
             void _setNewFrameReady(int iLimaFrame);
             int _xferImagMultDoubleImage();

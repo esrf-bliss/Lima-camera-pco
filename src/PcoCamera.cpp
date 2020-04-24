@@ -383,6 +383,223 @@ stcPcoData::stcPcoData()
     msAcqRecTimestamp = msAcqXferTimestamp = getTimestamp();
 }
 
+
+
+//=========================================================================================================
+// Camera::stopAcq
+//=========================================================================================================
+void Camera::stopAcq(bool clearQueue)
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    int _stopRequestIn, _stopRequestOut, _nrStop;
+    bool _started, _started0;
+    bool resWait;
+
+    _stopRequestIn = getRequestStop(_nrStop);
+
+
+    DEB_ALWAYS() << "--- [ENTRY]";
+
+    _started0 = getStarted();
+
+ 
+    setRequestStop(stopRequest);
+    
+    
+    int iSleepTimeoutMs = 15000;
+    int iSleepMs = 100;
+
+
+    while ((_started=getStarted()) && ((iSleepTimeoutMs-=iSleepMs) > 0) )
+    {
+        DEB_TRACE() << "waiting for getStarted() RETRY! " << DEB_VAR1(iSleepTimeoutMs);
+        setRequestStop(stopRequest);
+        Sleep_ms(iSleepMs);
+    }
+
+    if (_started)
+    {
+        Event *ev = new Event(Hardware,Event::Error,Event::Camera,Event::CamFault, "ERROR can NOT STOP");
+        _getPcoHwEventCtrlObj()->reportEvent(ev);
+    }    
+
+    DEB_ALWAYS() << " [exit]: " 
+        <<  DEB_VAR6(_started0, _started, _stopRequestIn, _stopRequestOut, _nrStop, resWait);
+}
+
+//=========================================================================================================
+int Camera::getRequestStop(int &nrStop)
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+
+    AutoMutex lock(m_cond_a.mutex());
+
+    nrStop = m_requestStopRetry;
+
+    DEB_TRACE() << DEB_VAR2(m_requestStop, nrStop);
+
+    return m_requestStop;
+}
+
+//=========================================================================================================
+
+void Camera::setRequestStop(int requestStop)
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    AutoMutex lock(m_cond_a.mutex());
+
+    int m_requestStop0 = m_requestStop;
+
+    switch (requestStop)
+    {
+        case stopNone:
+            m_requestStopRetry = 0;
+            m_requestStop = requestStop;
+            break;
+
+        case stopRequest:
+            m_requestStopRetry++;
+            m_requestStop = requestStop;
+            break;
+    }
+    DEB_ALWAYS() << DEB_VAR4(m_requestStop0, m_requestStop, m_requestStopRetry,
+                             requestStop);
+}
+
+//=========================================================================================================
+//=========================================================================================================
+
+
+//=========================================================================================================
+//=========================================================================================================
+
+
+//=========================================================================================================
+// startAcq
+//=========================================================================================================
+void Camera::startAcq()
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    char msg[512];
+
+    bool _started = getStarted();
+
+    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]");
+
+    if(_started)
+    {
+        DEB_ALWAYS() << "WARNING camera was started - BYPASSED" ;
+        return;
+    }
+
+    _camInfo(msg, msg + sizeof(msg), CAMINFO_ACQ);
+
+    DEB_ALWAYS() << "\n"
+                 << msg << _sprintComment(false, fnId, "[ENTRY]");
+
+    if (m_buffer)
+    {
+        m_buffer->startAcq();
+    }
+
+    setRequestStop(stopNone);
+    setExposing(pcoAcqStart);
+    __startAcq();
+    if (getExposing() == pcoAcqError)
+    {
+        setStarted(false);
+        DEB_ALWAYS() << "ERROR during __startAcq()" ;
+        return;
+    }
+
+    int iSleepTimeoutMs = 5000;
+    int iSleepMs = 100;
+
+
+    while ((!(_started=getStarted())) && ((iSleepTimeoutMs-=iSleepMs) > 0))
+    {
+        DEB_TRACE() << "waiting for getStarted() RETRY! " << DEB_VAR1(iSleepTimeoutMs);
+        Sleep_ms(iSleepMs);
+    }
+
+
+    if (!_started)
+    {
+        DEB_ALWAYS() << "ERROR never started getStarted()" ;
+        setStarted(false);
+        return;
+    }
+    
+}
+
+//=========================================================================================================
+
+//=========================================================================================================
+//=========================================================================================================
+bool Camera::getStarted()
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    AutoMutex lock(m_cond_a.mutex());
+
+    DEB_ALWAYS() <<  DEB_VAR1(m_started);
+ 
+    return m_started;
+}
+
+//=========================================================================================================
+void Camera::setStarted(bool started)
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    AutoMutex lock(m_cond_a.mutex());
+
+    bool m_started0 = m_started;
+    m_started = started;
+
+    DEB_ALWAYS() << DEB_VAR3(m_started0, m_started, started);
+}
+
+
+//=========================================================================================================
+void Camera::setExposing(pcoAcqStatus exposing)
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    AutoMutex lock(m_cond_a.mutex());
+
+    m_exposing = exposing;
+
+    DEB_TRACE() << DEB_VAR2(m_exposing, exposing);
+}
+
+//=========================================================================================================
+pcoAcqStatus Camera::getExposing()
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    AutoMutex lock(m_cond_a.mutex());
+
+    DEB_TRACE() << DEB_VAR1(m_exposing);
+    return m_exposing;
+}
+//=========================================================================================================
+//=========================================================================================================
+
+
+
 //=========================================================================================================
 //=========================================================================================================
 bool Camera::paramsGet(const char *key, char *&value)
@@ -887,7 +1104,7 @@ void Camera::prepareAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]") << _checkLogFiles();
+    DEB_ALWAYS() << "[ENTRY] " << _checkLogFiles();
 
     int error;
 
@@ -1128,7 +1345,7 @@ void Camera::prepareAcq()
 				Event *ev = new Event(Hardware,Event::Error,Event::Camera,Event::CamNoMemory, "ERROR frames OUT OF RANGE");
 				_getPcoHwEventCtrlObj()->reportEvent(ev);
 			}
-				m_sync->setStarted(false);
+				setStarted(false);
 				return;
 		}
 	}
@@ -1684,17 +1901,87 @@ void Camera::_setActionTimestamp(int action)
 
 //=================================================================================================
 //=================================================================================================
-void Camera::getStatus(Camera::Status &status)
+//void Camera::getStatus(Camera::Status &status)
+//{
+    //DEB_MEMBER_FUNCT();
+    //AutoMutex aLock(m_cond.mutex());
+    //status = m_status;
+    //DEB_RETURN() << DEB_VAR1(DEB_HEX(status));
+//}
+
+
+//=========================================================================================================
+//=========================================================================================================
+
+void Camera::getStatus(HwInterface::StatusType &status)
 {
+
+// called by interface / linux
+
+    bool _started = getStarted();
+    pcoAcqStatus _exposing = getExposing();
+
+    AutoMutex lock(m_cond.mutex());
+    bool _buffer = m_buffer;
+    lock.unlock();
+    
     DEB_MEMBER_FUNCT();
-    // AutoMutex aLock(m_cond.mutex());
-    status = m_status;
-    DEB_RETURN() << DEB_VAR1(DEB_HEX(status));
+    // DEB_TRACE() << DEB_VAR3(_started, m_buffer, m_exposing);
+
+    if (_started)
+    {
+        if (_buffer)
+        {
+            switch (_exposing)
+            {
+                case pcoAcqStart:
+                case pcoAcqRecordStart:
+                    status.acq = AcqRunning;
+                    status.det = DetExposure;
+                    break;
+
+                case pcoAcqStop:
+                case pcoAcqTransferStop:
+                case pcoAcqIdle:
+                case pcoAcqTransferEnd:
+                case pcoAcqRecordEnd:
+                case pcoAcqTransferStart:
+                    status.acq = AcqRunning;
+                    // status.det = DetIdle;
+                    status.det = DetLatency;
+                    break;
+
+                case pcoAcqRecordStop:
+                case pcoAcqRecordTimeout:
+                case pcoAcqWaitTimeout:
+                case pcoAcqWaitError:
+                case pcoAcqError:
+                case pcoAcqPcoError:
+                    status.acq = AcqFault;
+                    status.det = DetFault;
+                    break;
+
+                default:
+                    THROW_HW_ERROR(NotSupported) << "Undefined value";
+            } // sw
+        }     // m_buffer
+    }
+    else
+    { // not started
+        status.acq = AcqReady;
+        status.det = DetIdle;
+    }
+
+    if (_getDebug(DBG_STATUS))
+    {
+        DEB_ALWAYS() << DEB_VAR2(_exposing, status);
+    }
 }
+
 
 //=================================================================================================
 //=================================================================================================
-void Camera::_setStatus(Camera::Status status, bool force)
+void Camera::setStatus(Camera::Status status, bool force)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
@@ -1705,7 +1992,6 @@ void Camera::_setStatus(Camera::Status status, bool force)
         m_status = status;
 
     m_cond.broadcast();
-    aLock.unlock();
 }
 
 //=================================================================================================
@@ -1738,7 +2024,7 @@ void Camera::_pco_set_shutter_rolling_edge(int &error)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
-    char *msg="none";
+    char *msg=(char*)"none";
     const char *cmsg;
     char msgBuff[MSG_SIZE + 1];
 

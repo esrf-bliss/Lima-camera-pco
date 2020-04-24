@@ -29,24 +29,6 @@
 #include "lima/HwSyncCtrlObj.h"
 #include "lima/HwInterface.h"
 
-enum pcoAcqStatus
-{
-    pcoAcqOK = 0,
-    pcoAcqIdle,
-    pcoAcqStart,
-    pcoAcqRecordStart,
-    pcoAcqRecordEnd,
-    pcoAcqRecordStop,
-    pcoAcqRecordTimeout,
-    pcoAcqTransferStart,
-    pcoAcqTransferEnd,
-    pcoAcqStop,
-    pcoAcqTransferStop,
-    pcoAcqWaitTimeout,
-    pcoAcqWaitError,
-    pcoAcqError,
-    pcoAcqPcoError,
-};
 
 namespace lima
 {
@@ -90,23 +72,11 @@ namespace lima
 
             virtual void getValidRanges(ValidRangesType &valid_ranges);
 
-            void startAcq();
-            void stopAcq(bool clearQueue = true);
 
-            void getStatus(HwInterface::StatusType &);
 
             void xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
                                       WORD &pcoTrigMode, WORD &pcoAcqMode,
                                       bool &extTrig, int &err);
-
-            // BufferCtrlObj* _getBufferCtrlObj() {return m_buffer;}
-            void setExposing(pcoAcqStatus exposing);
-            void setStarted(bool started);
-            bool getStarted();
-            pcoAcqStatus getExposing();
-
-            int _getRequestStop(int &nrStop);
-            void _setRequestStop(int requestStop);
 
           private:
             double m_exp_time; /* exposure time in s */
@@ -118,11 +88,7 @@ namespace lima
             BufferCtrlObj *m_buffer;
             int m_nb_frames;
             int m_nb_acq_frames;
-            bool m_started;
-            pcoAcqStatus m_exposing;
             struct stcPcoData *m_pcoData;
-            Cond m_cond;
-            int m_requestStop, m_requestStopRetry;
 
             bool m_extTrigSingle_eq_Multi;
         };

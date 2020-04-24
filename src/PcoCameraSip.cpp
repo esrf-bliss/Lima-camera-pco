@@ -901,7 +901,7 @@ void Camera::setRecorderStopRequest(int val)
     DEB_MEMBER_FUNCT();
 
     HwInterface::StatusType status;
-    m_sync->getStatus(status);
+    getStatus(status);
 
     if (_getRecorderStopRequest() || !_isCameraType(camRAM) ||
         !(_pco_GetStorageMode_GetRecorderSubmode() != Fifo) ||

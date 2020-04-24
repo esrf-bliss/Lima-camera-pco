@@ -221,6 +221,26 @@ enum actionTimestamp
     tsReset
 };
 
+enum pcoAcqStatus
+{
+    pcoAcqOK = 0,
+    pcoAcqIdle,
+    pcoAcqStart,
+    pcoAcqRecordStart,
+    pcoAcqRecordEnd,
+    pcoAcqRecordStop,
+    pcoAcqRecordTimeout,
+    pcoAcqTransferStart,
+    pcoAcqTransferEnd,
+    pcoAcqStop,
+    pcoAcqTransferStop,
+    pcoAcqWaitTimeout,
+    pcoAcqWaitError,
+    pcoAcqError,
+    pcoAcqPcoError,
+};
+
+
 enum capsDesc
 {
     capsCDI = 1,
@@ -375,6 +395,7 @@ namespace lima
 
     } // namespace Pco
 } // namespace lima
+
 
 enum enumChange
 {
@@ -712,15 +733,66 @@ namespace lima
             void startAcq();
             void reset(int reset_level);
 
+
+          // ----------
+          public:
+            void __startAcq();
+            void setExposing(pcoAcqStatus exposing);
+            pcoAcqStatus getExposing();
+            void setStarted(bool started);
+            bool getStarted();
+          private:
+            bool _getStarted();
+            pcoAcqStatus _getExposing();
+            bool m_started;
+            pcoAcqStatus m_exposing;
+          // ----------
+
+          public:
+
+
 #ifdef __linux__
+        // --- specific for LINUX
+        public:
             CPco_com *camera;
             CPco_grab_cl_me4 *grabber;
             CPco_Log *mylog;
 
-            void stopAcq();
             void _stopAcq(bool waitForThread);
+            void _waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
+                                   DWORD &_dwMaxImageCnt, int &error);
+
+          private:
+            enum threadType{threadAcq = 1, threadSw};
+
+            class _AcqThread;
+            friend class _AcqThread;
+            _AcqThread *m_acq_threadAcq;
+            _AcqThread *m_acq_threadSw;
+
+            void _pco_GetLut(int &err);
+            void _pco_Open_Cam(int &err);
+            void _pco_Open_Grab(int &err);
+            void _pco_GetCameraInfo(int &error);
+            void _pco_ResetSettingsToDefault(int &err);
+#else
+        // --- specific for WIN
+        private:
+            bool _isRunAfterAssign();
 #endif
 
+          // ----------
+          public:
+            void stopAcq(bool clearQueue = true);
+            int getRequestStop(int &nrStop);
+            void setRequestStop(int requestStop);
+          private:
+            int m_requestStop, m_requestStopRetry;
+          // ----------
+
+          
+
+          public:
             // ----- BIN
             void setBin(const Bin &aBin);
             void getBin(Bin &aBin);
@@ -826,15 +898,13 @@ namespace lima
             bool m_cam_connected;
 
             Cond m_cond;
+            Cond m_cond_a;
+            Cond m_cond_thread;
+            Cond m_cond_started;
+            Cond m_cond_exposing;
+            Cond m_cond_requestStop;
+            Cond m_cond_status;
 
-#ifdef __linux__
-            enum threadType{threadAcq = 1, threadSw};
-
-            class _AcqThread;
-            friend class _AcqThread;
-            _AcqThread *m_acq_threadAcq;
-            _AcqThread *m_acq_threadSw;
-#endif
             volatile bool m_wait_flag;
             volatile bool m_quit;
             volatile bool m_thread_running;
@@ -957,9 +1027,6 @@ namespace lima
             bool _getCameraState(long long flag);
             void _setCameraState(long long flag, bool val);
 
-#ifndef __linux__
-            bool _isRunAfterAssign();
-#endif
 
             bool _isCapsDesc(int caps);
             void _pco_GetAcqEnblSignalStatus(WORD &wAcquEnableState, int &err);
@@ -970,13 +1037,6 @@ namespace lima
             void _pco_SetCameraToCurrentTime(int &error);
             void _pco_SetCamLinkSetImageParameters(int &error);
 
-#ifdef __linux__
-            void _pco_GetLut(int &err);
-            void _pco_Open_Cam(int &err);
-            void _pco_Open_Grab(int &err);
-            void _pco_GetCameraInfo(int &error);
-            void _pco_ResetSettingsToDefault(int &err);
-#endif
             void _pco_GetSizes(WORD *wXResActual, WORD *wYResActual,
                                WORD *wXResMax, WORD *wYResMax, int &error);
             void _pco_SetTransferParameter_SetActiveLookupTable_win(int &error);
@@ -1075,8 +1135,10 @@ namespace lima
             void _pco_initHWIOSignal(int mode, WORD wVar,
                                      int &error); // TODO sync
 
-            void _setStatus(Camera::Status status, bool force);
-            void getStatus(Camera::Status &status);
+            void setStatus(Camera::Status status, bool force);
+            //void getStatus(Camera::Status &status);
+            void getStatus(HwInterface::StatusType &);
+
 
           public:
             int _pco_GetADCOperation(int &adc_working, int &adc_max);
@@ -1118,10 +1180,6 @@ namespace lima
 
             void dummySip();
 
-#ifdef __linux__
-            void _waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
-                                   DWORD &_dwMaxImageCnt, int &error);
-#endif
             //----
             void _pco_GetInfoString(int infotype, char *buf_in, int size_in,
                                     int &error);

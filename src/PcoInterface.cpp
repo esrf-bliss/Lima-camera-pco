@@ -106,7 +106,7 @@ void Interface::reset(ResetLevel reset_level)
 
     DEB_TRACE() << fnId << ": " DEB_VAR2(reset_level, intLevel);
 
-    m_sync->stopAcq();
+    m_cam->stopAcq();
     m_cam->reset(intLevel);
 }
 
@@ -135,13 +135,15 @@ void Interface::startAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << m_cam->_sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() << "[ENTRY]";
 
     m_cam->_setActionTimestamp(tsStartAcq);
 
     if (m_buffer)
+    {
         m_buffer->getBuffer().setStartTimestamp(Timestamp::now());
-    m_sync->startAcq();
+    }
+    m_cam->startAcq();
 }
 
 //=========================================================================================================
@@ -154,7 +156,7 @@ void Interface::stopAcq()
     DEB_ALWAYS() << m_cam->_sprintComment(false, fnId, "[ENTRY]");
 
     m_cam->_setActionTimestamp(tsStopAcq);
-    m_sync->stopAcq();
+    m_cam->stopAcq();
 }
 
 //=========================================================================================================
@@ -177,7 +179,12 @@ void Interface::getStatus(StatusType &status)
 #else
 
     Camera::Status _status = Camera::Ready;
-    m_cam->getStatus(_status);
+    //m_cam->getStatus(_status);
+
+    AutoMutex aLock(m_cam->m_cond.mutex());
+    _status = m_cam->m_status;
+    aLock.unlock();
+    
     switch (_status)
     {
         case Camera::Fault:

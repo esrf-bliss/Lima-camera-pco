@@ -121,7 +121,7 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
 
     if (!checkImgNr)
     {
-        printf("--- %s> --- BYPASSED - NOT CHECKED\n", fnId);
+        //printf("--- %s> --- BYPASSED - NOT CHECKED\n", fnId);
         return;
     }
     
@@ -642,7 +642,7 @@ const char *Camera::_pco_SetRecordingState(int state, int &err)
     }
 
     if (wRecState_new)
-        m_sync->setExposing(pcoAcqRecordStart);
+        setExposing(pcoAcqRecordStart);
 
 #else
         if (count && !_isCameraType(Edge))
@@ -660,6 +660,7 @@ const char *Camera::_pco_SetRecordingState(int state, int &err)
     err = camera->PCO_SetRecordingState(wRecState_new);
     PCO_CHECK_ERROR(err, "PCO_SetRecordingState");
 #endif
+
 
     wRecState_actual = _pco_GetRecordingState(err);
     _setCameraState(CAMSTATE_RECORD_STATE, !!(wRecState_actual));

@@ -102,7 +102,11 @@ void BufferCtrlObj::prepareAcq()
 void BufferCtrlObj::startAcq()
 {
     DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
     std::string name;
+
+    DEB_TRACE() << "[ENTRY]";
 
     StdBufferCbMgr &buffer_mgr = m_buffer_cb_mgr;
     buffer_mgr.setStartTimestamp(Timestamp::now());
@@ -611,7 +615,7 @@ int BufferCtrlObj::_xferImag_buff2lima(DWORD &dwFrameIdx, int &bufIdx)
     size_t size = m_allocBuff.dwPcoAllocBufferSize[bufIdx];
 
     size = sizeLima;
-    if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+    if ((m_cam->getRequestStop(_nrStop)) &&
         (_nrStop > MAX_NR_STOP))
     {
         return pcoAcqStop;
@@ -641,7 +645,7 @@ int BufferCtrlObj::_xferImag_buff2lima(DWORD &dwFrameIdx, int &bufIdx)
     m_cam->m_checkImgNr->update(iLimaFrame, ptrSrc);
 
     //----- the image dwFrameIdx is already in the buffer -> callback!
-    if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+    if ((m_cam->getRequestStop(_nrStop)) &&
         (_nrStop > MAX_NR_STOP))
     {
         return pcoAcqStop;
@@ -864,7 +868,7 @@ int BufferCtrlObj::_xferImag()
             DEB_ALWAYS() << msg;
         }
 
-        if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+        if ((m_cam->getRequestStop(_nrStop)) &&
             (_nrStop > MAX_NR_STOP))
         {
             goto _EXIT_STOP;
@@ -933,7 +937,7 @@ int BufferCtrlObj::_xferImag()
         int errPco;
         do
         {
-            if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+            if ((m_cam->getRequestStop(_nrStop)) &&
                 (_nrStop > MAX_NR_STOP))
             {
                 goto _EXIT_STOP;
@@ -1514,7 +1518,7 @@ int BufferCtrlObj::_xferImag_getImage()
 
         m_pcoData->traceAcq.nrImgAcquired = dwFrameIdxCount;
 
-        if ((_stopReq = m_sync->_getRequestStop(_nrStop)) == stopRequest)
+        if ((_stopReq = m_cam->getRequestStop(_nrStop)))
         {
             if (_nrStop > MAX_NR_STOP)
             {
@@ -1751,7 +1755,7 @@ int BufferCtrlObj::_xferImag_getImage_edge()
 
         m_pcoData->traceAcq.nrImgAcquired = dwFrameIdxCount;
 
-        if ((_stopReq = m_sync->_getRequestStop(_nrStop)) == stopRequest)
+        if ((_stopReq = m_cam->getRequestStop(_nrStop)))
         {
             if (_nrStop > MAX_NR_STOP)
             {
@@ -2097,7 +2101,7 @@ int BufferCtrlObj::_xferImagMult()
 
         m_pcoData->traceAcq.nrImgAcquired = dwFrameIdx;
 
-        if ((_stopReq = m_sync->_getRequestStop(_nrStop)) == stopRequest)
+        if ((_stopReq = m_cam->getRequestStop(_nrStop)))
         {
             if (_nrStop > MAX_NR_STOP)
             {
@@ -2554,7 +2558,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
     _RETRY:
 
-        if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+        if ((m_cam->getRequestStop(_nrStop)) &&
             (_nrStop > MAX_NR_STOP))
         {
             goto _EXIT_STOP;
@@ -2609,7 +2613,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
                 ptrPcoBuffer = (void *)m_allocBuff.pcoAllocBufferPtr[bufIdx];
                 lima_buffer_nb = m_allocBuff.limaAllocBufferNr[bufIdx];
 
-                if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+                if ((m_cam->getRequestStop(_nrStop)) &&
                     (_nrStop > MAX_NR_STOP))
                 {
                     goto _EXIT_STOP;
@@ -2664,7 +2668,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
                              sizeLima);
                 lima_buffer_nb = m_allocBuff.limaAllocBufferNr1[bufIdx];
 
-                if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+                if ((m_cam->getRequestStop(_nrStop)) &&
                     (_nrStop > MAX_NR_STOP))
                 {
                     goto _EXIT_STOP;
@@ -2697,7 +2701,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
                 //----- the image dwPcoFrameIdx is already in the buffer ->
                 // callback!
-                if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+                if ((m_cam->getRequestStop(_nrStop)) &&
                     (_nrStop > MAX_NR_STOP))
                 {
                     goto _EXIT_STOP;
@@ -2733,7 +2737,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
     _RETRY_WAIT:
 
-        if ((m_sync->_getRequestStop(_nrStop) == stopRequest) &&
+        if ((m_cam->getRequestStop(_nrStop)) &&
             (_nrStop > MAX_NR_STOP))
         {
             goto _EXIT_STOP;
@@ -3173,7 +3177,7 @@ int BufferCtrlObj::_xferImagMultDoubleImage()
 
         // ---
 
-        if ((_stopReq = m_sync->_getRequestStop(_nrStop)) == stopRequest)
+        if ((_stopReq = m_cam->getRequestStop(_nrStop)))
         {
             if (_nrStop > MAX_NR_STOP)
             {

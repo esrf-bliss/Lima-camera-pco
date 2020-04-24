@@ -99,10 +99,10 @@ Camera::_AcqThread::~_AcqThread()
     DEB_DESTRUCTOR();
     // DEB_ALWAYS() << "[entry]" ;
 
-    AutoMutex aLock(m_cam.m_cond.mutex());
+    AutoMutex aLock(m_cam.m_cond_thread.mutex());
     m_cam.m_quit = true;
     // m_cam.WaitObject_.Signal();
-    m_cam.m_cond.broadcast();
+    m_cam.m_cond_thread.broadcast();
     aLock.unlock();
 
     join();
@@ -181,10 +181,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
     bool bRequestStop;
     int _nrStop;
 
-    AutoMutex aLock(m_cam.m_cond.mutex());
-    // StdBufferCbMgr& buffer_mgr = m_buffer_ctrl_obj.getBuffer();
-
-    // StdBufferCbMgr& buffer_mgr = m_buffer->getBuffer();
+    AutoMutex aLock(m_cam.m_cond_thread.mutex());
 
     int nb_allocated_buffers;
 
@@ -204,21 +201,24 @@ void Camera::_AcqThread::threadFunction_Dimax()
 
     while (!m_cam.m_quit)
     {
+        aLock.lock();
         m_cam.m_thread_running = false;
-        m_cam.m_cond.broadcast();
+        m_cam.m_cond_thread.broadcast();
 
         while (m_cam.m_wait_flag && !m_cam.m_quit)
         {
             // DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++Wait " <<
             // DEB_VAR3(m_cam.m_wait_flag, m_cam.m_quit, m_cam.m_thread_running)
             // << "  " << getTimestamp(Iso);
-            m_cam.m_cond.wait();
+            m_cam.m_cond_thread.wait();
         } // while wait
 
         DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++Run "
                      << getTimestamp(Iso);
         m_cam.m_thread_running = true;
-        m_cam.m_cond.broadcast();
+        m_cam.m_cond_thread.broadcast();
+        aLock.unlock();
+
         if (m_cam.m_quit)
             return;
 
@@ -250,15 +250,16 @@ void Camera::_AcqThread::threadFunction_Dimax()
         // m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].desc = "xfer to lima
         // / total execTime";
 
-        m_cam.m_sync->setStarted(true);
+        //m_cam.setStarted(true);
 
         m_cam.m_sync->getNbFrames(_nb_frames);
         limaFrameNr = 0; // 0 ..... N-1
 
         m_cam.m_pcoData->traceAcq.nrImgRequested = _nb_frames;
 
+        aLock.lock();
         m_cam.m_status = Camera::Exposure;
-        m_cam.m_cond.broadcast();
+        m_cam.m_cond_thread.broadcast();
         aLock.unlock();
 
         err = m_cam.grabber->Get_actual_size(&width, &height, NULL);
@@ -315,7 +316,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
         if (errTot)
         {
             m_cam.m_pcoData->traceAcq.nrErrors++;
-            //_setStatus(Camera::Fault,false);
+            //setStatus(Camera::Fault,false);
             //_statusReturn = Camera::Fault;
             continueAcq = false;
             m_cam.m_wait_flag = true;
@@ -334,8 +335,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 m_cam._waitForRecording(_nb_frames, validCount, maxCount,
                                         error);
 
-                //bRequestStop = (m_cam.m_sync->_getRequestStop(_nrStop) == stopRequest);
-                bRequestStop = !!(m_cam.m_sync->_getRequestStop(_nrStop));
+                bRequestStop = !!(m_cam.getRequestStop(_nrStop));
 
                 if (error || ((DWORD)_nb_frames > maxCount))
                 {
@@ -399,7 +399,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
-            m_cam._setStatus(Camera::Readout, false);
+            m_cam.setStatus(Camera::Readout, false);
 
             m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].value +=
                 usElapsedTime(usStart);
@@ -473,12 +473,10 @@ void Camera::_AcqThread::threadFunction_Dimax()
             ++limaFrameNr;
 
             int _nrStop;
-            //if ((m_cam.m_sync->_getRequestStop(_nrStop)) == stopRequest)
-            if (m_cam.m_sync->_getRequestStop(_nrStop))
+            if (m_cam.getRequestStop(_nrStop))
             {
                 _msgAbort = "STOP REQUEST";
                 DEB_ALWAYS() << _msgAbort;
-                // m_sync->_setRequestStop(stopNone);
                 continueAcq = false;
                 m_cam.m_wait_flag = true;
                 bAbort = true;
@@ -541,11 +539,11 @@ void Camera::_AcqThread::threadFunction_Dimax()
         m_cam.m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
         m_cam.m_pcoData->traceAcq.usTicks[traceAcq_execTimeTot].value =
             usElapsedTime(usStartTot);
-        m_cam._setStatus(_statusReturn, false);
+        m_cam.setStatus(_statusReturn, false);
 
-        aLock.lock();
+        //aLock.lock();
         m_cam.m_wait_flag = true;
-        m_cam.m_sync->setStarted(false);
+        m_cam.setStarted(false);
 
         if (bAbort)
         {
@@ -588,9 +586,7 @@ void Camera::_AcqThread::threadFunction_Edge()
     void *pcoBuffPtr;
     DWORD width, height;
 
-    AutoMutex aLock(m_cam.m_cond.mutex());
-    // StdBufferCbMgr& buffer_mgr = m_cam.m_buffer_ctrl_obj.getBuffer();
-    // StdBufferCbMgr& buffer_mgr = m_buffer->getBuffer();
+    AutoMutex aLock(m_cam.m_cond_thread.mutex());
 
     int nb_allocated_buffers;
 
@@ -615,8 +611,8 @@ void Camera::_AcqThread::threadFunction_Edge()
             // DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++Wait " <<
             // getTimestamp(Iso);
             m_cam.m_thread_running = false;
-            m_cam.m_cond.broadcast();
-            m_cam.m_cond.wait();
+            m_cam.m_cond_thread.broadcast();
+            m_cam.m_cond_thread.wait();
         } // while wait
 
         DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++Run "
@@ -657,7 +653,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         // m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].desc = "xfer to lima
         // / total execTime";
 
-        m_cam.m_sync->setStarted(true);
+        m_cam.setStarted(true);
 
         m_cam.m_sync->getNbFrames(_nb_frames);
         limaFrameNr = 0; // 0 ..... N-1
@@ -665,7 +661,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         m_cam.m_pcoData->traceAcq.nrImgRequested = _nb_frames;
 
         m_cam.m_status = Camera::Exposure;
-        m_cam.m_cond.broadcast();
+        m_cam.m_cond_thread.broadcast();
         aLock.unlock();
 
         err = m_cam.grabber->Get_actual_size(&width, &height, NULL);
@@ -727,7 +723,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         if (errTot)
         {
             m_cam.m_pcoData->traceAcq.nrErrors++;
-            // m_cam._setStatus(Camera::Fault,false);
+            // m_cam.setStatus(Camera::Fault,false);
             //_statusReturn = Camera::Fault;
             continueAcq = false;
             m_cam.m_wait_flag = true;
@@ -756,7 +752,7 @@ void Camera::_AcqThread::threadFunction_Edge()
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
-            m_cam._setStatus(Camera::Readout, false);
+            m_cam.setStatus(Camera::Readout, false);
 
             m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].value +=
                 usElapsedTime(usStart);
@@ -798,7 +794,7 @@ void Camera::_AcqThread::threadFunction_Edge()
                     "ABORT - grab_loop Error break loop at image number ";
                 DEB_ALWAYS() << _msgAbort << DEB_VAR1(pcoFrameNr);
                 //_statusReturn = Camera::Fault;
-                // m_cam._setStatus(Camera::Fault,false);
+                // m_cam.setStatus(Camera::Fault,false);
                 continueAcq = false;
                 m_cam.m_wait_flag = true;
                 continueAcq = false;
@@ -871,11 +867,10 @@ void Camera::_AcqThread::threadFunction_Edge()
             ++limaFrameNr;
 
             int _nrStop;
-            if ((m_cam.m_sync->_getRequestStop(_nrStop)) == stopRequest)
+            if ((m_cam.getRequestStop(_nrStop)))
             {
                 _msgAbort = "STOP REQUEST";
                 DEB_ALWAYS() << _msgAbort;
-                // m_sync->_setRequestStop(stopNone);
                 continueAcq = false;
                 m_cam.m_wait_flag = true;
                 bAbort = true;
@@ -935,11 +930,11 @@ void Camera::_AcqThread::threadFunction_Edge()
         m_cam.m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
         m_cam.m_pcoData->traceAcq.usTicks[traceAcq_execTimeTot].value =
             usElapsedTime(usStartTot);
-        m_cam._setStatus(_statusReturn, false);
+        m_cam.setStatus(_statusReturn, false);
 
         aLock.lock();
         m_cam.m_wait_flag = true;
-        m_cam.m_sync->setStarted(false);
+        m_cam.setStarted(false);
 
         if (bAbort)
         {
@@ -988,7 +983,7 @@ Camera::Camera(const std::string &camPar)
     m_config = true;
     DebParams::checkInit();
 
-    _setStatus(Camera::Config, true);
+    setStatus(Camera::Config, true);
 
     m_msgLog = new ringLog(300);
     m_tmpLog = new ringLog(300);
@@ -1119,7 +1114,7 @@ Camera::Camera(const std::string &camPar)
     m_pcoData->timestamps.constructor = getTimestamp();
 
     m_config = false;
-    _setStatus(Camera::Ready, true);
+    setStatus(Camera::Ready, true);
 
     // DEB_ALWAYS() << "constructor exit";
 }
@@ -1205,7 +1200,7 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
     m_sync->getExpTime(m_pcoData->traceAcq.sExposure);
     m_sync->getLatTime(m_pcoData->traceAcq.sDelay);
 
-    m_sync->setExposing(pcoAcqRecordStart);
+    setExposing(pcoAcqRecordStart);
 
     DEB_ALWAYS() << "waiting for the recording ...";
     while (true)
@@ -1233,7 +1228,7 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
             nb_frames_fixed = true;
             DEB_ALWAYS() << "ERROR nb_frames > memSize: "
                          << DEB_VAR2(nb_frames, _dwMaxImageCnt);
-            m_sync->setExposing(pcoAcqError);
+            setExposing(pcoAcqError);
             error = -1;
             break;
         }
@@ -1246,7 +1241,7 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
 
         if ((timeout < msNowRecordLoop) && !m_pcoData->bExtTrigEnabled)
         {
-            m_sync->setExposing(pcoAcqStop);
+            setExposing(pcoAcqStop);
             DEB_ALWAYS() << "ERROR TIMEOUT!!!: "
                          << DEB_VAR5(timeout, timeout0, msNowRecordLoop,
                                      _dwValidImageCnt, nb_frames);
@@ -1254,9 +1249,8 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
             break;
         }
 
-        if ((requestStop = m_sync->_getRequestStop(_nrStop)) == stopRequest)
+        if ((requestStop = getRequestStop(_nrStop)))
         {
-            // m_sync->_setRequestStop(stopNone);
             DEB_ALWAYS() << "STOP REQ (recording): "
                          << DEB_VAR2(_dwValidImageCnt, nb_frames);
             break;
@@ -1274,10 +1268,11 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
         throw LIMA_HW_EXC(Error, "_pco_SetRecordingState");
     }
 
-    if ((requestStop != stopRequest) && (!nb_frames_fixed))
+    //if ((requestStop != stopRequest) && (!nb_frames_fixed))
+    if ((!requestStop) && (!nb_frames_fixed))
     {
-        if (m_sync->getExposing() == pcoAcqRecordStart)
-            m_sync->setExposing(pcoAcqRecordEnd);
+        if (getExposing() == pcoAcqRecordStart)
+            setExposing(pcoAcqRecordEnd);
 
         _pco_GetNumberOfImagesInSegment(wSegment, _dwValidImageCnt,
                                         _dwMaxImageCnt, error);
@@ -1315,12 +1310,12 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
             if (nb_frames_fixed)
                 status = pcoAcqError;
 
-            m_sync->setExposing(status);
+            setExposing(status);
         }
 
     } // if nb_frames_fixed && no stopRequested
 
-    // m_sync->setExposing(status);
+    // setExposing(status);
     m_pcoData->dwMaxImageCnt[wSegment - 1] = m_pcoData->traceAcq.maxImgCount =
         _dwMaxImageCnt;
 
@@ -1340,15 +1335,6 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
                   timeout, timeout0, msRecord, msXfer, msTotal);
     _traceMsg(_msg);
 
-
-#if 0
-	if(requestStop == stopRequest) 
-	{
-		Event *ev = new Event(Hardware,Event::Error,Event::Camera,Event::CamFault, errMsg);
-		m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
-	}
-
-#endif
 }
 
 //=========================================================================================================
@@ -1367,7 +1353,7 @@ void Camera::_stopAcq(bool waitForThread)
     m_wait_flag = true;
     return;
 
-    AutoMutex aLock(m_cond.mutex());
+    AutoMutex aLock(m_cond_thread.mutex());
     if (m_status != Camera::Ready)
     {
         // waitForThread == true / while thread is running
@@ -1375,7 +1361,7 @@ void Camera::_stopAcq(bool waitForThread)
         {
             m_wait_flag = true;
             // WaitObject_.Signal();
-            m_cond.wait();
+            m_cond_thread.wait();
         }
         aLock.unlock();
 
@@ -1392,16 +1378,18 @@ void Camera::_stopAcq(bool waitForThread)
         // Camera_->AcquisitionStop.Execute();
 
         DEB_ALWAYS() << "[set Ready]" << DEB_VAR1(waitForThread);
-        _setStatus(Camera::Ready, false);
+        setStatus(Camera::Ready, false);
     }
     DEB_ALWAYS() << "[return]" << DEB_VAR2(waitForThread, m_status);
 }
 
 //=================================================================================================
 //=================================================================================================
-void Camera::startAcq()
+void Camera::__startAcq()
 {
     DEB_MEMBER_FUNCT();
+    DEF_FNID;
+    DEB_ALWAYS() << "[ENTRY]";
 
     m_acq_frame_nb = -1;
     m_pcoData->pcoError = 0;
@@ -1417,11 +1405,9 @@ void Camera::startAcq()
     m_pcoData->timestamps.startAcq = getTimestamp();
 
     //=====================================================================
-    DEF_FNID;
     // WORD state;
     // HANDLE hEvent= NULL;
 
-    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]") << _checkLogFiles();
 
     // int error;
     // const char *msg;
@@ -1436,18 +1422,17 @@ void Camera::startAcq()
     DEB_ALWAYS() << "[... starting]";
     m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
 
-    m_sync->setStarted(true);
-    m_sync->setExposing(pcoAcqRecordStart);
+    setStarted(true);
+    setExposing(pcoAcqRecordStart);
 
-    _setStatus(Camera::Exposure, false);
+    setStatus(Camera::Exposure, false);
 
     // Start acqusition thread
-    AutoMutex aLock(m_cond.mutex());
+    AutoMutex aLock(m_cond_thread.mutex());
     m_wait_flag = false;
-    m_cond.broadcast();
-    DEB_ALWAYS() << "[... starting after mutex]";
+    m_cond_thread.broadcast();
+    DEB_ALWAYS() << "[... starting after mutex] [EXIT]";
 
-    DEB_ALWAYS() << "[exit]";
     return;
 }
 
@@ -1609,11 +1594,11 @@ void Camera::_set_shutter_rolling_edge(DWORD dwRolling, int &error)
     // DEB_ALWAYS() << NOT_IMPLEMENTED ;
 
     // Start switch thread
-    AutoMutex aLock(m_cond.mutex());
+    AutoMutex aLock(m_cond_thread.mutex());
     m_dwRollingShutterNew = dwRolling;
     m_wait_flag_rolling = false;
     m_quit_rolling = false;
-    m_cond.broadcast();
+    m_cond_thread.broadcast();
     // DEB_ALWAYS() << "[... starting after mutex]";
 }
 
@@ -1658,25 +1643,25 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
     // dwRolling is set by Camera::_set_shutter_rolling_edge(DWORD dwRolling,
     // int &error)
 
-    AutoMutex aLock(m_cam.m_cond.mutex());
+    AutoMutex aLock(m_cam.m_cond_thread.mutex());
 
     DEB_ALWAYS() << DEB_VAR2(m_cam.m_wait_flag_rolling, m_cam.m_quit_rolling);
 
     while (!m_cam.m_quit_rolling)
     {
         m_cam.m_thread_running_rolling = false;
-        m_cam.m_cond.broadcast();
+        m_cam.m_cond_thread.broadcast();
         // aLock.unlock();
 
         while (m_cam.m_wait_flag_rolling && !m_cam.m_quit_rolling)
         {
-            m_cam.m_cond.wait();
+            m_cam.m_cond_thread.wait();
         } // while wait
 
         DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++ Running Thread "
                      << getTimestamp(Iso);
         m_cam.m_thread_running_rolling = true;
-        m_cam.m_cond.broadcast();
+        m_cam.m_cond_thread.broadcast();
         m_cam.m_config = true;
         m_cam.m_status = Camera::Config;
         // aLock.unlock();
@@ -1684,7 +1669,7 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
         if (m_cam.m_quit_rolling)
             return;
 
-            // m_cam._setStatus(Camera::Config,true);
+            // m_cam.setStatus(Camera::Config,true);
 
 #if 1
 
@@ -1879,9 +1864,9 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
     continueWhile:
         m_cam.m_wait_flag_rolling = true;
         m_cam.m_config = false;
-        // m_cam._setStatus(Camera::Ready,true);
+        // m_cam.setStatus(Camera::Ready,true);
         m_cam.m_status = Camera::Ready;
-        m_cam.m_cond.broadcast();
+        m_cam.m_cond_thread.broadcast();
 
         DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++ Finished Thread "
                      << getTimestamp(Iso);
