@@ -1061,6 +1061,8 @@ Camera::Camera(const std::string &camPar)
 
     DEB_ALWAYS() << "par: " << DEB_VAR3(key, ret, value);
 
+    //debugSdk = 0x0000FFFF; value = "/tmp"; ret = 1;
+
     if (ret && debugSdk)
     {
         snprintf(fnLog, PATH_MAX, "%s/pco_%s.log", value, getTimestamp(FnFull));

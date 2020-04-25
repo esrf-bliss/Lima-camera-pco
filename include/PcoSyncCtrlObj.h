@@ -42,6 +42,8 @@ namespace lima
             DEB_CLASS_NAMESPC(DebModCamera, "SyncCtrlObj", "Pco");
 
           public:
+
+            // -----------
             SyncCtrlObj(Camera *, BufferCtrlObj *);
             virtual ~SyncCtrlObj();
 
@@ -55,11 +57,14 @@ namespace lima
             virtual void setLatTime(double lat_time);
             virtual void getLatTime(double &lat_time);
 
-            virtual void setNbFrames(int nb_frames);
-            virtual void getNbFrames(int &nb_frames);
-            // these two functions calls the upper ones get/setNbFrames
             virtual void setNbHwFrames(int nb_frames);
             virtual void getNbHwFrames(int &nb_frames);
+
+            virtual void getValidRanges(ValidRangesType &valid_ranges);
+            // -----------
+
+            virtual void setNbFrames(int nb_frames); // called by setNbHwFrames 
+            virtual void getNbFrames(int &nb_frames); // called by getNbHwFrames
 
             void setAcqFrames(int nb_acq_frames)
             {
@@ -69,10 +74,6 @@ namespace lima
             {
                 nb_acq_frames = m_nb_acq_frames;
             }
-
-            virtual void getValidRanges(ValidRangesType &valid_ranges);
-
-
 
             void xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
                                       WORD &pcoTrigMode, WORD &pcoAcqMode,

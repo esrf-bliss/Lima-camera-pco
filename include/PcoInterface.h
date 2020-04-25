@@ -47,6 +47,7 @@ namespace lima
             DEB_CLASS_NAMESPC(DebModCamera, "Interface", "Pco");
 
           public:
+            // -----------
             Interface(Camera *);
             virtual ~Interface();
 
@@ -60,6 +61,13 @@ namespace lima
 
             virtual int getNbAcquiredFrames();
             virtual int getNbHwAcquiredFrames();
+            
+            // get the camera object to access it directly from client
+            Camera *getCamera()
+            {
+                return m_cam;
+            }            
+            // -----------
 
           private:
             Camera *m_cam;
@@ -70,9 +78,7 @@ namespace lima
             BinCtrlObj *m_BinCtrlObj;
             PcoHwEventCtrlObj *m_HwEventCtrlObj;
         };
-
     } // namespace Pco
-
 } // namespace lima
 
 #endif // PCOINTERFACE_H

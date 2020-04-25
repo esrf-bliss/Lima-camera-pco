@@ -250,13 +250,17 @@ void Camera::_pco_Open_Cam(int &err)
 
     camera = new CPco_com_cl_me4();
     camera->SetLog(mylog);
+    unsigned long debugSdk_get = mylog->get_logbits();
+    DEB_ALWAYS() << "debugSdk_get" << DEB_VAR1(debugSdk_get);
+    
 
     // DEB_ALWAYS()  << "creating the camera" ;
     // camera= new CPco_com_cl_me4();
     // camera->SetLog(mylog);
 
-    DEB_ALWAYS() << "Try to open Camera";
+    DEB_ALWAYS() << "BEFORE Try to open Camera";
     err = camera->Open_Cam(0);
+    DEB_ALWAYS() << "AFTER Try to open Camera" << DEB_VAR1(err);
     PCO_CHECK_ERROR(err, "Open_Cam close application");
     if (err)
     {
