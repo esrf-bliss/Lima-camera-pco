@@ -900,10 +900,6 @@ namespace lima
             Cond m_cond;
             Cond m_cond_a;
             Cond m_cond_thread;
-            Cond m_cond_started;
-            Cond m_cond_exposing;
-            Cond m_cond_requestStop;
-            Cond m_cond_status;
 
             volatile bool m_wait_flag;
             volatile bool m_quit;
