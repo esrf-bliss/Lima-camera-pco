@@ -5,6 +5,53 @@
 #===================================================
 
 
+#===================================================
+# 2020/04/25 - params
+#===================================================
+(limadev1) lid19frelon1:~ % LimaCCDs dimaxlin
+============= Properties =============
+         keys: {'bitAlignment': 'MSB', 'debug_type_info': 'fat(1) err(2) war(4) trac(8)', 'trigSingleMulti': '1'}
+       params: ['bitAlignment=MSB', 'trigSingleMulti=1', 'logBits=0', 'logBits_info=FFFF', 'logPath=/tmp']
+     paramsIn: bitAlignment=MSB;trigSingleMulti=1;logBits=0;logBits_info=FFFF;logPath=/tmp;
+debug_control: [0] [0x0]
+ debug_module: [0xffffffff] [0xffffffff]
+ debug_format: [0x31] [0x31]
+   debug_type: [0xffff] [0xffff]
+   mem_factor: [0] [0x0]
+======================================
+
+# --- id19/limapco/dimaxlin properties
+id19/limapco/dimaxlin->bitAlignment: MSB
+id19/limapco/dimaxlin->debug_control: 0
+id19/limapco/dimaxlin->debug_format: 0x31
+id19/limapco/dimaxlin->debug_module: 0xffffffff
+id19/limapco/dimaxlin->debug_type: 0xffff
+id19/limapco/dimaxlin->debug_type_info: "fat(1) err(2) war(4) trac(8)"
+id19/limapco/dimaxlin->params: bitAlignment=MSB,\ 
+                               trigSingleMulti=1,\ 
+                               logBits=0,\ 
+                               logBits_info=FFFF,\ 
+                               "logPath=/tmp"
+id19/limapco/dimaxlin->trigSingleMulti: 1
+
+============= Properties =============
+         keys: {'bitAlignment': 'MSB', 'debug_type_info': 'fat(1) err(2) war(4) trac(8)', 'trigSingleMulti': '1'}
+       params: ['bitAlignment=MSB', 'trigSingleMulti=1', 'logBits=0', 'logBits_info=FFFF', 'logPath=/tmp']
+     paramsIn: logPath=/tmp;bitAlignment=MSB;debug_type_info=fat(1) err(2) war(4) trac(8);trigSingleMulti=1;
+debug_control: [0] [0x0]
+ debug_module: [0xffffffff] [0xffffffff]
+ debug_format: [0x31] [0x31]
+   debug_type: [0xffff] [0xffff]
+   mem_factor: [0] [0x0]
+======================================
+============= Properties =============
+         keys: {'bitAlignment': 'MSB', 'debug_type_info': 'fat(1) err(2) war(4) trac(8)', 'logBits': '0', 'logBits_info': 'FFFF', 'logPath': '/tmp', 'trigSingleMulti': '1'}
+       params: ['bitAlignment=MSB', 'trigSingleMulti=1']
+     paramsIn: bitAlignment=MSB;trigSingleMulti=1;bitAlignment=MSB;debug_type_info=fat(1) err(2) war(4) trac(8);logBits=0;logBits_info=FFFF;logPath=/tmp;trigSingleMulti=1;
+======================================
+
+
+
 
 #===================================================
 # 2019/10/03 - traceAcq (linux) to update

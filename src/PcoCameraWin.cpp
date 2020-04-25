@@ -64,7 +64,7 @@ Camera::Camera(const std::string &camPar)
     m_checkImgNr = new CheckImgNr(this);
 
     // properties: params
-    paramsInit(camPar.c_str());
+    init_properties(camPar.c_str());
 
     char *value;
     const char *key;
@@ -78,24 +78,24 @@ Camera::Camera(const std::string &camPar)
     key = "debugPco";
     ***/
     key = "testMode";
-    ret = paramsGet(key, value);
+    ret = getProperty(key, value);
     if (ret)
     {
         m_pcoData->testCmdMode = _atoi64(value);
     }
 
     key = "acqTimeoutRetry";
-    ret = paramsGet(key, value);
+    ret = getProperty(key, value);
     iValue = ret ? atoi(value) : 3;
     m_pcoData->acqTimeoutRetry = (iValue < 0) ? 0 : iValue;
 
     // patch in xMinSize meanwhile firmware for CLHS 1.19 is fixed
     key = "xMinSize";
-    m_pcoData->params_xMinSize = !!paramsGet(key, value);
+    m_pcoData->params_xMinSize = !!getProperty(key, value);
 
     // ignore the nbMaxImages calculated for dimax HS
     key = "ignoreMaxImages";
-    m_pcoData->params_ignoreMaxImages = !!paramsGet(key, value);
+    m_pcoData->params_ignoreMaxImages = !!getProperty(key, value);
 
     DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version) << ALWAYS_NL
                  << _checkLogFiles(true);

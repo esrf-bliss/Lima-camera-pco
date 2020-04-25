@@ -601,18 +601,18 @@ pcoAcqStatus Camera::getExposing()
 
 //=========================================================================================================
 //=========================================================================================================
-bool Camera::paramsGet(const char *key, char *&value)
+bool Camera::getProperty(const char *key, char *&value)
 {
     // DEF_FNID;
     DEB_CONSTRUCTOR();
     bool ret;
 
-    for (int i = 0; i < m_pcoData->params.nr; i++)
+    for (int i = 0; i < m_pcoData->properties.nr; i++)
     {
-        if (_stricmp(key, m_pcoData->params.ptrKey[i]) == 0)
+        if (_stricmp(key, m_pcoData->properties.ptrKey[i]) == 0)
         {
             ret = true;
-            value = m_pcoData->params.ptrValue[i];
+            value = m_pcoData->properties.ptrValue[i];
             DEB_TRACE() << DEB_VAR3(key, ret, value);
             return ret;
         }
@@ -636,7 +636,7 @@ bool Camera::paramsGet(const char *key, char *&value)
 //      "key1 = value1 ; key2 = value2 ; key3 ; ...."
 //       str=bitAlignment=MSB;trigSingleMulti=1;logBits=FFFF;logPath=/tmp;
 
-void Camera::paramsInit(const char *str)
+void Camera::init_properties(const char *str)
 {
     DEF_FNID;
     DEB_CONSTRUCTOR();
@@ -645,19 +645,19 @@ void Camera::paramsInit(const char *str)
 
     int i;
     char *tokNext = NULL;
-    char *buff = m_pcoData->params.buff;
-    int &nrList = m_pcoData->params.nr;
+    char *buff = m_pcoData->properties.buff;
+    int &nrList = m_pcoData->properties.nr;
     int nr;
 
-    memset((void *)&m_pcoData->params, 0, sizeof(m_pcoData->params));
+    memset((void *)&m_pcoData->properties, 0, sizeof(m_pcoData->properties));
 
     // --- split of params string
-    strcpy_s(buff, PARAMS_LEN_BUFF, str);
+    strcpy_s(buff, PROPERTIES_LEN_BUFF, str);
     char *ptr = buff;
 
-    for (nr = i = 0; i < PARAMS_NR; i++)
+    for (nr = i = 0; i < PROPERTIES_NR; i++)
     {
-        if ((m_pcoData->params.ptrKey[i] = strtok_s(ptr, ";", &tokNext)) ==
+        if ((m_pcoData->properties.ptrKey[i] = strtok_s(ptr, ";", &tokNext)) ==
             NULL)
             break;
         ptr = NULL;
@@ -671,33 +671,33 @@ void Camera::paramsInit(const char *str)
         char *key, *value;
         bool found;
 
-        ptr = str_trim(m_pcoData->params.ptrKey[i]);
+        ptr = str_trim(m_pcoData->properties.ptrKey[i]);
         key = strtok_s(ptr, "=", &tokNext);
         value = strtok_s(NULL, "=", &tokNext);
         str_toupper(key);
-        m_pcoData->params.ptrKey[i] = key = str_trim(key);
+        m_pcoData->properties.ptrKey[i] = key = str_trim(key);
         value = str_trim(value);
         if (value == NULL)
             value = (char *)"";
-        m_pcoData->params.ptrValue[i] = value;
+        m_pcoData->properties.ptrValue[i] = value;
 
         found = false;
         for (int j = 0; j < nrList; j++)
         {
-            if (_stricmp(m_pcoData->params.ptrKey[j],
-                         m_pcoData->params.ptrKey[i]) == 0)
+            if (_stricmp(m_pcoData->properties.ptrKey[j],
+                         m_pcoData->properties.ptrKey[i]) == 0)
             {
-                m_pcoData->params.ptrValue[j] = m_pcoData->params.ptrValue[i];
+                m_pcoData->properties.ptrValue[j] = m_pcoData->properties.ptrValue[i];
                 found = true;
                 break;
             }
         }
         if (!found)
         {
-            key = m_pcoData->params.ptrKey[nrList] =
-                m_pcoData->params.ptrKey[i];
-            value = m_pcoData->params.ptrValue[nrList] =
-                m_pcoData->params.ptrValue[i];
+            key = m_pcoData->properties.ptrKey[nrList] =
+                m_pcoData->properties.ptrKey[i];
+            value = m_pcoData->properties.ptrValue[nrList] =
+                m_pcoData->properties.ptrValue[i];
             nrList++;
         }
     }
@@ -705,8 +705,8 @@ void Camera::paramsInit(const char *str)
     for (int j = 0; j < nrList; j++)
     {
         char *key, *value;
-        key = m_pcoData->params.ptrKey[j];
-        value = m_pcoData->params.ptrValue[j];
+        key = m_pcoData->properties.ptrKey[j];
+        value = m_pcoData->properties.ptrValue[j];
         DEB_TRACE() << DEB_VAR3(j, key, value);
     }
     DEB_TRACE() << "[EXIT]";
@@ -809,7 +809,7 @@ void Camera::_init()
 
     const char *key = "sn";
     char *value;
-    bool bRet = paramsGet(key, value);
+    bool bRet = getProperty(key, value);
     DWORD dwSn = (DWORD)(bRet ? atoi(value) : 0);
 
     // --- Open Camera - close before if it is open
@@ -884,7 +884,7 @@ void Camera::_init()
     // set alignment to [LSB aligned]; all raw image data will be aligned to the
     // LSB.
 
-    if (paramsGet("bitAlignment", value))
+    if (getProperty("bitAlignment", value))
     {
         std::string str(value);
 

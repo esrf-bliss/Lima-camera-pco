@@ -1001,7 +1001,7 @@ Camera::Camera(const std::string &camPar)
     m_checkImgNr = new CheckImgNr(this);
 
     // properties: params
-    paramsInit(camPar.c_str());
+    init_properties(camPar.c_str());
 
     char *value;
     const char *key;
@@ -1020,7 +1020,7 @@ Camera::Camera(const std::string &camPar)
     key = "debugPco";
     ***/
     key = "extValue";
-    ret = paramsGet(key, value);
+    ret = getProperty(key, value);
 
     // ======================== params / logFile & logBits
     // logBits=FFFF
@@ -1050,14 +1050,14 @@ Camera::Camera(const std::string &camPar)
     unsigned long debugSdk_get = 0;
     // unsigned long long debugSdk = 0x0000F0FF;
     key = "logBits";
-    ret = paramsGet(key, value);
+    ret = getProperty(key, value);
     debugSdk = ret ? strtol(value, NULL, 16) : 0;
 
     DEB_ALWAYS() << "par: " << DEB_VAR4(key, ret, value, debugSdk) << " "
                  << DEB_HEX(debugSdk);
 
     key = "logPath";
-    ret = paramsGet(key, value);
+    ret = getProperty(key, value);
 
     DEB_ALWAYS() << "par: " << DEB_VAR3(key, ret, value);
 
@@ -1070,8 +1070,8 @@ Camera::Camera(const std::string &camPar)
         mylog->set_logbits(debugSdk);
         debugSdk_get = mylog->get_logbits();
 
-        m_pcoData->params.logBits = debugSdk;
-        snprintf(m_pcoData->params.logPath, sizeof(m_pcoData->params.logPath),
+        m_pcoData->properties.logBits = debugSdk;
+        snprintf(m_pcoData->properties.logPath, sizeof(m_pcoData->properties.logPath),
                  fnLog);
 
         DEB_ALWAYS() << "setLog: " << DEB_VAR3(fnLog, debugSdk, debugSdk_get)
@@ -1083,8 +1083,8 @@ Camera::Camera(const std::string &camPar)
         mylog = new CPco_Log(NULL);
         mylog->set_logbits(0);
 
-        m_pcoData->params.logBits = 0;
-        m_pcoData->params.logPath[0] = 0;
+        m_pcoData->properties.logBits = 0;
+        m_pcoData->properties.logPath[0] = 0;
 
         DEB_ALWAYS() << "setLog: NO LOGS " << DEB_VAR2(ret, debugSdk) << " "
                      << DEB_HEX(debugSdk);
@@ -1093,9 +1093,9 @@ Camera::Camera(const std::string &camPar)
     // ========================
 
     m_pcoData->testCmdMode = 0;
-    // paramsGet("testMode", m_pcoData->testCmdMode);
-    paramsGet("testMode", value);
-    m_pcoData->testCmdMode = m_pcoData->params.testMode =
+    // getProperty("testMode", m_pcoData->testCmdMode);
+    getProperty("testMode", value);
+    m_pcoData->testCmdMode = m_pcoData->properties.testMode =
         strtoull(value, NULL, 0);
 
     DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version) << ALWAYS_NL

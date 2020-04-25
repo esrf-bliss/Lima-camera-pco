@@ -1145,7 +1145,7 @@ void Camera::getParamsInfo(std::string &o_sn)
     char *ptr = buff;
     char *ptrMax = buff + sizeof(buff);
 
-    struct lima::Pco::stcPcoData::stcParams *par = &m_pcoData->params;
+    struct lima::Pco::stcPcoData::stcParams *par = &m_pcoData->properties;
 
     int nr = par->nr;
     int nrMax = sizeof(par->ptrKey) / sizeof(par->ptrKey[0]);

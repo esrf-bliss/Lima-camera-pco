@@ -546,21 +546,21 @@ namespace lima
             unsigned long long testCmdMode;
             BYTE ipField[4];
 
-#define PARAMS_NR 20
-#define PARAMS_LEN_TOKEN (31)
-#define PARAMS_LEN_BUFF (PARAMS_NR * (PARAMS_LEN_TOKEN + 1))
+#define PROPERTIES_NR 20
+#define PROPERTIES_LEN_TOKEN (31)
+#define PROPERTIES_LEN_BUFF (PROPERTIES_NR * (PROPERTIES_LEN_TOKEN + 1))
 
             struct stcParams
             {
-                char *ptrKey[PARAMS_NR];
-                char *ptrValue[PARAMS_NR];
+                char *ptrKey[PROPERTIES_NR];
+                char *ptrValue[PROPERTIES_NR];
                 int nr;
-                char buff[PARAMS_LEN_BUFF + 1];
+                char buff[PROPERTIES_LEN_BUFF + 1];
 
                 WORD logBits;
                 char logPath[PATH_MAX];
                 unsigned long long testMode;
-            } params;
+            } properties;
 
             DWORD dwPixelRateMax;
 
@@ -878,9 +878,9 @@ namespace lima
             };
             void _traceMsg(char *s);
 
-            void paramsInit(const char *str);
+            void init_properties(const char *str);
 
-            bool paramsGet(const char *key, char *&value);
+            bool getProperty(const char *key, char *&value);
             time_t _getActionTimestamp(int action);
             void _setActionTimestamp(int action);
 

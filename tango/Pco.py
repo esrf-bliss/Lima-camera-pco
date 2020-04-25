@@ -48,6 +48,8 @@
 #    sync with master
 # 2019/04/18 
 #    new att
+# 2020/04/25 
+#    merge keys and params
 #=============================================================================
 
 
@@ -62,7 +64,8 @@ from Lima.Server import AttrHelper
 # linux / server version
 #VERSION_ATT ="20190405"
 #VERSION_ATT ="tango/Pco.py: 2019/04/08"
-VERSION_ATT ="tango/Pco.py: 2019/04/25"
+#VERSION_ATT ="tango/Pco.py: 2019/04/25"
+VERSION_ATT ="tango/Pco.py: 2020/04/25"
 
 RESET_CLOSE_INTERFACE	= 100
 
@@ -717,10 +720,16 @@ def get_control(debug_control = "0",
 
     if(type(params) == str):
 		# <type 'str'>
-        paramsIn = params
+        sParams = params
     else:
         # <class 'PyTango._PyTango.StdStringVector'>
-        paramsIn = "".join("%s;" % (x,) for x in params)
+        sParams = "".join("%s;" % (x,) for x in params)
+
+    sKeys = "".join(f"{k}={keys[k]};" for k in keys)
+
+    # paramsIn -> keys + params ( ';' separated)
+    #    bitAlignment=MSB;trigSingleMulti=1;logBits=0;logBits_info=FFFF; .....
+    paramsIn = sKeys + sParams
 
     bParamsIn = paramsIn.encode()
     # bParamsIn -> bytes

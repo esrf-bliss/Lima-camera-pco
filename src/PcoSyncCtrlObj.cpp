@@ -54,7 +54,7 @@ SyncCtrlObj::SyncCtrlObj(Camera *cam, BufferCtrlObj *buffer)
 
     cam->m_exposing=pcoAcqIdle;
     cam->m_started=false;
-    ret = cam->paramsGet("trigSingleMulti", value);
+    ret = cam->getProperty("trigSingleMulti", value);
     m_extTrigSingle_eq_Multi = ret && (!!atoi(value));
 }
 
