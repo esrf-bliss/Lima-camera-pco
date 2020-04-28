@@ -738,6 +738,7 @@ void Camera::_init()
     DEB_ALWAYS() << "setting the log";
 
     DEB_ALWAYS() << "++++++++++++++ _pco_Open_Cam";
+    // SDK call -> depends on the interface!
     _pco_Open_Cam(iErr);
     if (iErr)
     {

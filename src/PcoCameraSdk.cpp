@@ -1958,6 +1958,7 @@ void Camera::_pco_GetCameraType(int &error)
     // -- Reset to default settings
 
     PCO_FN2(error, msg, PCO_SetRecordingState, m_handle, 0);
+    PCO_PRINT_ERR(error, msg);
     errTotPcoSdk = errTotPcoSdk || error; // if(error) return msg;
 
     PCO_FN1(error, msg, PCO_ResetSettingsToDefault, m_handle);
@@ -2000,6 +2001,7 @@ void Camera::_pco_GetCameraType(int &error)
     return;
 
 #else
+    //linux
     const char *ptr;
     int errTot = 0;
 
@@ -2015,16 +2017,13 @@ void Camera::_pco_GetCameraType(int &error)
 
     DEB_ALWAYS() << fnId;
 
-    if (1)
-    {
-        m_pcoData->ipField[0] = m_pcoData->ipField[1] = m_pcoData->ipField[2] =
-            m_pcoData->ipField[3] = 0;
-    }
+#if 1
+    m_pcoData->ipField[0] = m_pcoData->ipField[1] = m_pcoData->ipField[2] =
+        m_pcoData->ipField[3] = 0;
+#endif
 
     error = camera->PCO_GetCameraType(&camtype, &serialnumber, &iftype);
     PCO_CHECK_ERROR(error, "PCO_GetCameraType");
-    if (error)
-        return;
 
     m_pcoData->stcPcoCamType.wCamType = m_pcoData->wCamType = camtype;
     m_pcoData->stcPcoCamType.wCamSubType = 0;
@@ -2035,10 +2034,19 @@ void Camera::_pco_GetCameraType(int &error)
     ptr = _xlatPcoCode2Str(camtype, ModelType, error);
     strcpy_s(m_pcoData->model, MODEL_TYPE_SIZE, ptr);
     errTot |= error;
+    if(error)
+    {
+        DEB_ALWAYS() << "WARNING ERROR in xlatPcoCode2Str " << DEB_VAR1(camtype);
+    }
 
     ptr = _xlatPcoCode2Str(iftype, InterfaceType, error);
     strcpy_s(m_pcoData->iface, INTERFACE_TYPE_SIZE, ptr);
     errTot |= error;
+
+    if(error)
+    {
+        DEB_ALWAYS() << "WARNING ERROR in xlatPcoCode2Str " << DEB_VAR1(iftype);
+    }
 
     __sprintfSExt(m_pcoData->camera_name, CAMERA_NAME_SIZE,
                   "%s (IF %s) (SN %u)", m_pcoData->model, m_pcoData->iface,
@@ -2049,11 +2057,14 @@ void Camera::_pco_GetCameraType(int &error)
 
     error = camera->PCO_GetInfo(0, &m_pcoData->nameCamIf,
                                 sizeof(m_pcoData->nameCamIf) - 1);
+    PCO_CHECK_ERROR(error, "PCO_GetInfo(0)");
     error = camera->PCO_GetInfo(1, &m_pcoData->nameCam,
                                 sizeof(m_pcoData->nameCam) - 1);
+    PCO_CHECK_ERROR(error, "PCO_GetInfo(1)");
     error = camera->PCO_GetInfo(2, &m_pcoData->nameSensor,
                                 sizeof(m_pcoData->nameSensor) - 1);
 
+    PCO_CHECK_ERROR(error, "PCO_GetInfo(2)");
     DEB_ALWAYS() << "\n   " << DEB_VAR1(m_pcoData->nameCamIf) << "\n   "
                  << DEB_VAR1(m_pcoData->nameCam) << "\n   "
                  << DEB_VAR1(m_pcoData->nameSensor);

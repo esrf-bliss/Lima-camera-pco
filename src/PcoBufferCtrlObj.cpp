@@ -35,11 +35,6 @@
 #define USING_PCO_ALLOCATED_BUFFERS
 #define EVENT_WAIT_TMOUT_MS 10000
 
-#define THROW_LIMA_HW_EXC(e, x)                                                \
-    {                                                                          \
-        printf("========*** LIMA_HW_EXC %s\n", x);                             \
-        throw LIMA_HW_EXC(e, x);                                               \
-    }
 
 using namespace lima;
 using namespace lima::Pco;

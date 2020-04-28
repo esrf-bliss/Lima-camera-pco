@@ -183,24 +183,18 @@ typedef struct __timeb64 TIME_USEC;
 // MACROS
 //===============================================================
 
-#define THROW_LIMA_HW_EXC(e, x)                                                \
-    {                                                                          \
-        printf("========*** LIMA_HW_EXC %s\n", x);                             \
-        throw LIMA_HW_EXC(e, x);                                               \
-    }
 
 #define PCO_THROW_OR_TRACE(__err__, __msg__)                                   \
     {                                                                          \
         if (__err__)                                                           \
         {                                                                      \
-            char ___buff___[ERRMSG_SIZE + 1];                                  \
+            char ___buff___[128];                                              \
             sprintf_s(                                                         \
-                ___buff___, ERRMSG_SIZE,                                       \
-                "LIMA_HW_EXC ===> %s PcoError[0x%08x][%s] error[0x%08x]",      \
+                ___buff___, sizeof(___buff___),                                \
+                "%s >> PcoError[0x%08x][%s] error[0x%08x]",                    \
                 __msg__, m_pcoData->pcoError, m_pcoData->pcoErrorMsg,          \
                 __err__);                                                      \
-            DEB_ALWAYS() << ___buff___;                                        \
-            throw LIMA_HW_EXC(Error, ___buff___);                              \
+            THROW_FATAL(Hardware, Error) << ___buff___;                        \
         }                                                                      \
         DEB_TRACE() << "*** " << __msg__ << " OK";                             \
     }
@@ -209,12 +203,12 @@ typedef struct __timeb64 TIME_USEC;
     {                                                                          \
         if (__err__)                                                           \
         {                                                                      \
-            char ___buff___[ERRMSG_SIZE + 1];                                  \
-            sprintf_s(___buff___, ERRMSG_SIZE, "=== %s PcoError[x%08x][%s]",   \
-                      __msg__, m_pcoData->pcoError, m_pcoData->pcoErrorMsg);   \
-            printf("%s [%s][%d]\n", ___buff___, __FILE__, __LINE__);           \
-            DEB_TRACE() << ___buff___;                                         \
-        }                                                                      \
+            char ___buff___[128];                                  \
+            sprintf_s(___buff___, sizeof(___buff___), "=== %s PcoError[x%08x][%s]", \
+                      __msg__, m_pcoData->pcoError, m_pcoData->pcoErrorMsg);        \
+            printf("... %s [%s][%d]\n", ___buff___, __FILE__, __LINE__);            \
+            DEB_TRACE() << ___buff___;                                              \
+        }                                                                           \
     }
 
 #define PCO_CHECK_ERROR(er, fn) (PcoCheckError(__LINE__, __FILE__, (er), (fn)))

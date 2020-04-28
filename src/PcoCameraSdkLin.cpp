@@ -247,17 +247,40 @@ void Camera::_pco_Open_Cam(int &err)
     DEF_FNID;
 
     DEB_ALWAYS() << "creating the camera";
+    char *value;
 
-    camera = new CPco_com_cl_me4();
+    // SDK call -> depends on the interface!
+    // camera = new CPco_com_cl_me4();
+    // camera= new CPco_com_clhs();
+    // camera= new CPco_com_usb();
+    
+
+    if(!getProperty("camera_if", value))
+    {
+        THROW_FATAL(Hardware, Error) << "PCO property camera_if is REQUIRED!!!";
+    }
+
+    camera = NULL;
+    
+    if (_stricmp(value, "ME4") == 0)
+    {
+        camera = new CPco_com_cl_me4();
+    } 
+    else 
+    {
+        THROW_FATAL(Hardware, Error) << "interface is NOT IMPLEMENTED!!! " << DEB_VAR1(value);
+    }
+
+    if (camera == NULL)
+    {
+        THROW_FATAL(Hardware, Error) << "could not create interface!!! " << DEB_VAR1(value);
+    }
+
+
     camera->SetLog(mylog);
     unsigned long debugSdk_get = mylog->get_logbits();
     DEB_ALWAYS() << "debugSdk_get" << DEB_VAR1(debugSdk_get);
     
-
-    // DEB_ALWAYS()  << "creating the camera" ;
-    // camera= new CPco_com_cl_me4();
-    // camera->SetLog(mylog);
-
     DEB_ALWAYS() << "BEFORE Try to open Camera";
     err = camera->Open_Cam(0);
     DEB_ALWAYS() << "AFTER Try to open Camera" << DEB_VAR1(err);
@@ -266,10 +289,7 @@ void Camera::_pco_Open_Cam(int &err)
     {
         delete camera;
         camera = NULL;
-
-        const char *msg = "FATAL can NOT open the camera!!!";
-        DEB_ALWAYS() << msg;
-        THROW_FATAL(Hardware, Error) << msg;
+        THROW_FATAL(Hardware, Error) << "can NOT open the camera!!!";
     }
 
     DEB_ALWAYS() << "After open Camera";
@@ -285,7 +305,13 @@ void Camera::_pco_Open_Grab(int &err)
     DEF_FNID;
     // int iErr;
 
+    const char *sCamType = _getCameraTypeStr();
+    const char *sCamSubType = _getCameraSubTypeStr();
+    const char *sInterfaceType = _getInterfaceTypeStr();
     camtype = _getCameraType();
+    
+
+    DEB_ALWAYS() << "Grabber is CPco_grab_cl_me4_edge " << DEB_VAR3(sCamType, sCamSubType, sInterfaceType);
 
     if (camtype == CAMERATYPE_PCO_EDGE)
     {
@@ -309,9 +335,7 @@ void Camera::_pco_Open_Grab(int &err)
         camera = NULL;
         grabber = NULL;
 
-        const char *msg = "FATAL Wrong camera for this application";
-        DEB_ALWAYS() << msg;
-        THROW_FATAL(Hardware, Error) << msg;
+        THROW_FATAL(Hardware, Error) << "Camera is not supported";
     }
 
     if (!grabber)
@@ -321,9 +345,7 @@ void Camera::_pco_Open_Grab(int &err)
         camera = NULL;
         grabber = NULL;
 
-        const char *msg = "FATAL new grabber creation";
-        DEB_ALWAYS() << msg;
-        THROW_FATAL(Hardware, Error) << msg;
+        THROW_FATAL(Hardware, Error) << "can not create the grabber";
     }
 
     grabber->SetLog(mylog);
@@ -341,9 +363,7 @@ void Camera::_pco_Open_Grab(int &err)
         delete camera;
         camera = NULL;
 
-        const char *msg = "FATAL Open_Grabber, close application";
-        DEB_ALWAYS() << msg;
-        THROW_FATAL(Hardware, Error) << msg;
+        THROW_FATAL(Hardware, Error) << "Open_Grabber, close application";
     }
 
     return;
