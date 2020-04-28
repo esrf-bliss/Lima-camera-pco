@@ -23,6 +23,9 @@
 **************************************************************************/
 #ifndef PCOCAMERA_H
 #define PCOCAMERA_H
+
+#define CLHS
+
 #include "Pco.h"
 #include "PCO_errt.h"
 #include "lima/Debug.h"
@@ -42,6 +45,8 @@
 
 #    include "Cpco_com_cl_me4.h"
 #    include "Cpco_grab_cl_me4.h"
+#    include "Cpco_com_clhs.h"
+#    include "Cpco_grab_clhs.h"
 #    include "file12.h"
 #    include "sc2_telegram.h"
 //---- linux sdk [end]
@@ -755,7 +760,9 @@ namespace lima
         // --- specific for LINUX
         public:
             CPco_com *camera;
-            CPco_grab_cl_me4 *grabber;
+            CPco_grab_cl_me4 *grabber_me4;
+            CPco_grab_clhs *grabber_clhs;
+
             CPco_Log *mylog;
 
             void _stopAcq(bool waitForThread);

@@ -1197,10 +1197,16 @@ void Camera::_pco_CloseCamera(int &err)
 #else
     err = 0;
 
-    if (grabber)
+    if (grabber_me4)
     {
-        delete grabber;
-        grabber = NULL;
+        delete grabber_me4;
+        grabber_me4 = NULL;
+    }
+
+    if (grabber_clhs)
+    {
+        delete grabber_clhs;
+        grabber_clhs = NULL;
     }
 
     if (camera)
@@ -2895,30 +2901,74 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         DEB_ALWAYS() << "ERROR - PCO_ArmCamera() " << DEB_VAR1(error);
     }
 
-    error = grabber->Set_DataFormat(clpar.DataFormat);
-    msg = "Set_DataFormat";
+
+	if((grabber_me4 == NULL) && (grabber_me4 == NULL))
+	{
+        THROW_FATAL(Hardware, Error) << "any grabber is opened";
+	}
+
+
+	if(grabber_me4)
+	{	
+		error = grabber_me4->Set_DataFormat(clpar.DataFormat);
+	}
+	else
+	{
+		error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
+	}
+   msg = "Set_DataFormat";
     PCO_CHECK_ERROR(error, msg);
     if (error != PCO_NOERROR)
     {
         DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
     }
 
-    error = grabber->Set_Grabber_Size(width, height);
-    msg = "Set_Grabber_Size";
+	
+	if(grabber_me4)
+	{	
+		error = grabber_me4->Set_Grabber_Size(width, height);
+    }
+    else
+    {
+		error = grabber_clhs->Set_Grabber_Size(width, height);
+	}
+	msg = "Set_Grabber_Size";
     PCO_CHECK_ERROR(error, msg);
 
-    error = grabber->PostArm(1);
+    if(grabber_me4)
+	{	
+		error = grabber_me4->PostArm(1);
+	}
+	else
+	{
+		error = grabber_clhs->PostArm(1);
+	}
     msg = "PostArm(1)";
     PCO_CHECK_ERROR(error, msg);
 
 #    else  // USERSET
-    error = grabber->PostArm();
-    msg = "PostArm(0)";
+    if(grabber_me4)
+	{	
+		error = grabber_me4->PostArm();
+    }
+    else
+    {
+		error = grabber_clhs->PostArm();
+	}
+	msg = "PostArm(0)";
     PCO_CHECK_ERROR(error, msg);
 #    endif // USERSET
 
-    error = grabber->Allocate_Framebuffer(pcoBuffNr);
-    msg = "Allocate_Framebuffer";
+    
+    if(grabber_me4)
+	{	
+		error = grabber_me4->Allocate_Framebuffer(pcoBuffNr);
+    }
+    else
+    {
+		error = grabber_clhs->Allocate_Framebuffer(pcoBuffNr);
+	}
+		msg = "Allocate_Framebuffer";
     PCO_CHECK_ERROR(error, msg);
     error = 0;
 
