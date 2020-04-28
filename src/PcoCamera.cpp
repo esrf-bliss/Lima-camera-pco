@@ -739,6 +739,8 @@ void Camera::_init()
 
     DEB_ALWAYS() << "++++++++++++++ _pco_Open_Cam";
     // SDK call -> depends on the interface!
+    //THROW_FATAL(Hardware, Error) << "TRACE1";
+
     _pco_Open_Cam(iErr);
     if (iErr)
     {
@@ -1455,8 +1457,12 @@ int Camera::PcoCheckError(int line, const char *file, int err, const char *fn,
                           << DEB_VAR1(m_pcoData->pcoErrorMsg);
             return 0;
         }
-        DEB_WARNING() << fnId << ":\n... " << msg << "\n... " << tmpMsg;
-        return (err);
+       DEB_ALWAYS() << "PCO ERROR: "
+					<< DEB_VAR2(msg, err) 
+					<< " = " <<	DEB_HEX(err);
+ 			
+       DEB_WARNING() << fnId << ":\n... " << msg << "\n... " << tmpMsg;
+       return (err);
     }
     return (err);
 }

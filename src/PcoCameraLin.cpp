@@ -262,7 +262,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
         m_cam.m_cond_thread.broadcast();
         aLock.unlock();
 
-        err = m_cam.grabber_me4->Get_actual_size(&width, &height, NULL);
+        err = m_cam.grabber_clhs->Get_actual_size(&width, &height, NULL);
         PCO_CHECK_ERROR1(err, "Get_actual_size");
         if (err)
             m_cam.m_pcoData->traceAcq.nrErrors++;
@@ -277,13 +277,13 @@ void Camera::_AcqThread::threadFunction_Dimax()
         errTot = 0;
         if (acquireFirst)
         {
-            // err = grabber_me4->Start_Acquire(_nb_frames);
+            // err = grabber_clhs->Start_Acquire(_nb_frames);
             // PCO_CHECK_ERROR1(err, "Start_Acquire");
             // if(err)  {errTot ++; m_cam.m_pcoData->traceAcq.nrErrors++;}
 
             DEB_ALWAYS()
                 << fnId
-                << " _pco_SetRecordingState AFTER grabber_me4->Start_Acquire";
+                << " _pco_SetRecordingState AFTER grabber_clhs->Start_Acquire";
             m_cam._pco_SetRecordingState(1, err);
             PCO_CHECK_ERROR1(err, "SetRecordingState(1)");
             if (err)
@@ -296,7 +296,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
         {
             DEB_ALWAYS()
                 << fnId
-                << " _pco_SetRecordingState BEFORE grabber_me4->Start_Acquire";
+                << " _pco_SetRecordingState BEFORE grabber_clhs->Start_Acquire";
             m_cam._pco_SetRecordingState(1, err);
             PCO_CHECK_ERROR1(err, "SetRecordingState(1)");
             if (err)
@@ -305,7 +305,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 m_cam.m_pcoData->traceAcq.nrErrors++;
             }
 
-            // err = grabber_me4->Start_Acquire(_nb_frames);
+            // err = grabber_clhs->Start_Acquire(_nb_frames);
             // PCO_CHECK_ERROR1(err, "Start_Acquire");
             // if(err)  {errTot ++; m_cam.m_pcoData->traceAcq.nrErrors++;}
         }
@@ -409,14 +409,14 @@ void Camera::_AcqThread::threadFunction_Dimax()
 
             // err = camera-> pco
             // _ReadImagesFromSegment(wActSeg,pcoFrameNr,pcoFrameNr);
-            // err=grabber_me4->Get_Framebuffer_adr(pcoBuffIdx,&pcoBuffPtr);
+            // err=grabber_clhs->Get_Framebuffer_adr(pcoBuffIdx,&pcoBuffPtr);
 
             {
-                // grabber_me4->Extract_Image(limaBuffPtr,pcoBuffPtr,width,height);
+                // grabber_clhs->Extract_Image(limaBuffPtr,pcoBuffPtr,width,height);
                 // DWORD Get_Image ( WORD Segment, DWORD ImageNr, void * adr )
                 // DEB_ALWAYS() << DEB_VAR3(wActSeg, pcoFrameNr, limaBuffPtr);
 
-                m_cam.grabber_me4->Get_Image(wActSeg, pcoFrameNr, limaBuffPtr);
+                m_cam.grabber_clhs->Get_Image(wActSeg, pcoFrameNr, limaBuffPtr);
                 PCO_CHECK_ERROR1(err, "Get_Image");
                 if (err != PCO_NOERROR)
                 {
@@ -448,7 +448,9 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 usElapsedTimeSet(usStart);
             }
 
-            err = m_cam.grabber_me4->Unblock_buffer(pcoBuffIdx);
+#ifdef ME4
+            err = m_cam.grabber_clhs->Unblock_buffer(pcoBuffIdx);
+#endif
             PCO_CHECK_ERROR1(err, "Unblock_buffer");
             if (err != PCO_NOERROR)
             {
@@ -508,7 +510,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
             bAbort = true;
         }
 
-        err = m_cam.grabber_me4->Stop_Acquire();
+        err = m_cam.grabber_clhs->Stop_Acquire();
         PCO_CHECK_ERROR1(err, "Stop_Acquire");
         if (err != PCO_NOERROR)
         {
@@ -518,7 +520,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
             bAbort = true;
         }
 
-        err = m_cam.grabber_me4->Free_Framebuffer();
+        err = m_cam.grabber_clhs->Free_Framebuffer();
         PCO_CHECK_ERROR1(err, "Free_Framebuffer");
         if (err != PCO_NOERROR)
         {
@@ -664,7 +666,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         m_cam.m_cond_thread.broadcast();
         aLock.unlock();
 
-        err = m_cam.grabber_me4->Get_actual_size(&width, &height, NULL);
+        err = m_cam.grabber_clhs->Get_actual_size(&width, &height, NULL);
         PCO_CHECK_ERROR1(err, "Get_actual_size");
         if (err)
             m_cam.m_pcoData->traceAcq.nrErrors++;
@@ -682,7 +684,9 @@ void Camera::_AcqThread::threadFunction_Edge()
         if (acquireFirst)
         {
             DEB_ALWAYS() << "Start_Acquire";
-            err = m_cam.grabber_me4->Start_Acquire(_nb_frames);
+#ifdef ME4
+            err = m_cam.grabber_clhs->Start_Acquire(_nb_frames);
+#endif
             PCO_CHECK_ERROR1(err, "Start_Acquire");
             if (err)
             {
@@ -711,7 +715,9 @@ void Camera::_AcqThread::threadFunction_Edge()
             }
 
             DEB_ALWAYS() << "Start_Acquire";
-            err = m_cam.grabber_me4->Start_Acquire(_nb_frames);
+#ifdef ME4
+            err = m_cam.grabber_clhs->Start_Acquire(_nb_frames);
+#endif
             PCO_CHECK_ERROR1(err, "Start_Acquire");
             if (err)
             {
@@ -759,7 +765,7 @@ void Camera::_AcqThread::threadFunction_Edge()
             usElapsedTimeSet(usStart);
 
             usElapsedTimeSet(usStart);
-            err = m_cam.grabber_me4->Wait_For_Next_Image(&pcoBuffIdx, 10);
+            err = m_cam.grabber_clhs->Wait_For_Next_Image(&pcoBuffIdx, 10);
             PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
             if (err != PCO_NOERROR)
             {
@@ -774,7 +780,9 @@ void Camera::_AcqThread::threadFunction_Edge()
 
             if (err == PCO_NOERROR)
             {
-                err = m_cam.grabber_me4->Check_DMA_Length(pcoBuffIdx);
+#ifdef ME4
+                err = m_cam.grabber_clhs->Check_DMA_Length(pcoBuffIdx);
+#endif
                 PCO_CHECK_ERROR1(err, "Check_DMA_Length");
                 if (err != PCO_NOERROR)
                 {
@@ -807,7 +815,9 @@ void Camera::_AcqThread::threadFunction_Edge()
             // DEB_ALWAYS()  << "lima image#  " << DEB_VAR1(limaFrameNr) <<"
             // acquired !";
 
-            err = m_cam.grabber_me4->Get_Framebuffer_adr(pcoBuffIdx, &pcoBuffPtr);
+#ifdef ME4
+            err = m_cam.grabber_clhs->Get_Framebuffer_adr(pcoBuffIdx, &pcoBuffPtr);
+#endif
             PCO_CHECK_ERROR1(err, "Get_Framebuffer_adr");
             if (err != PCO_NOERROR)
             {
@@ -821,8 +831,10 @@ void Camera::_AcqThread::threadFunction_Edge()
             }
             if (err == PCO_NOERROR)
             {
-                m_cam.grabber_me4->Extract_Image(limaBuffPtr, pcoBuffPtr, width,
+#ifdef ME4
+                m_cam.grabber_clhs->Extract_Image(limaBuffPtr, pcoBuffPtr, width,
                                              height);
+#endif
 
                 m_cam.m_pcoData->traceAcq.usTicks[traceAcq_pcoSdk].value +=
                     usElapsedTime(usStart);
@@ -842,7 +854,9 @@ void Camera::_AcqThread::threadFunction_Edge()
                 usElapsedTimeSet(usStart);
             }
 
-            err = m_cam.grabber_me4->Unblock_buffer(pcoBuffIdx);
+#ifdef ME4
+            err = m_cam.grabber_clhs->Unblock_buffer(pcoBuffIdx);
+#endif
             PCO_CHECK_ERROR1(err, "Unblock_buffer");
             if (err != PCO_NOERROR)
             {
@@ -899,7 +913,7 @@ void Camera::_AcqThread::threadFunction_Edge()
             bAbort = true;
         }
 
-        err = m_cam.grabber_me4->Stop_Acquire();
+        err = m_cam.grabber_clhs->Stop_Acquire();
         PCO_CHECK_ERROR1(err, "Stop_Acquire");
         if (err != PCO_NOERROR)
         {
@@ -909,7 +923,7 @@ void Camera::_AcqThread::threadFunction_Edge()
             bAbort = true;
         }
 
-        err = m_cam.grabber_me4->Free_Framebuffer();
+        err = m_cam.grabber_clhs->Free_Framebuffer();
         PCO_CHECK_ERROR1(err, "Free_Framebuffer");
         if (err != PCO_NOERROR)
         {
@@ -972,7 +986,7 @@ Camera::Camera(const std::string &camPar)
     m_handle = 0;
 
     camera = NULL;
-    grabber_me4 = NULL;
+    grabber_clhs = NULL;
 
     m_quit = false;
     m_wait_flag = true;

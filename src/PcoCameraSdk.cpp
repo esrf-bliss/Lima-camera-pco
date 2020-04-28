@@ -2902,7 +2902,7 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     }
 
 
-	if((grabber_me4 == NULL) && (grabber_me4 == NULL))
+	if((grabber_me4 == NULL) && (grabber_clhs == NULL))
 	{
         THROW_FATAL(Hardware, Error) << "any grabber is opened";
 	}

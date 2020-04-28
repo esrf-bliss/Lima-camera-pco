@@ -264,7 +264,7 @@ void Camera::_pco_Open_Cam(int &err)
     
     if (_stricmp(value, "ME4") == 0)
     {
-        camera = new CPco_com_cl_me4();
+        //camera = new CPco_com_cl_me4();
     }
     else if (_stricmp(value, "CLHS") == 0)
     {
@@ -328,7 +328,9 @@ void Camera::_pco_Open_Grab(int &err)
 		switch(wInterfaceType)
 		{
 			case INTERFACE_CAMERALINK:
-				grabber_me4 = new CPco_grab_cl_me4_edge((CPco_com_cl_me4 *)camera);
+#ifdef ME4
+				//grabber_me4 = new CPco_grab_cl_me4_edge((CPco_com_cl_me4 *)camera);
+#endif
 				msg = "ME4";
 				break;
 			case INTERFACE_CAMERALINKHS:
@@ -342,7 +344,9 @@ void Camera::_pco_Open_Grab(int &err)
     else if (_isCameraType(Dimax))
     {
 		msg = "ME4";
-        grabber_me4 = new CPco_grab_cl_me4_camera((CPco_com_cl_me4 *)camera);
+#ifdef ME4
+        //grabber_me4 = new CPco_grab_cl_me4_camera((CPco_com_cl_me4 *)camera);
+#endif
     }
     else
     {
