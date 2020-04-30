@@ -758,12 +758,11 @@ namespace lima
 
 #ifdef __linux__
 
-#define grabber_me4 grabber_clhs
         // --- specific for LINUX
         public:
             CPco_com *camera;
-            //CPco_grab_cl_me4 *grabber_me4;
             //CPco_grab_clhs *grabber_me4;
+            CPco_grab_cl_me4 *grabber_me4;
             CPco_grab_clhs *grabber_clhs;
 
             CPco_Log *mylog;

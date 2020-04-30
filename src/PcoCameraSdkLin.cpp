@@ -319,9 +319,18 @@ void Camera::_pco_Open_Grab(int &err)
 	grabber_me4 = NULL;
 	grabber_clhs = NULL;
 	
-    DEB_ALWAYS() << "Open Grabber" << DEB_VAR3(sCamType, sCamSubType, sInterfaceType);
+    DEB_ALWAYS() << "Open Grabber" << DEB_VAR2(wInterfaceType, camtype) << "=" << DEB_HEX(camtype)
+				<< ", " << DEB_VAR3(sCamType, sCamSubType, sInterfaceType);
 
-    if ((camtype == CAMERATYPE_PCO_EDGE) || (camtype == CAMERATYPE_PCO_EDGE_42))
+
+
+    if ((camtype == CAMERATYPE_PCO_EDGE_HS) && (wInterfaceType == INTERFACE_CAMERALINKHS))
+    {
+		grabber_clhs = new CPco_grab_clhs((CPco_com_clhs*)camera);
+		msg = "CLHS";
+		
+	}
+    else if ((camtype == CAMERATYPE_PCO_EDGE) || (camtype == CAMERATYPE_PCO_EDGE_42))
     {
         DEB_ALWAYS() << "Grabber is CPco_grab_cl_me4_edge";
 
@@ -329,7 +338,7 @@ void Camera::_pco_Open_Grab(int &err)
 		{
 			case INTERFACE_CAMERALINK:
 #ifdef ME4
-				//grabber_me4 = new CPco_grab_cl_me4_edge((CPco_com_cl_me4 *)camera);
+				grabber_me4 = new CPco_grab_cl_me4_edge((CPco_com_cl_me4 *)camera);
 #endif
 				msg = "ME4";
 				break;
@@ -380,8 +389,10 @@ void Camera::_pco_Open_Grab(int &err)
 	}
 	else if(grabber_me4)
 	{
+#ifdef ME4
 		grabber_me4->SetLog(mylog);
 		err = grabber_me4->Open_Grabber(board);
+#endif
 	}
 	else
 	{

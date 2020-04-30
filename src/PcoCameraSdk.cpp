@@ -1753,23 +1753,20 @@ void Camera::_pco_GetTemperatureInfo(int &error)
     DEF_FNID;
 
 #ifdef __linux__
+
+    sCoolingSetpoint = sTempCcd = sTempCam = sTempPS = -273;
+    
     error = camera->PCO_GetTemperature(&sTempCcd, &sTempCam, &sTempPS);
     PCO_CHECK_ERROR(error, "PCO_GetTemperature");
-    if (error)
-    {
-        sTempCcd = sTempCam = sTempPS = 0;
-    }
 
     error = camera->PCO_GetCoolingSetpointTemperature(&sCoolingSetpoint);
     PCO_CHECK_ERROR(error, "PCO_GetCoolingSetpointTemperature");
-    if (error)
-    {
-        sCoolingSetpoint = 0;
-    }
 
-    DEB_ALWAYS() << "\n   " << DEB_VAR1(sTempCcd) << "\n   "
-                 << DEB_VAR1(sTempCam) << "\n   " << DEB_VAR1(sTempPS)
-                 << "\n   " << DEB_VAR1(sCoolingSetpoint);
+    DEB_ALWAYS() 	<< "\nTemperature (C):" 
+					<< "\n               CCD  " << DEB_VAR1(sTempCcd)
+					<< "\n            Camera   " << DEB_VAR1(sTempCam) 
+					<< "\n      Power Supply   " << DEB_VAR1(sTempPS)
+					<< "\n   Cooling Setpoint  " << DEB_VAR1(sCoolingSetpoint);
 
     m_pcoData->temperature.sCcd = sTempCcd;
     m_pcoData->temperature.sCam = sTempCam;
@@ -2038,7 +2035,7 @@ void Camera::_pco_GetCameraType(int &error)
     m_pcoData->stcPcoCamType.wInterfaceType = m_pcoData->wIfType = iftype;
 
     ptr = _xlatPcoCode2Str(camtype, ModelType, error);
-    strcpy_s(m_pcoData->model, MODEL_TYPE_SIZE, ptr);
+    strcpy_s(m_pcoData->model, sizeof(m_pcoData->model), ptr);
     errTot |= error;
     if(error)
     {
@@ -2054,26 +2051,34 @@ void Camera::_pco_GetCameraType(int &error)
         DEB_ALWAYS() << "WARNING ERROR in xlatPcoCode2Str " << DEB_VAR1(iftype);
     }
 
-    __sprintfSExt(m_pcoData->camera_name, CAMERA_NAME_SIZE,
+    __sprintfSExt(m_pcoData->camera_name, sizeof(m_pcoData->camera_name),
                   "%s (IF %s) (SN %u)", m_pcoData->model, m_pcoData->iface,
                   m_pcoData->dwSerialNumber);
-    DEB_ALWAYS() << "\n   " << DEB_VAR1(m_pcoData->model) << "\n   "
-                 << DEB_VAR1(m_pcoData->iface) << "\n   "
-                 << DEB_VAR1(m_pcoData->camera_name);
 
     error = camera->PCO_GetInfo(0, &m_pcoData->nameCamIf,
                                 sizeof(m_pcoData->nameCamIf) - 1);
     PCO_CHECK_ERROR(error, "PCO_GetInfo(0)");
+    
     error = camera->PCO_GetInfo(1, &m_pcoData->nameCam,
                                 sizeof(m_pcoData->nameCam) - 1);
     PCO_CHECK_ERROR(error, "PCO_GetInfo(1)");
+    
     error = camera->PCO_GetInfo(2, &m_pcoData->nameSensor,
                                 sizeof(m_pcoData->nameSensor) - 1);
 
     PCO_CHECK_ERROR(error, "PCO_GetInfo(2)");
-    DEB_ALWAYS() << "\n   " << DEB_VAR1(m_pcoData->nameCamIf) << "\n   "
-                 << DEB_VAR1(m_pcoData->nameCam) << "\n   "
-                 << DEB_VAR1(m_pcoData->nameSensor);
+
+    DEB_ALWAYS() << "\n   " 
+ 
+		
+				<< "GetCameraType: " << DEB_VAR1(camtype) << " = " << DEB_HEX(camtype) << ", "
+										<<DEB_VAR1(m_pcoData->model) << "\n   "
+				<< "               " << DEB_VAR1(serialnumber) << "\n   "
+				<< "               " << DEB_VAR2(iftype, m_pcoData->iface) << "\n   "
+				<< "               " << DEB_VAR1(m_pcoData->camera_name) << "\n   "
+				<< "   GetInfo(0): " << DEB_VAR1(m_pcoData->nameCamIf) << "\n   "
+                << "   GetInfo(1): " << DEB_VAR1(m_pcoData->nameCam) << "\n   "
+                << "   GetInfo(2): " << DEB_VAR1(m_pcoData->nameSensor);
 
 #endif
 
@@ -2910,13 +2915,15 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 
 	if(grabber_me4)
 	{	
+#ifdef ME4
 		error = grabber_me4->Set_DataFormat(clpar.DataFormat);
+#endif
 	}
 	else
 	{
 		error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
 	}
-   msg = "Set_DataFormat";
+	msg = "Set_DataFormat";
     PCO_CHECK_ERROR(error, msg);
     if (error != PCO_NOERROR)
     {
@@ -2926,7 +2933,9 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 	
 	if(grabber_me4)
 	{	
+#ifdef ME4
 		error = grabber_me4->Set_Grabber_Size(width, height);
+#endif
     }
     else
     {
@@ -2937,7 +2946,9 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 
     if(grabber_me4)
 	{	
+#ifdef ME4
 		error = grabber_me4->PostArm(1);
+#endif
 	}
 	else
 	{
@@ -2949,7 +2960,9 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 #    else  // USERSET
     if(grabber_me4)
 	{	
+#ifdef ME4
 		error = grabber_me4->PostArm();
+#endif
     }
     else
     {
@@ -2962,7 +2975,9 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     
     if(grabber_me4)
 	{	
+#ifdef ME4
 		error = grabber_me4->Allocate_Framebuffer(pcoBuffNr);
+#endif
     }
     else
     {

@@ -6,6 +6,195 @@
 
 
 #===================================================
+# 2020/04/29 - debug CLHS
+#===================================================
+
+
+
+[2020/04/30 15:54:23.063593] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1614): ---  iSignal=4, wEnabled=0, wType=1, wPolarity=1, wFilterSetting=0, wSelected=0
+[2020/04/30 15:54:23.063961] Pco::Camera::_pco_initHWIOSignal (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:3119): set PcoHWIOSignal polarity name=Exposure Trigger, sigNum=0, wSelected=0, wPolarity=4, sSignalPolarity=Rising edge active
+[2020/04/30 15:54:23.064315] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:954): [EXIT]
+[2020/04/30 15:54:23.064330] Pco::Camera::Camera (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1486): ... new _AcqThread (Acq)
+[2020/04/30 15:54:23.064382] Pco::Camera::Camera (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1490): ... new _AcqThread (Sw)
+[2020/04/30 15:54:23.064504] _AcqThread::Camera::threadFunction (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:153): +++ START threadFunction_Edge
+[2020/04/30 15:54:23.064574] _AcqThread::Camera::threadFunction_Edge (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:585): [entry]
+[2020/04/30 15:54:23.064596] _AcqThread::Camera::threadFunction_Edge (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:978): [exit]
+[2020/04/30 15:54:23.064618] _AcqThread::Camera::threadFunction (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:160): ABORT - camera not supported!!!
+[2020/04/30 15:54:23.064646] _AcqThread::Camera::threadFunction (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:129): +++ START threadFunction_SwitchEdge
+[2020/04/30 15:54:23.064682] _AcqThread::Camera::threadFunction_SwitchEdge (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:2028): m_cam.m_wait_flag_rolling=1, m_cam.m_quit_rolling=0
+[2020/04/30 15:54:23.064702] Pco::Camera::setRequestStop (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:471): m_requestStop0=-2098635984, m_requestStop=0, m_requestStopRetry=0, requestStop=0
+***** Thread 7f2eb1ef6700 function exited due to an exception without clean-up! *****
+=================================================
+   mem_factor: org[70]
+=================================================
+[2020/04/30 15:54:23.245057] Lima.Server.LimaCCDs::LimaCCDs::apply_config: Applied config : /users/opd05/lima_edgehslin.cfg : default 
+^C[2020/04/30 16:00:47.693206] Pco::Interface::stopAcq (/users/blissadm/lima/lima/camera/pco/src/PcoInterface.cpp:156): [ENTRY]
+[2020/04/30 16:00:47.693266] Pco::Camera::stopAcq (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:403): --- [ENTRY]
+[2020/04/30 16:00:47.693278] Pco::Camera::getStarted (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:553): m_started=0
+[2020/04/30 16:00:47.693290] Pco::Camera::setRequestStop (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:471): m_requestStop0=0, m_requestStop=1, m_requestStopRetry=1, requestStop=1
+[2020/04/30 16:00:47.693302] Pco::Camera::getStarted (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:553): m_started=0
+[2020/04/30 16:00:47.693311] Pco::Camera::stopAcq (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:428):  [exit]: _started0=0, _started=0, _stopRequestIn=0, _stopRequestOut=0, _nrStop=0, resWait=0
+... close_interface()
+[2020/04/30 16:00:47.694128] Pco::Camera::stopAcq (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:403): --- [ENTRY]
+[2020/04/30 16:00:47.694146] Pco::Camera::getStarted (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:553): m_started=0
+[2020/04/30 16:00:47.694156] Pco::Camera::setRequestStop (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:471): m_requestStop0=1, m_requestStop=1, m_requestStopRetry=2, requestStop=1
+[2020/04/30 16:00:47.694168] Pco::Camera::getStarted (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:553): m_started=0
+[2020/04/30 16:00:47.694176] Pco::Camera::stopAcq (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:428):  [exit]: _started0=0, _started=0, _stopRequestIn=1, _stopRequestOut=0, _nrStop=1, resWait=0
+[2020/04/30 16:00:47.839504] Pco::Camera::_pco_ResetLib (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:3958): INFO: function does NOT exists in linux [_pco_ResetLib]
+(limadev) lbm05pco5:~ % 
+
+
+lbm05pco5:pco_camera-org/pco_clhs/bin % ./pco_camera_grab 
+Logging set to 0x000ff0ff
+Try to open Camera
+Grabber is CPco_grab_clhs
+Try to open Grabber
+Camera Name is: pco.edge 4.2 M CLHS rolling shutter
+Camera Typ is : 0x1340
+Camera Serial : 61007634
+current temperatures
+Camera:      40°C
+Sensor:      70°C
+PowerSupply: 40°C
+actual PixelRate: 274000000
+possible PixelRates:
+0: 100000000
+1: 274000000
+actual Triggermode: 0 Auto
+actual Binning: 1x1
+actual ROI: 1-2048, 1-2048
+Actual Resolution 2048 x 2048
+
+ actual recording state RUN actual freq: 99.879Hz time/pic: 10.01ms  datarate:799.03MB/sec 
+
+x to close camera and program   actual values
+l to set loop_count              loop_count      1
+c to set imagecount              imagecount      100
+t to set picture timeout         timeout         10000ms
+e to set exposure time           exposuretime    10002us
+d to set delay time              delaytime       0us
+p to set camera pixelrate        pixelrate       274000000Hz
+a to set triggermode             triggermode     Auto
+b to set binning                 binning         1x1
+
+0 to set recording state to OFF
+1 to set recording state to ON
+2 Single Acquire_Image (recording camera)
+3 Single Get_Image (recording camera or camera recorder buffer) 
+4 Loop Acquire_Image
+5 Loop Wait_Next_Image
+
+
+
+/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1114:52: error: no matching function for call to 'CPco_grab_clhs::Start_Acquire(int&)'
+             err = grabber->Start_Acquire(_nb_frames);
+                                                    ^
+
+/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1143:52: error: no matching function for call to 'CPco_grab_clhs::Start_Acquire(int&)'
+             err = grabber->Start_Acquire(_nb_frames);
+                                                    ^
+
+/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1206:32: error: 'class CPco_grab_clhs' has no member named 'Check_DMA_Length'
+                 err = grabber->Check_DMA_Length(pcoBuffIdx);
+                                ^~~~~~~~~~~~~~~~
+/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1239:28: error: 'class CPco_grab_clhs' has no member named 'Get_Framebuffer_adr'; did you mean 'Free_Framebuffer'?
+             err = grabber->Get_Framebuffer_adr(pcoBuffIdx, &pcoBuffPtr);
+                            ^~~~~~~~~~~~~~~~~~~
+                            Free_Framebuffer
+/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1253:26: error: 'class CPco_grab_clhs' has no member named 'Extract_Image'; did you mean 'Get_Image'?
+                 grabber->Extract_Image(limaBuffPtr, pcoBuffPtr, width,
+                          ^~~~~~~~~~~~~
+                          Get_Image
+/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1274:28: error: 'class CPco_grab_clhs' has no member named 'Unblock_buffer'
+             err = grabber->Unblock_buffer(pcoBuffIdx);
+                            ^~~~~~~~~~~~~~
+
+
+
+
+
+===
+
+[2020/04/29 16:17:49.083903] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:722): [ENTRY]
+[2020/04/29 16:17:49.083911] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:738): setting the log
+[2020/04/29 16:17:49.083920] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:740): ++++++++++++++ _pco_Open_Cam
+[2020/04/29 16:17:49.083934] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:249): creating the camera
+[2020/04/29 16:17:49.083952] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:286): debugSdk_getdebugSdk_get=65535
+[2020/04/29 16:17:49.083962] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:288): BEFORE Try to open Camera
+[2020/04/29 16:17:50.000408] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:290): AFTER Try to open Cameraerr=0
+[2020/04/29 16:17:50.000475] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:299): After open Camera
+[2020/04/29 16:17:50.000492] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:754): ++++++++++++++ _pco_GetCameraType
+[2020/04/29 16:17:50.000506] Pco::Camera::_pco_GetCameraType (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:2024): _pco_GetCameraType
+[2020/04/29 16:17:50.000894] Pco::Camera::_pco_GetCameraType (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:2060): 
+   m_pcoData->model=PCO EDGE hs
+   m_pcoData->iface=CAMERALINK_HS
+   m_pcoData->camera_name=PCO EDGE hs (IF CAMERALINK_HS) (SN 61007634)
+
+[2020/04/29 16:17:50.001305] Pco::Camera::PcoCheckError (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:1460): 
+PCO ERROR: msg=Firmware error 8003101e at device 'SC2 Main uP': Value is out of range. 
+[/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp][2066], err=-2147282914 = 0xffffffff8003101e
+
+
+[2020/04/29 16:17:50.002595] Pco::Camera::_pco_GetCameraType (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:2074): 
+   m_pcoData->nameCamIf=
+   m_pcoData->nameCam=pco.edge 4.2 M CLHS rolling shutter
+   m_pcoData->nameSensor=S001908030 PCB013206731
+
+[2020/04/29 16:17:50.002636] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:761): ++++++++++++++ _pco_Open_Grab
+[2020/04/29 16:17:50.002656] Pco::Camera::_pco_Open_Grab (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:322): Open GrabbersCamType=PCO EDGE hs, sCamSubType=, sInterfaceType=CAMERALINK_HS
+[2020/04/29 16:17:50.222909] Pco::Camera::_pco_Open_Grab (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:359): Exception(Error): Camera is not supported [thrown]
+-------> An unforeseen exception occurred.... Hardware: _pco_Open_Grab(/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp, 359): Error: Camera is not supported
+
+
+---------------------------------------------------------------------------
+15:17:07.690 Cpco_clhs->cameracount() : 1 err 0x0
+Camera 0:
+ Vendor        : PCO AG
+ Model         : pco.edge 4.2 M CLHS rolling shutter
+ Serial        : 61007634
+ Port [g.p]    :   00.00   
+ PortID        :    0000   
+ LLDeviceID    : 0x00000001
+ sensor_width  : 2048 
+ sensor_height : 2048 
+ sensor_bitpix : 16 
+cam->acquire_ports   : 1 
+cam->connected_ports : 1 
+
+[2020/04/30 11:16:21.002616] Pco::Camera::_pco_GetCameraType (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:2074): 
+   GetCameraType: camtype=4928, m_pcoData->model=PCO EDGE hs
+                  serialnumber=61007634
+                  iftype=7, m_pcoData->iface=CAMERALINK_HS
+                  m_pcoData->camera_name=PCO EDGE hs (IF CAMERALINK_HS) (SN 61007634)
+      GetInfo(0): m_pcoData->nameCamIf=
+      GetInfo(1): m_pcoData->nameCam=pco.edge 4.2 M CLHS rolling shutter
+      GetInfo(2): m_pcoData->nameSensor=S001908030 PCB013206731
+
+// pco.edge types
+#define CAMERATYPE_PCO_EDGE                  0x1300 // pco.edge 5.5 (Sensor CIS2521) Interface: CameraLink , rolling shutter
+#define CAMERATYPE_PCO_EDGE_42               0x1302 // pco.edge 4.2 (Sensor CIS2020) Interface: CameraLink , rolling shutter
+#define CAMERATYPE_PCO_EDGE_GL               0x1310 // pco.edge 5.5 (Sensor CIS2521) Interface: CameraLink , global  shutter
+#define CAMERATYPE_PCO_EDGE_USB3             0x1320 // pco.edge     (all sensors   ) Interface: USB 3.0    ,(all shutter modes)
+#define CAMERATYPE_PCO_EDGE_HS               0x1340 // pco.edge     (all sensors   ) Interface: high speed ,(all shutter modes) 
+#define CAMERATYPE_PCO_EDGE_MT               0x1304 // pco.edge MT2 (all sensors   ) Interface: CameraLink Base, rolling shutter
+
+
+#define CAMERASUBTYPE_PCO_EDGE_SPRINGFIELD   0x0006
+#define CAMERASUBTYPE_PCO_EDGE_31            0x0031
+#define CAMERASUBTYPE_PCO_EDGE_42            0x0042
+#define CAMERASUBTYPE_PCO_EDGE_55            0x0055
+#define CAMERASUBTYPE_PCO_EDGE_DEVELOPMENT   0x0100
+#define CAMERASUBTYPE_PCO_EDGE_X2            0x0200
+#define CAMERASUBTYPE_PCO_EDGE_RESOLFT       0x0300
+#define CAMERASUBTYPE_PCO_EDGE_GOLD          0x0FF0
+#define CAMERASUBTYPE_PCO_EDGE_DUAL_CLOCK    0x000D
+#define CAMERASUBTYPE_PCO_EDGE_DICAM         0xDC00
+#define CAMERASUBTYPE_PCO_EDGE_42_LT         0x8042
+
+
+
+
+#===================================================
 # 2020/04/25 - params
 #===================================================
 (limadev1) lid19frelon1:~ % LimaCCDs dimaxlin
@@ -404,6 +593,7 @@ void CtBuffer::Parameters::reset()
 
   DEB_TRACE() << *this;
 }
+
 
 #===================================================
 #===================================================
