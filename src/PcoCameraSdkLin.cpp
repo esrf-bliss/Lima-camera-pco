@@ -316,7 +316,9 @@ void Camera::_pco_Open_Grab(int &err)
     camtype = _getCameraType();
 	const char *msg = "NONE";
 
-	grabber_me4 = NULL;
+	int PicTimeOutMs = 10*1000;
+	
+    grabber_me4 = NULL;
 	grabber_clhs = NULL;
 	
     DEB_ALWAYS() << "Open Grabber" << DEB_VAR2(wInterfaceType, camtype) << "=" << DEB_HEX(camtype)
@@ -386,6 +388,10 @@ void Camera::_pco_Open_Grab(int &err)
     {
 		grabber_clhs->SetLog(mylog);
 		err = grabber_clhs->Open_Grabber(board);
+		if(!err)
+		{
+			err=grabber_clhs->Set_Grabber_Timeout(PicTimeOutMs);
+		}
 	}
 	else if(grabber_me4)
 	{
@@ -402,6 +408,7 @@ void Camera::_pco_Open_Grab(int &err)
     
     if (err)
     {
+		PCO_CHECK_ERROR(err, "grabber creation");
         delete grabber_me4;
         delete grabber_clhs;
         grabber_me4 = NULL;

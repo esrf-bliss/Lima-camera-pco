@@ -719,9 +719,12 @@ void Camera::_init()
     DEB_CONSTRUCTOR();
     DEF_FNID;
 
-    DEB_ALWAYS() << "[ENTRY]";
+    DEB_ALWAYS() << fnId << " [INIT]";
 
     int error = 0;
+    char msg[MSG4K + 1];
+	const char *cmsg;
+    m_log.clear();
 
 #ifdef __linux__
     // ----- linux [begin]
@@ -735,9 +738,11 @@ void Camera::_init()
 
     // int bufnum=20;
 
-    DEB_ALWAYS() << "setting the log";
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Cam";
+    __sprintfSExt(msg, sizeof(msg), "*** %s (linux) [%s] [ENTRY]\n",fnId, getTimestamp(Iso));
+ 	DEB_ALWAYS() << msg;
+	m_log.append(msg);
+    
     // SDK call -> depends on the interface!
     //THROW_FATAL(Hardware, Error) << "TRACE1";
 
@@ -751,41 +756,64 @@ void Camera::_init()
         THROW_HW_ERROR(Error);
     }
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraType";
+     __sprintfSExt(msg, sizeof(msg), "_pco_GetCameraType\n");
+	DEB_ALWAYS() << msg;
+	m_log.append(msg);
+   
     _pco_GetCameraType(iErr);
     if (iErr)
     {
         DEB_ALWAYS() << "WARNING - _pco_GetCameraType " << DEB_VAR1(iErr);
     }
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Grab";
     _pco_Open_Grab(iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_Open_Grab err[0x%08x]\n", iErr );
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraInfo";
     _pco_GetCameraInfo(iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_GetCameraInfo err[0x%08x]\n", iErr );
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
+    
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_ResetSettingsToDefault";
     _pco_ResetSettingsToDefault(iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_ResetSettingsToDefault err[0x%08x]\n", iErr );
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_SetCameraToCurrentTime";
     _pco_SetCameraToCurrentTime(iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_SetCameraToCurrentTime err[0x%08x]\n", iErr );
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetTransferParameter";
     _pco_GetTransferParameter(iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_GetTransferParameter err[0x%08x]\n", iErr );
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetTemperatureInfo";
     _pco_GetTemperatureInfo(iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_GetTemperatureInfo err[0x%08x]\n", iErr );
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
 
-    DEB_ALWAYS() << "++++++++++++++ pco_GetPixelRate";
     DWORD pixRateActual, pixRateNext;
     _pco_GetPixelRate(pixRateActual, pixRateNext, iErr);
     DEB_ALWAYS() << DEB_VAR2(pixRateActual, pixRateNext);
+    __sprintfSExt(msg, sizeof(msg), "pco_GetPixelRate\n"
+		"  pixRateActual[%d] pixRateNext[%d] err[0x%08x]\n", pixRateActual, pixRateNext, iErr );
+	m_log.append(msg);
+    DEB_ALWAYS() << msg;
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetLut";
     _pco_GetLut(iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_GetLut err[0x%08x]\n", iErr );
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
 
-    DEB_ALWAYS() << "++++++++++++++ _pco_SetRecordingState";
     _pco_SetRecordingState(0, iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_SetRecordingState(0) err[0x%08x]\n", iErr);
+	m_log.append(msg);
+    DEB_ALWAYS() << msg;
 
     //_pco_SetTimestampMode(2, iErr);
 
@@ -795,16 +823,24 @@ void Camera::_init()
     // 0x04: "Rising edge active"
     // 0x08: "Falling edge active"
     _pco_initHWIOSignal(0, 0x04, iErr);
+    __sprintfSExt(msg, sizeof(msg), "_pco_initHWIOSignal(0, 0x04) err[0x%08x]\n", iErr);
+	m_log.append(msg);
+    DEB_ALWAYS() << msg;
+
+
+    __sprintfSExt(msg, sizeof(msg), "*** %s (linux) [%s] [EXIT]\n",fnId, getTimestamp(Iso));
+ 	DEB_ALWAYS() << msg;
+    m_log.append(msg);
 
     // ----- linux [end]
 #else
+	DEB_ALWAYS() << fnId << " win [INIT]";
     // ----- windows [begin]
+    
 
-    char msg[MSG4K + 1];
 
     _armRequired(true);
 
-    m_log.clear();
     __sprintfSExt(msg, sizeof(msg), "*** Pco log %s\n", getTimestamp(Iso));
     m_log.append(msg);
 
@@ -944,14 +980,15 @@ void Camera::_init()
 
     _pco_initHWIOSignal(0, 0x4, error);
 
+	DEB_ALWAYS() << fnId << " win [EXIT]":
     // ----- windows [end]
 #endif
 
     _pco_SetCameraToCurrentTime(error);
 
-    DEB_TRACE() << m_log;
+    DEB_ALWAYS() << "m_log:\n" << m_log;
     DEB_TRACE() << "END OF CAMERA";
-    DEB_ALWAYS() << "[EXIT]";
+    DEB_ALWAYS() << fnId << " [EXIT]";
 }
 
 //=========================================================================================================

@@ -5,6 +5,211 @@
 #===================================================
 
 
+
+
+
+===
+
+[2020/05/01 14:35:22.947039] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:722): [ENTRY]
+[2020/05/01 14:35:22.947047] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:738): setting the log
+[2020/05/01 14:35:22.947056] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:740): ++++++++++++++ _pco_Open_Cam
+[2020/05/01 14:35:22.947068] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:249): creating the camera
+
+
+[2020/05/01 14:35:22.947080] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:286): 
+debugSdk_getdebugSdk_get=65535
+
+[2020/05/01 14:35:22.947089] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:288): BEFORE Try to open Camera
+[2020/05/01 14:35:24.001447] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:290): AFTER Try to open Cameraerr=0
+[2020/05/01 14:35:24.001511] Pco::Camera::_pco_Open_Cam (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:299): After open Camera
+
+[2020/05/01 14:35:24.001521] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:754): ++++++++++++++ _pco_GetCameraType
+[2020/05/01 14:35:24.001529] Pco::Camera::_pco_GetCameraType (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:2021): _pco_GetCameraType
+[2020/05/01 14:35:24.002290] Pco::Camera::PcoCheckError (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:1460): PCO ERROR: msg=Firmware error 8003101e at device 'SC2 Main uP': Value is out of range. [/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp][2060], err=-2147282914 = 0xffffffff8003101e
+[2020/05/01 14:35:24.003551] Pco::Camera::_pco_GetCameraType (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:2071): 
+   GetCameraType: camtype=4928 = 0x1340, m_pcoData->model=PCO EDGE hs
+                  serialnumber=61007634
+                  iftype=7, m_pcoData->iface=CAMERALINK_HS
+                  m_pcoData->camera_name=PCO EDGE hs (IF CAMERALINK_HS) (SN 61007634)
+      GetInfo(0): m_pcoData->nameCamIf=
+      GetInfo(1): m_pcoData->nameCam=pco.edge 4.2 M CLHS rolling shutter
+      GetInfo(2): m_pcoData->nameSensor=S001908030 PCB013206731
+
+
+
+
+[2020/05/01 14:35:24.003622] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:761): ++++++++++++++ _pco_Open_Grab
+
+[2020/05/01 14:35:24.003642] Pco::Camera::_pco_Open_Grab (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:324): 
+Open Grabber
+wInterfaceType=7, 
+camtype=4928=0x1340, 
+sCamType=PCO EDGE hs, 
+sCamSubType=, 
+sInterfaceType=CAMERALINK_HS
+
+
+[2020/05/01 14:35:24.003662] Pco::Camera::_pco_Open_Grab (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:373): Grabber is CLHS
+
++++++++++++++++++++=Logging set to 0xffff
+
+[2020/05/01 14:35:24.003691] Pco::Camera::_pco_Open_Grab (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:385): Try to open Grabber
+
+[2020/05/01 14:35:24.003723] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:764): ++++++++++++++ _pco_GetCameraInfo
+[2020/05/01 14:35:24.004611] Pco::Camera::_pco_GetCameraInfo (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:116): 
+   step_exp_time=9.664e-06, step_lat_time=1e-05
+   min_exp_time0=0.0001, max_exp_time0=10
+   min_lat_time0=0, max_lat_time0=1
+   min_exp_time=9.0336e-05, max_exp_time=10
+   min_lat_time=0, max_lat_time=1.00001
+
+[2020/05/01 14:35:24.005056] Pco::Camera::_pco_GetCameraInfo (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp:176): 
+   iPixelRateValidNr=2
+   validPixelRate=validRates:  [100000000]  [274000000]
+
+[2020/05/01 14:35:24.005092] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:767): ++++++++++++++ _pco_ResetSettingsToDefault
+[2020/05/01 14:35:24.019319] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:770): ++++++++++++++ _pco_SetCameraToCurrentTime
+[2020/05/01 14:35:24.019685] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:773): ++++++++++++++ _pco_GetTransferParameter
+
+[2020/05/01 14:35:24.019706] Pco::Camera::_pco_GetTransferParameter (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:4315): 
+   clpar.baudrate=234822943
+   clpar.ClockFrequency=270663679
+   clpar.DataFormat=4294907938
+   clpar.Transmit=503578623
+
+[2020/05/01 14:35:24.019743] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:776): ++++++++++++++ _pco_GetTemperatureInfo
+
+[2020/05/01 14:35:24.020455] Pco::Camera::_pco_GetTemperatureInfo (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1765): 
+Temperature (C):
+               CCD  sTempCcd=70
+            Camera   sTempCam=41
+      Power Supply   sTempPS=39
+   Cooling Setpoint  sCoolingSetpoint=7
+
+
+[2020/05/01 14:35:24.020496] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:779): ++++++++++++++ pco_GetPixelRate
+[2020/05/01 14:35:24.020877] Pco::Camera::_pco_GetPixelRate (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:2343): 
+   pixRateActual=274000000
+   pixRateNext=274000000
+
+[2020/05/01 14:35:24.020905] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:782): 
+pixRateActual=274000000, pixRateNext=274000000
+
+[2020/05/01 14:35:24.020918] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:784): ++++++++++++++ _pco_GetLut
+[2020/05/01 14:35:24.021293] Pco::Camera::PcoCheckError (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:1460): PCO ERROR: msg=Firmware error 80031020 at device 'SC2 Main uP': Command/data not supported by this hardware. [/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdkLin.cpp][232], err=-2147282912 = 0xffffffff80031020
+[2020/05/01 14:35:24.021318] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:787): ++++++++++++++ _pco_SetRecordingState
+[2020/05/01 14:35:24.021662] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:792): ++++++++++++++ _pco_initHWIOSignal
+
+[2020/05/01 14:35:24.022036] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1549): 
+--- sizeiSignalMax=5, m_pcoData->wNrPcoHWIOSignal0=5, m_pcoData->wNrPcoHWIOSignal=5
+[2020/05/01 14:35:24.022057] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1560): 
+---  descriptoriSignal=0, m_pcoData->stcPcoHWIOSignalDesc[iSignal].wSize=109
+SignalNum = 0 0
+[2020/05/01 14:35:24.023540] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1590): 
+---  signal name iSignal=0, sizeName=204, ptrName=HWIOSignalDescriptor for Output 0
+possible selections:
+0: Exposure Trigger
+selectable signal types:
+TTL
+selectable signal polarity:
+Rising edge active
+Falling edge active
+selectable filter settings:
+High
+
+[2020/05/01 14:35:24.023988] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1614): 
+---  iSignal=0, wEnabled=1, wType=1, wPolarity=4, wFilterSetting=0, wSelected=0
+[2020/05/01 14:35:24.024011] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1560): 
+---  descriptoriSignal=1, m_pcoData->stcPcoHWIOSignalDesc[iSignal].wSize=109
+SignalNum = 1 1
+[2020/05/01 14:35:24.025476] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1590): 
+---  signal name iSignal=1, sizeName=204, ptrName=HWIOSignalDescriptor for Output 1
+possible selections:
+0: Acquire Enable
+selectable signal types:
+TTL
+selectable signal polarity:
+Low level active
+High level active
+selectable filter settings:
+Off
+Medium
+
+[2020/05/01 14:35:24.025906] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1614): 
+---  iSignal=1, wEnabled=1, wType=1, wPolarity=1, wFilterSetting=0, wSelected=0
+[2020/05/01 14:35:24.025926] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1560): 
+---  descriptoriSignal=2, m_pcoData->stcPcoHWIOSignalDesc[iSignal].wSize=109
+SignalNum = 2 2
+[2020/05/01 14:35:24.027397] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1590): 
+---  signal name iSignal=2, sizeName=201, ptrName=HWIOSignalDescriptor for Output 2
+possible selections:
+0: Status Busy
+selectable signal types:
+TTL
+selectable signal polarity:
+Low level active
+High level active
+selectable filter settings:
+Off
+Medium
+
+[2020/05/01 14:35:24.027831] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1614): 
+---  iSignal=2, wEnabled=1, wType=1, wPolarity=1, wFilterSetting=0, wSelected=0
+[2020/05/01 14:35:24.027852] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1560): 
+---  descriptoriSignal=3, m_pcoData->stcPcoHWIOSignalDesc[iSignal].wSize=109
+SignalNum = 3 3
+[2020/05/01 14:35:24.029367] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1590): 
+---  signal name iSignal=3, sizeName=217, ptrName=HWIOSignalDescriptor for Output 3
+possible selections:
+0: Status Expos
+1: Status Line
+selectable signal types:
+TTL
+selectable signal polarity:
+Low level active
+High level active
+selectable filter settings:
+Off
+Medium
+
+[2020/05/01 14:35:24.029775] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1614): 
+---  iSignal=3, wEnabled=1, wType=1, wPolarity=1, wFilterSetting=0, wSelected=0
+[2020/05/01 14:35:24.029796] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1560): 
+---  descriptoriSignal=4, m_pcoData->stcPcoHWIOSignalDesc[iSignal].wSize=109
+SignalNum = 4 4
+[2020/05/01 14:35:24.031285] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1590): ---  signal name iSignal=4, sizeName=152, ptrName=HWIOSignalDescriptor for Output 4
+possible selections:
+0: CLHS Trigger
+selectable signal types:
+None
+selectable signal polarity:
+None
+selectable filter settings:
+None
+
+[2020/05/01 14:35:24.031685] Pco::Camera::_pco_GetHWIOSignalAll (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:1614): 
+---  iSignal=4, wEnabled=0, wType=1, wPolarity=1, wFilterSetting=0, wSelected=0
+[2020/05/01 14:35:24.032084] Pco::Camera::_pco_initHWIOSignal (/users/blissadm/lima/lima/camera/pco/src/PcoCameraSdk.cpp:3119): 
+set PcoHWIOSignal polarity name=Exposure Trigger, sigNum=0, wSelected=0, wPolarity=4, sSignalPolarity=Rising edge active
+
+[2020/05/01 14:35:24.032439] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:954): [EXIT]
+[2020/05/01 14:35:24.032455] Pco::Camera::Camera (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1506): ... new _AcqThread (Acq) & start
+[2020/05/01 14:35:24.032512] Pco::Camera::Camera (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1510): ... new _AcqThread (Switch) & start
+[2020/05/01 14:35:24.032613] _AcqThread::Camera::threadFunction (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:153): +++ START threadFunction_Edge_clhs
+[2020/05/01 14:35:24.032680] _AcqThread::Camera::threadFunction_Edge_clhs (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:992): threadFunction_Edge_clhs[ENTRY]
+[2020/05/01 14:35:24.032706] _AcqThread::Camera::threadFunction_Edge_clhs (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:1040): m_cam.m_wait_flag=1, m_cam.m_quit=0, _nb_frames=-1
+[2020/05/01 14:35:24.032730] Pco::Camera::setRequestStop (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:471): m_requestStop0=-1487348944, m_requestStop=0, m_requestStopRetry=0, requestStop=0
+[2020/05/01 14:35:24.032766] _AcqThread::Camera::threadFunction (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:129): +++ START threadFunction_SwitchEdge
+[2020/05/01 14:35:24.032804] _AcqThread::Camera::threadFunction_SwitchEdge (/users/blissadm/lima/lima/camera/pco/src/PcoCameraLin.cpp:2048): m_cam.m_wait_flag_rolling=1, m_cam.m_quit_rolling=0
+=================================================
+   mem_factor: org[70]
+=================================================
+[2020/05/01 14:35:24.220126] Lima.Server.LimaCCDs::LimaCCDs::apply_config: Applied config : /users/opd05/lima_edgehslin.cfg : default 
+
+
+
+
+
 #===================================================
 # 2020/04/29 - debug CLHS
 #===================================================

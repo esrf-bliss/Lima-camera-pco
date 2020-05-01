@@ -1009,12 +1009,18 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
     void *pcoBuffPtr;
     DWORD width, height;
 
+
+
 	CPco_grab_clhs *grabber = m_cam.grabber_clhs;
 	if(grabber == NULL)
 	{
 		THROW_FATAL(Hardware, Error) << "threadFunction_Edge_clhs: grabber == NULL";
 	}
 	
+
+    int timeoutMs;
+    grabber->Get_Grabber_Timeout(&timeoutMs);
+
     AutoMutex aLock(m_cam.m_cond_thread.mutex());
 
     int nb_allocated_buffers;
@@ -1187,6 +1193,14 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 
             usElapsedTimeSet(usStart);
 
+
+
+    
+			/// \brief Waits until the next image is completely transferred to the given address.	
+			/// \param adr Pointer to address where the image gets stored	
+			/// \param timeout Sets a timeout in milliseconds. After this the function returns with an error.
+			/// \return Error code or 0 in case of success
+
 			//DWORD Wait_For_Next_Image(void* adr,int timeout);
 			//DWORD Wait_For_Next_Image(int *nr_of_pic,int timeout);
 			// WORD *picbuf[BUFNUM];
@@ -1194,7 +1208,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             //err=grabber->Wait_For_Next_Image(picbuf[buf_nr],timeout);
 			//err = grabber->Wait_For_Next_Image(&pcoBuffIdx, 10);
             
-            err = grabber->Wait_For_Next_Image(limaBuffPtr, 10);
+            err = grabber->Wait_For_Next_Image(limaBuffPtr, timeoutMs);
             PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
             if (err != PCO_NOERROR)
             {
@@ -1342,10 +1356,10 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 
 Camera::Camera(const std::string &camPar)
 {
-    // DEF_FNID;
+    DEF_FNID;
     DEB_CONSTRUCTOR();
 
-    DEB_ALWAYS() << "... ::Camera [entry]";
+    DEB_ALWAYS() << fnId << " [ENTRY]";
     
     m_pco_buffer_nrevents = 0;
     
@@ -1502,7 +1516,7 @@ Camera::Camera(const std::string &camPar)
     m_config = false;
     setStatus(HwInterface::StatusType::Basic::Ready, true);
 
-    // DEB_ALWAYS() << "constructor exit";
+    DEB_ALWAYS() << fnId << " [EXIT]";
 }
 
 //=========================================================================================================
