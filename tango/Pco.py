@@ -109,6 +109,7 @@ class Pco(PyTango.Device_4Impl):
             'lastImgAcquired': 'LastImgAcquired',
             'lastImgRecorded': 'LastImgRecorded',
             'logMsg': 'MsgLog',
+            'logMsgEx': 'MsgLogEx',
             'logPcoEnabled': 'PcoLogsEnabled',
             'maxNbImages': 'MaxNbImages',
             'paramsInfo': 'ParamsInfo',
@@ -448,6 +449,16 @@ class PcoClass(PyTango.DeviceClass):
              'unit': 'N/A',
              'format': '%s',
              'description': 'print the log msgs'
+             }],
+
+         'logMsgEx':	  
+         [[PyTango.DevString,
+           PyTango.SCALAR,
+           PyTango.READ],
+           {
+             'unit': 'N/A',
+             'format': '%s',
+             'description': 'print the extended log msgs'
              }],
 
          'logPcoEnabled':	  

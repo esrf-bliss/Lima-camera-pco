@@ -1359,8 +1359,15 @@ Camera::Camera(const std::string &camPar)
     DEF_FNID;
     DEB_CONSTRUCTOR();
 
-    DEB_ALWAYS() << fnId << " [ENTRY]";
+    char buff[MSG4K + 1];
+
     
+    m_log.clear();
+    
+    __sprintfSExt(buff, sizeof(buff), "*** %s (linux) [%s] [ENTRY]\n",fnId, getTimestamp(Iso));
+ 	DEB_ALWAYS() << buff;
+	m_log.append(buff);
+
     m_pco_buffer_nrevents = 0;
     
     m_cam_connected = false;
@@ -1380,6 +1387,8 @@ Camera::Camera(const std::string &camPar)
 
     m_config = true;
     DebParams::checkInit();
+
+
 
     setStatus(HwInterface::StatusType::Basic::Config, true);
 
@@ -1461,6 +1470,12 @@ Camera::Camera(const std::string &camPar)
 
     //debugSdk = 0x0000FFFF; value = "/tmp"; ret = 1;
 
+
+    __sprintfSExt(buff, sizeof(buff), "PCO SDK log *** %s (linux) [%s] [ENTRY]\n",fnId, getTimestamp(Iso));
+ 	DEB_ALWAYS() << buff;
+	m_log.append(buff);
+
+
     if (ret && debugSdk)
     {
         snprintf(fnLog, PATH_MAX, "%s/pco_%s.log", value, getTimestamp(FnFull));
@@ -1472,14 +1487,14 @@ Camera::Camera(const std::string &camPar)
         snprintf(m_pcoData->properties.logPath, sizeof(m_pcoData->properties.logPath),
                  fnLog);
 
-        DEB_ALWAYS() << "setLog: " << DEB_VAR3(fnLog, debugSdk, debugSdk_get)
-                     << " " << DEB_HEX(debugSdk) << " "
-                     << DEB_HEX(debugSdk_get);
+
     }
     else
     {
         mylog = new CPco_Log(NULL);
         mylog->set_logbits(0);
+        fnLog[0]= 0;
+        debugSdk= debugSdk_get=0;
 
         m_pcoData->properties.logBits = 0;
         m_pcoData->properties.logPath[0] = 0;
@@ -1487,6 +1502,11 @@ Camera::Camera(const std::string &camPar)
         DEB_ALWAYS() << "setLog: NO LOGS " << DEB_VAR2(ret, debugSdk) << " "
                      << DEB_HEX(debugSdk);
     }
+
+	__sprintfSExt(buff, sizeof(buff), "PCO SDK log %s: logbits: set[0x%08x] get[0x%08x] logpath[%s]\n",
+		debugSdk ? "ENABLED" : "DISABLED",
+		debugSdk, debugSdk_get, fnLog);
+	DEB_ALWAYS() << buff;
 
     // ========================
 
@@ -1516,7 +1536,11 @@ Camera::Camera(const std::string &camPar)
     m_config = false;
     setStatus(HwInterface::StatusType::Basic::Ready, true);
 
-    DEB_ALWAYS() << fnId << " [EXIT]";
+    __sprintfSExt(buff, sizeof(buff), "*** %s (linux) [%s] [EXIT]\n",fnId, getTimestamp(Iso));
+ 	DEB_ALWAYS() << buff;
+	m_log.append(buff);
+    DEB_ALWAYS() << "m_log:\n" << m_log;
+
 }
 
 //=========================================================================================================

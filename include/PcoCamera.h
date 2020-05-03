@@ -1102,6 +1102,7 @@ namespace lima
             void getRoiInfo(std::string &o_sn);
 
             void getMsgLog(std::string &o_sn);
+            void getMsgLogEx(std::string &o_sn);
 
             //--------------------------------------
 

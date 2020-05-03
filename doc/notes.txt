@@ -6,6 +6,15 @@
 
 
 
+2020/05/01 19:22:03.032718] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:816): _init linux [EXIT]
+
+[2020/05/01 19:22:03.033057] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:971): m_log: 
+*** _init (linux) [2020/05/01 19:22:01]
+*** _pco_GetCameraType
+*** pco_GetPixelRate
+    pixRateActual[274000000] pixRateNext[274000000] err[0]
+*** __pco_GetLut err[-2147282912]*** _pco_SetRecordingState(0) err[0]
+[2020/05/01 19:22:03.033078] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:973): _init [EXIT]
 
 
 ===

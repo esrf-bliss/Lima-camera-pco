@@ -702,12 +702,20 @@ void Camera::init_properties(const char *str)
         }
     }
 
+    char bla[MSG4K + 1];
+   
+	__sprintfSExt(bla, sizeof(bla), "Properties [%d]\n",nrList);
+	m_log.append(bla);
+
     for (int j = 0; j < nrList; j++)
     {
         char *key, *value;
         key = m_pcoData->properties.ptrKey[j];
         value = m_pcoData->properties.ptrValue[j];
         DEB_TRACE() << DEB_VAR3(j, key, value);
+
+		__sprintfSExt(bla, sizeof(bla), "  %15s : %s\n",key, value);
+		m_log.append(bla);
     }
     DEB_TRACE() << "[EXIT]";
 };
@@ -724,7 +732,6 @@ void Camera::_init()
     int error = 0;
     char msg[MSG4K + 1];
 	const char *cmsg;
-    m_log.clear();
 
 #ifdef __linux__
     // ----- linux [begin]
@@ -800,8 +807,8 @@ void Camera::_init()
     DWORD pixRateActual, pixRateNext;
     _pco_GetPixelRate(pixRateActual, pixRateNext, iErr);
     DEB_ALWAYS() << DEB_VAR2(pixRateActual, pixRateNext);
-    __sprintfSExt(msg, sizeof(msg), "pco_GetPixelRate\n"
-		"  pixRateActual[%d] pixRateNext[%d] err[0x%08x]\n", pixRateActual, pixRateNext, iErr );
+    __sprintfSExt(msg, sizeof(msg), "_pco_GetPixelRate err[0x%08x]\n"
+		"  pixRateActual[%d] pixRateNext[%d]\n", iErr, pixRateActual, pixRateNext );
 	m_log.append(msg);
     DEB_ALWAYS() << msg;
 
@@ -986,7 +993,6 @@ void Camera::_init()
 
     _pco_SetCameraToCurrentTime(error);
 
-    DEB_ALWAYS() << "m_log:\n" << m_log;
     DEB_TRACE() << "END OF CAMERA";
     DEB_ALWAYS() << fnId << " [EXIT]";
 }

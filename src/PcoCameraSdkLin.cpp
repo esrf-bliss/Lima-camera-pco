@@ -49,6 +49,8 @@ void Camera::_pco_GetCameraInfo(int &error)
     DEF_FNID;
     // int errTot=0;
     const char *msg;
+    char buff[MSG4K + 1];
+
     // const char *ptr;
     SC2_Camera_Description_Response dummy;
     dummy.wSize = sizeof(dummy);
@@ -64,6 +66,8 @@ void Camera::_pco_GetCameraInfo(int &error)
     error = camera->PCO_GetCameraDescription(&m_pcoData->stcPcoDescription);
     msg = "PCO_GetCameraDescription(1)";
     PCO_CHECK_ERROR(error, msg);
+    __sprintfSExt(buff, sizeof(buff), "PCO_GetCameraDescription(1) err[0x%08x]\n", error);
+	m_log.append(buff);
 
     // ERROR!!!!!!!!!
     // error = camera->PCO_GetCameraDescriptionEx(&dummy,
@@ -119,6 +123,21 @@ void Camera::_pco_GetCameraInfo(int &error)
                  << DEB_VAR2(min_exp_time, max_exp_time) << "\n   "
                  << DEB_VAR2(min_lat_time, max_lat_time);
 
+    __sprintfSExt(buff, sizeof(buff), 
+		"       Step (ms): exp_time[%g] lat_time[%g]\n"
+		"  exp_time0 (ms): min[%g] max[%g]\n"
+		"  lat_time0 (ms): min[%g] max[%g]\n"
+		"   exp_time (ms): min[%g] max[%g]\n"
+		"   lat_time (ms): min[%g] max[%g]\n",
+		step_exp_time*1000., step_lat_time*1000.,
+		min_exp_time0*1000., max_exp_time0*1000.,
+		min_lat_time0*1000., max_lat_time0*1000.,
+		min_exp_time*1000., max_exp_time*1000.,
+		min_lat_time*1000., max_lat_time*1000.);
+	m_log.append(buff);
+
+
+
     // callback to update in lima the valid_ranges from the last
     // stcPcoDescription read
     if (m_sync)
@@ -133,6 +152,12 @@ void Camera::_pco_GetCameraInfo(int &error)
     m_pcoData->bMetaDataAllowed =
         !!(m_pcoData->stcPcoDescription.dwGeneralCaps1 & GENERALCAPS1_METADATA);
 
+
+    __sprintfSExt(buff, sizeof(buff), "Metadata allowed[%d]\n", m_pcoData->bMetaDataAllowed);
+    m_log.append(buff);
+
+
+
     if (m_pcoData->bMetaDataAllowed)
     {
         error = camera->PCO_GetMetadataMode(&m_pcoData->wMetaDataMode,
@@ -140,12 +165,18 @@ void Camera::_pco_GetCameraInfo(int &error)
                                             &m_pcoData->wMetaDataVersion);
         msg = "PCO_GetMetadataMode";
         PCO_CHECK_ERROR(error, msg);
+
+		__sprintfSExt(buff, sizeof(buff), "PCO_GetMetadataMode err[0x%08x]\n"
+			"  metadataMode[%d] metadataSize[%d] metadataVersion[%d]\n",
+			error, m_pcoData->wMetaDataMode, m_pcoData->wMetaDataSize,m_pcoData->wMetaDataVersion);
+			m_log.append(buff);
     }
     else
     {
         m_pcoData->wMetaDataMode = m_pcoData->wMetaDataSize =
             m_pcoData->wMetaDataVersion = 0;
     }
+
 
     {
         // get the max CAMERA pixel rate (Hz) from the description structure
@@ -175,6 +206,12 @@ void Camera::_pco_GetCameraInfo(int &error)
 
         DEB_ALWAYS() << "\n   " << DEB_VAR1(iPixelRateValidNr) << "\n   "
                      << DEB_VAR1(validPixelRate);
+
+
+		__sprintfSExt(buff, sizeof(buff), "Pixel rates (Hz) from description structure:\n"
+			"  nr[%d] max[%d] %s\n", iPixelRateValidNr, dwPixelRateMax, validPixelRate);
+			m_log.append(buff);
+
     }
 
     m_pcoData->bMetaDataAllowed =

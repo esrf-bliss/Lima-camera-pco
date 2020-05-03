@@ -688,6 +688,17 @@ void Camera::getMsgLog(std::string &o_sn)
     o_sn = buff;
 }
 
+void Camera::getMsgLogEx(std::string &o_sn)
+{
+    char *ptr = buff;
+    char *ptrMax = buff + sizeof(buff);
+
+    // 0 -> decreasing / older - last
+    // 1 -> increasing / newer - last
+    m_msgLog->dump(ptr, (int)(ptrMax - ptr), 1);
+
+    o_sn = m_log;
+}
 //=================================================================================================
 // SIP - msgLog
 //=================================================================================================

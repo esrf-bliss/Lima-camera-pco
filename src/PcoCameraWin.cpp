@@ -50,6 +50,8 @@ Camera::Camera(const std::string &camPar)
     m_config = true;
     DebParams::checkInit();
 
+    m_log.clear();
+
     m_msgLog = new ringLog(300);
     m_tmpLog = new ringLog(300);
     if (m_msgLog == NULL)

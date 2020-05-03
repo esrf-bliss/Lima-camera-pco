@@ -65,6 +65,7 @@ namespace Pco
 		void getLastImgAcquired(unsigned long & img /Out/);   // lastImgAcquired
 		void getLastImgRecorded(unsigned long & img /Out/);   // lastImgRecorded
 		void getMsgLog(std::string &o_sn /Out/);  // logMsg
+		void getMsgLogEx(std::string &o_sn /Out/);  // logMsgEx
 		void getPcoLogsEnabled(int & enabled /Out/);      // logPcoEnabled
 
 		void getMaxNbImages(unsigned long & nr /Out/);     // maxNbImages
