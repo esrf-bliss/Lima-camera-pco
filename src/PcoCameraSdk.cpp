@@ -1352,6 +1352,9 @@ void Camera::_pco_SetCameraToCurrentTime(int &err)
     DEF_FNID;
 
 #ifdef __linux__
+    char buff[MSG4K + 1];
+	const char *cmsg;
+
     // Sets the camera time to current system time.
     //
     // The date and time is updated automatically, as long as the camera is
@@ -1359,7 +1362,12 @@ void Camera::_pco_SetCameraToCurrentTime(int &err)
     // When powering up the camera, then this command or PCO_SetDateTime should
     // be done once. return: Error code
 
+    cmsg = "PCO_SetCameraToCurrentTime";
     err = camera->PCO_SetCameraToCurrentTime();
+    PCO_CHECK_ERROR(err, cmsg);
+    __sprintfSExt(buff, sizeof(buff), "%s err[0x%08x]\n", cmsg, err);
+	m_log.append(buff);
+
 
 #else
     {
@@ -1753,14 +1761,28 @@ void Camera::_pco_GetTemperatureInfo(int &error)
     DEF_FNID;
 
 #ifdef __linux__
+    char buff[MSG4K + 1];
+
 
     sCoolingSetpoint = sTempCcd = sTempCam = sTempPS = -273;
     
     error = camera->PCO_GetTemperature(&sTempCcd, &sTempCam, &sTempPS);
     PCO_CHECK_ERROR(error, "PCO_GetTemperature");
 
+	__sprintfSExt(buff, sizeof(buff), "PCO_GetTemperature err[0x%08x]\n",
+		"  Temp (C): ccd[%d] cam[%d] PS[%d]\n",
+		error, sTempCcd, sTempCam, sTempPS);
+	m_log.append(buff);
+
+
+
     error = camera->PCO_GetCoolingSetpointTemperature(&sCoolingSetpoint);
     PCO_CHECK_ERROR(error, "PCO_GetCoolingSetpointTemperature");
+
+	__sprintfSExt(buff, sizeof(buff), "PCO_GetCoolingSetpointTemperature err[0x%08x]\n",
+		"  Temp (C): cooling setpoint[%d]\n",
+		error, sCoolingSetpoint);
+	m_log.append(buff);
 
     DEB_ALWAYS() 	<< "\nTemperature (C):" 
 					<< "\n               CCD  " << DEB_VAR1(sTempCcd)
@@ -2005,6 +2027,8 @@ void Camera::_pco_GetCameraType(int &error)
 
 #else
     //linux
+    char buff[MSG4K + 1];
+
     const char *ptr;
     int errTot = 0;
 
@@ -2025,7 +2049,8 @@ void Camera::_pco_GetCameraType(int &error)
         m_pcoData->ipField[3] = 0;
 #endif
 
-    error = camera->PCO_GetCameraType(&camtype, &serialnumber, &iftype);
+    int err1;
+    err1=error = camera->PCO_GetCameraType(&camtype, &serialnumber, &iftype);
     PCO_CHECK_ERROR(error, "PCO_GetCameraType");
 
     m_pcoData->stcPcoCamType.wCamType = m_pcoData->wCamType = camtype;
@@ -2055,18 +2080,50 @@ void Camera::_pco_GetCameraType(int &error)
                   "%s (IF %s) (SN %u)", m_pcoData->model, m_pcoData->iface,
                   m_pcoData->dwSerialNumber);
 
+
+	__sprintfSExt(buff, sizeof(buff), "PCO_GetCameraType err[0x%08x]\n"
+			"  camType[%d][0x%04x][%s]\n"
+			"  s/n[%d]\n"
+			"  interface[%d][%s]\n",
+			err1, 
+			camtype, camtype, m_pcoData->model,
+			serialnumber,
+			iftype, m_pcoData->iface);
+	m_log.append(buff);
+
+
+
     error = camera->PCO_GetInfo(0, &m_pcoData->nameCamIf,
                                 sizeof(m_pcoData->nameCamIf) - 1);
     PCO_CHECK_ERROR(error, "PCO_GetInfo(0)");
+	__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(0) err[0x%08x]\n"
+			"  nameIF[%s]\n",
+			error, 
+			m_pcoData->nameCamIf);
+	m_log.append(buff);
+
+
+
     
     error = camera->PCO_GetInfo(1, &m_pcoData->nameCam,
                                 sizeof(m_pcoData->nameCam) - 1);
     PCO_CHECK_ERROR(error, "PCO_GetInfo(1)");
+	__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(1) err[0x%08x]\n"
+			"  nameCam[%s]\n",
+			error, 
+			m_pcoData->nameCam);
+	m_log.append(buff);
     
     error = camera->PCO_GetInfo(2, &m_pcoData->nameSensor,
                                 sizeof(m_pcoData->nameSensor) - 1);
 
     PCO_CHECK_ERROR(error, "PCO_GetInfo(2)");
+
+	__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(2) err[0x%08x]\n"
+			"  nameSensor[%s]\n",
+			error, 
+			m_pcoData->nameSensor);
+	m_log.append(buff);
 
     DEB_ALWAYS() << "\n   " 
  
@@ -4298,6 +4355,39 @@ void Camera::_pco_ArmCamera(int &err)
 
 //=================================================================================================
 //=================================================================================================
+
+/// typedef struct _PCO_SC2_CL_TRANSFER_PARAMS
+/// {
+///    DWORD   baudrate;         // serial baudrate: 9600, 19200, 38400, 56400, 115200
+///    DWORD   ClockFrequency;   // Pixelclock in Hz: 40000000,66000000,80000000
+///    DWORD   CCline;           // Usage of CameraLink CC1-CC4 lines, use value returned by Get 
+///    DWORD   DataFormat;       // see defines below, use value returned by Get
+///    DWORD   Transmit;         // single or continuous transmitting images, 0-single, 1-continuous
+/// }PCO_SC2_CL_TRANSFER_PARAM;
+
+/// #define PCO_CL_DEFAULT_BAUDRATE 9600
+/// #define PCO_CL_PIXELCLOCK_40MHZ 40000000
+/// #define PCO_CL_PIXELCLOCK_66MHZ 66000000
+/// #define PCO_CL_PIXELCLOCK_80MHZ 80000000
+/// #define PCO_CL_PIXELCLOCK_32MHZ 32000000
+/// #define PCO_CL_PIXELCLOCK_64MHZ 64000000
+
+/// #define PCO_CL_CCLINE_LINE1_TRIGGER           0x01
+/// #define PCO_CL_CCLINE_LINE2_ACQUIRE           0x02
+/// #define PCO_CL_CCLINE_LINE3_HANDSHAKE         0x04
+/// #define PCO_CL_CCLINE_LINE4_TRANSMIT_ENABLE   0x08
+
+/// #define PCO_CL_DATAFORMAT_MASK   0x0F
+/// #define PCO_CL_DATAFORMAT_1x16   0x01
+/// #define PCO_CL_DATAFORMAT_2x12   0x02
+/// #define PCO_CL_DATAFORMAT_3x8    0x03
+/// #define PCO_CL_DATAFORMAT_4x16   0x04
+/// #define PCO_CL_DATAFORMAT_5x16   0x05
+/// #define PCO_CL_DATAFORMAT_5x12   0x07     //extract data to 12bit
+/// #define PCO_CL_DATAFORMAT_10x8   0x08
+/// #define PCO_CL_DATAFORMAT_5x12L  0x09     //extract data to 16Bit
+/// #define PCO_CL_DATAFORMAT_5x12R  0x0A     //without extract
+
 void Camera::_pco_GetTransferParameter(int &err)
 {
     DEB_MEMBER_FUNCT();
@@ -4306,9 +4396,22 @@ void Camera::_pco_GetTransferParameter(int &err)
     err = 0;
 
 #ifdef __linux__
+    char buff[MSG4K + 1];
+	const char *cmsg;
 
+	memset((void *) &clpar, 0, sizeof (clpar));
+    cmsg = "PCO_GetTransferParameter";
     err = camera->PCO_GetTransferParameter(&clpar, sizeof(clpar));
-    PCO_CHECK_ERROR(err, "PCO_GetTransferParameter");
+    PCO_CHECK_ERROR(err, cmsg);
+    __sprintfSExt(buff, sizeof(buff), "%s err[0x%08x]\n"
+		"  baudrate[%ld] ClockFrequency[%ld]\n"
+		"  CCline[%ld] DataFormat[%ld] Transmit[%ld]\n",
+		cmsg, err,
+		clpar.baudrate, clpar.ClockFrequency, 
+		clpar.CCline,clpar.DataFormat, clpar.Transmit);
+	m_log.append(buff);
+
+
     if (err)
         return;
 

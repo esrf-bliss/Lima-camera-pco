@@ -778,26 +778,25 @@ void Camera::_init()
 	m_log.append(msg);
 	DEB_ALWAYS() << msg;
 
+    __sprintfSExt(msg, sizeof(msg), "_pco_GetCameraInfo\n");
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
     _pco_GetCameraInfo(iErr);
-    __sprintfSExt(msg, sizeof(msg), "_pco_GetCameraInfo err[0x%08x]\n", iErr );
-	m_log.append(msg);
-	DEB_ALWAYS() << msg;
     
-
+    __sprintfSExt(msg, sizeof(msg), "_pco_ResetSettingsToDefault\n");
+	m_log.append(msg);
+	DEB_ALWAYS() << msg;
     _pco_ResetSettingsToDefault(iErr);
-    __sprintfSExt(msg, sizeof(msg), "_pco_ResetSettingsToDefault err[0x%08x]\n", iErr );
+
+    __sprintfSExt(msg, sizeof(msg), "_pco_SetCameraToCurrentTime\n");
 	m_log.append(msg);
 	DEB_ALWAYS() << msg;
-
     _pco_SetCameraToCurrentTime(iErr);
-    __sprintfSExt(msg, sizeof(msg), "_pco_SetCameraToCurrentTime err[0x%08x]\n", iErr );
-	m_log.append(msg);
-	DEB_ALWAYS() << msg;
 
-    _pco_GetTransferParameter(iErr);
-    __sprintfSExt(msg, sizeof(msg), "_pco_GetTransferParameter err[0x%08x]\n", iErr );
+    __sprintfSExt(msg, sizeof(msg), "_pco_GetTransferParameter\n");
 	m_log.append(msg);
 	DEB_ALWAYS() << msg;
+    _pco_GetTransferParameter(iErr);
 
     _pco_GetTemperatureInfo(iErr);
     __sprintfSExt(msg, sizeof(msg), "_pco_GetTemperatureInfo err[0x%08x]\n", iErr );

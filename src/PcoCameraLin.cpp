@@ -1471,11 +1471,6 @@ Camera::Camera(const std::string &camPar)
     //debugSdk = 0x0000FFFF; value = "/tmp"; ret = 1;
 
 
-    __sprintfSExt(buff, sizeof(buff), "PCO SDK log *** %s (linux) [%s] [ENTRY]\n",fnId, getTimestamp(Iso));
- 	DEB_ALWAYS() << buff;
-	m_log.append(buff);
-
-
     if (ret && debugSdk)
     {
         snprintf(fnLog, PATH_MAX, "%s/pco_%s.log", value, getTimestamp(FnFull));
@@ -1507,6 +1502,7 @@ Camera::Camera(const std::string &camPar)
 		debugSdk ? "ENABLED" : "DISABLED",
 		debugSdk, debugSdk_get, fnLog);
 	DEB_ALWAYS() << buff;
+	m_log.append(buff);
 
     // ========================
 

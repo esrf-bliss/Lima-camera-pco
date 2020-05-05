@@ -428,6 +428,7 @@ void Camera::_pco_Open_Grab(int &err)
 		if(!err)
 		{
 			err=grabber_clhs->Set_Grabber_Timeout(PicTimeOutMs);
+			_pco_GetTransferParameter(err);
 		}
 	}
 	else if(grabber_me4)
@@ -467,18 +468,24 @@ void Camera::_pco_ResetSettingsToDefault(int &error)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
+    char buff[MSG4K + 1];
+	const char *cmsg;
     int iErr = 0;
-
+	
     // -- Reset to default settings
 
     _pco_SetRecordingState(0, iErr);
 
+    cmsg = "PCO_ResetSettingsToDefault";
     error = camera->PCO_ResetSettingsToDefault();
-    PCO_CHECK_ERROR(error, "PCO_ResetSettingsToDefault");
+    PCO_CHECK_ERROR(error, cmsg);
+    __sprintfSExt(buff, sizeof(buff), "%s err[0x%08x]\n", cmsg, error);
+	m_log.append(buff);
 
     error |= iErr;
 
     return;
+
 }
 
 #endif
