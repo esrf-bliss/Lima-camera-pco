@@ -84,16 +84,31 @@ typedef bool BOOLEAN;
 
 #define istrlen (int)strlen
 
-#include "file12.h"
+
 #include "Cpco_log.h"
-#include "reorderfunc.h"
+#include "file12.h"
+
+#ifdef __GNUC__
+#pragma pack(push)    
+#pragma pack(1)    
+#endif
+
 #include "SC2_drv_struct.h"
-#include "SC2_SDKAddendum.h"
 #include "PCO_err.h"
-#include "sc2_command.h"
+
 #include "sc2_telegram.h"
+#include "sc2_command.h"
 #include "sc2_defs.h"
+
+#include "reorderfunc.h"
 #include "sc2_command_toString.h"
+#include "SC2_SDKAddendum.h"
+
+
+#ifdef __GNUC__
+#pragma pack(pop) 
+#endif
+
 //#include "correctionmode.h" 
 
 #endif

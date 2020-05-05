@@ -59,7 +59,7 @@
 ///
 /// The recording state controls the run state of the camera. If the Recording State is [run], sensor exposure and
 /// readout sequences are started depending on current camera settings (trigger mode,acquire mode, external signals...).\n
-/// The Recording State has the highest priority compared to functions like <acq enbl> or exposure trigger.\n
+/// The Recording State has the highest priority compared to functions like \<acq enbl\> or exposure trigger.\n
 /// When the Recording State is set to [stop], sensor exposure and readout sequences are stopped.
 /// If the camera is currently in [sensor_readout] state, this readout is finished, before camera run
 /// state is changed to [sensor_idle]. If the camera is currently in [sensor_exposing] state, the
@@ -1062,6 +1062,7 @@ DWORD PCO_GetIRSensitivity(WORD* wIR);
 DWORD PCO_SetIRSensitivity(WORD wIR);
 
 /// \cond
+
 ///
 /// \brief Get the mode for the offset regulation with reference pixels (see camera manual for further explanations).
 ///
@@ -1085,6 +1086,8 @@ DWORD PCO_GetOffsetMode (WORD* wOffsetRegulation);
 /// \return Error message, 0 in case of success else less than 0.
 ///
 DWORD PCO_SetOffsetMode (WORD wOffsetRegulation);
+
+/// \endcond  
 
 ///
 /// \brief Get the temperature set point for cooling the image sensor (only available for cooled cameras).
@@ -1325,6 +1328,8 @@ DWORD PCO_SetAcquireModeEx(WORD wAcquMode, DWORD dwNumberImages);
 /// \return Error message, 0 in case of success else less than 0.
 ///
 DWORD PCO_GetAcqEnblSignalStatus(WORD* wAcquEnableState);
+
+/// \cond
 
 
 ///

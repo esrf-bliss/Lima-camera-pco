@@ -227,6 +227,12 @@
 #define GET_EXTERNAL_REGISTER                   0x1610
 #define SET_EXTERNAL_REGISTER                   0x1710
 
+#define GET_USER_INTERFACE_INFO                 0x1810
+#define GET_USER_INTERFACE_SETTINGS             0x1910
+#define SET_USER_INTERFACE_SETTINGS             0x1A10
+#define USER_INTERFACE_TRANSMIT_DATA            0x1B10
+#define USER_INTERFACE_RECEIVE_DATA             0x1C10
+
 
 /////////////////////////////////////////////////////////////////////
 // Image Sensor Control
@@ -290,6 +296,12 @@
 
 #define GET_COOLING_SETPOINTS                   0x3711
 
+#define GET_INTENSIFIED_MCP                     0x3811
+#define SET_INTENSIFIED_MCP                     0x3911
+#define GET_INTENSIFIED_GATING_MODE             0x3A11
+#define SET_INTENSIFIED_GATING_MODE             0x3B11
+
+
 /////////////////////////////////////////////////////////////////////
 // timing control 
 /////////////////////////////////////////////////////////////////////
@@ -338,6 +350,10 @@
 #define SET_HW_IO_SIGNAL_TIMING                 0x2712
 #define GET_HW_LED_SIGNAL                       0x2812
 #define SET_HW_LED_SIGNAL                       0x2912
+
+#define GET_INTENSIFIED_LOOP_COUNT              0x3012
+#define SET_INTENSIFIED_LOOP_COUNT              0x3112
+
 
 /////////////////////////////////////////////////////////////////////
 // storage control

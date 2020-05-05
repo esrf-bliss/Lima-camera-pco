@@ -720,12 +720,10 @@ DWORD PCO_SetModulationMode(WORD wModulationMode, DWORD dwPeriodicalTime, WORD w
 
 
 DWORD PCO_GetCMOSLinetiming(WORD* wParameter,WORD* wTimebase,DWORD* dwLineTime);
+DWORD PCO_GetCMOSLinetiming_res(DWORD *dwMinLineTime,DWORD *dwMaxLineTime, DWORD *dwLineCaps);
 DWORD PCO_SetCMOSLinetiming(WORD wParameter,WORD wTimebase,DWORD dwLineTime);
 DWORD PCO_GetCMOSLineExposureDelay(DWORD* dwExposureLines,DWORD* dwDelayLines);
 DWORD PCO_SetCMOSLineExposureDelay(DWORD dwExposureLines,DWORD dwDelayLines);
-
-
-
 
 ///
 /// \brief Gets the camera synchronisation mode for a dimax.
@@ -1015,6 +1013,7 @@ DWORD PCO_GetPlayPosition(WORD* wStatus,DWORD *dwPosition);
 
 //seems to be a non operational command
 DWORD PCO_SetVideoPayloadIdentifier(WORD wSegment,WORD wMode1,WORD wMode2,DWORD dwSetPos1,DWORD dwClrPos1,DWORD dwSetPos2,DWORD dwClrPos2,DWORD dwSetPos3,DWORD dwClrPos3,DWORD dwSetPos4,DWORD dwClrPos4);
+
 /// \endcond
 
 
@@ -1029,7 +1028,6 @@ DWORD PCO_SetVideoPayloadIdentifier(WORD wSegment,WORD wMode1,WORD wMode2,DWORD 
 ///
 DWORD PCO_GetColorSettings(SC2_Get_Color_Settings_Response* ColSetResp);
 
-/// \cond
 
 ///
 /// \brief Sets the color convert settings inside the camera.
@@ -1052,7 +1050,6 @@ DWORD PCO_SetColorSettings(SC2_Set_Color_Settings* SetColSet);
 DWORD PCO_DoWhiteBalance(WORD wMode);
 
 
-
 ///
 /// \brief Gets the white balancing status.
 ///
@@ -1066,7 +1063,6 @@ DWORD PCO_DoWhiteBalance(WORD wMode);
 DWORD PCO_GetWhiteBalanceStatus(WORD* wStatus,WORD* wColorTemp,SHORT* sTint);
 
 
-/// \cond
 
 /// @name Special control status
 ///
@@ -1100,8 +1096,6 @@ DWORD PCO_InitiateSelftestProcedure(DWORD* dwWarn,DWORD* dwErr);
 /// \return Error message, 0 in case of success else less than 0.
 ///
 DWORD PCO_WriteHotPixelList(WORD wListNo,WORD wNumValid,WORD* wHotPixX, WORD* wHotPixY);
-
-
 
 
 ///
@@ -1383,6 +1377,7 @@ DWORD PCO_SetPowersaveMode(WORD wMode,WORD wDelayMinutes);
 ///
 DWORD PCO_GetBatteryStatus(WORD* wBatteryType,WORD* wBatteryLevel,WORD* wPowerStatus);
 
+/// \cond
 
 
 ///
@@ -1410,9 +1405,7 @@ DWORD PCO_SetExternalRegister(WORD* wID,BYTE* bData,WORD* wDataSize);
 
 
 DWORD PCO_WriteMailbox(WORD wMailboxNo,BYTE* bData,WORD len);
-
 DWORD PCO_ReadMailbox(WORD wMailboxNo,BYTE* bData,WORD* len);
-
 DWORD PCO_GetMailboxStatus(WORD* wNumberOfMailboxes,WORD* wMailboxStatus,WORD *len);
 
 DWORD PCO_GetFlimModulationParams(WORD* wSourceSelect,WORD* wOutputWaveform);
@@ -1426,9 +1419,17 @@ DWORD PCO_SetFlimMasterModulationFrequency(DWORD dwFrequency);
 DWORD PCO_GetFlimRelativePhase(DWORD* dwPhaseMilliDeg);
 DWORD PCO_SetFlimRelativePhase(DWORD dwPhaseMilliDeg);
 
+
+DWORD PCO_GetIntensifiedGatingMode(WORD* wGatingMode);
+DWORD PCO_SetIntensifiedGatingMode(WORD wGatingMode);
+DWORD PCO_GetIntensifiedMCP(WORD* wIntensifiedVoltage,DWORD* dwIntensifiedPhosphorDecay_us);
+DWORD PCO_SetIntensifiedMCP(WORD wIntensifiedVoltage,DWORD dwIntensifiedPhosphorDecay_us);
+DWORD PCO_GetIntensifiedLoopCount(WORD* wCount);
+DWORD PCO_SetIntensifiedLoopCount(WORD wCount);
+
 // implementation dependent on actual class 
-virtual DWORD PCO_GetTransferParameter(void* buf ,int length ){ return PCO_NOERROR;}
-virtual DWORD PCO_SetTransferParameter(void* buf ,int length ){ return PCO_NOERROR;}
+virtual DWORD PCO_GetTransferParameter(void* buf ,int length ){ if((buf)&&(length>0)){} return PCO_NOERROR;}
+virtual DWORD PCO_SetTransferParameter(void* buf ,int length ){ if((buf)&&(length>0)){} return PCO_NOERROR;}
 //  void  PCO_SetVerbose(int iNewState);
 //  DWORD PCO_GetImageTiming(void);
 

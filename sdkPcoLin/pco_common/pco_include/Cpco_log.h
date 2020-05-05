@@ -101,6 +101,8 @@ protected:
 
 #define TIME_M      0x1000
 #define TIME_MD     0x2000
+#define THREAD_ID   0x4000 
+#define CPU_ID      0x8000         
 
 #define NONE_M      0x01000000
 

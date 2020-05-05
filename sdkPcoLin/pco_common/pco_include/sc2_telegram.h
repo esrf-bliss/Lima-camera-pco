@@ -204,14 +204,19 @@
 #ifndef  SC2_TELEGRAM_H
 #define  SC2_TELEGRAM_H
 
-#include "sc2_common.h"
+
 
 #define FWREVISION 0x00009000
 
-#if defined(WIN32) || defined(__linux__)
-//#pragma message("Structures packed to 1 byte boundary!")
+#ifdef WIN32
+#pragma message("Structures packed to 1 byte boundary!")
 #pragma pack(push) 
 #pragma pack(1)            
+#endif
+
+#ifdef __GNUC__
+#pragma pack(push) 
+#pragma pack(1)    
 #endif
 
 
@@ -222,6 +227,8 @@
 #ifdef _PIC32_
 #define struct struct __attribute__ ((packed))
 #endif
+
+#include "sc2_common.h"
 
 
 // ================================================================================== //
@@ -304,7 +311,7 @@ typedef struct           // structure for saving FW info in device flash/eeprom 
   BYTE  bMonth;
   WORD  wYear;
 }
-SC2_FWVERSION;           // length is trimmed to 32 byte
+SC2_FWVERSION;           // length 10 byte, when used as header length shall be padded to 32 byte
 
 
 typedef struct
@@ -359,9 +366,16 @@ typedef struct
   BYTE        bNum;                    // block enumeration (0->1...10, 1-> 11...20 ...)
   BYTE        bCks;                    // checksum byte
 }
-SC2_Get_Ext_Firmware_Versions;
+SC2_Get_Firmware_Versions_Ext;
 
-#define SC2_Get_Ext_Hardware_Versions SC2_Get_Ext_Firmware_Versions
+#define SC2_Get_Ext_Firmware_Versions  SC2_Get_Firmware_Versions_Ext    
+
+// NOTE: SC2_Get_Ext_Firmware_Versions is deprecated !!!
+// Command code is defined with GET_FIRMWARE_VERSIONS_EXT, therefore
+//   command structure is renamed to SC2_Get_Firmware_Versions_Ext.
+
+// #define SC2_Get_Hardware_Versions_Ext  SC2_Get_Firmware_Versions_Ext
+// not used until now, there is no command code.
 
 
 typedef struct
@@ -692,7 +706,9 @@ typedef struct
   WORD        wBatteryType;            // Battery type, 0 = no batt. 0xFFFF = unknown
   WORD        wBatteryLevel;           // charge level in percent of full 
   WORD        wPowerStatus;            // power status of mains, battery etc.
-  WORD        wRFU[3];                 // 4 words reserved for future use.
+  SHORT       sBatteryTemp;            // battery temperature
+  WORD        wRFU1;                   // reserved for future use
+  WORD        wRFU2;                   // reserved for future use
   BYTE        bCks;                    // checksum byte
 } SC2_Battery_Status_Response;
 
@@ -731,6 +747,130 @@ typedef struct
   BYTE        bData[256];              // data read from source register (max. 256 Byte)
   BYTE        bCks;                    // checksum byte
 } SC2_Get_External_Register_Response;
+
+
+/////////////////////////////////////////////////////////////////////
+// User Interface Commands
+/////////////////////////////////////////////////////////////////////
+
+typedef struct
+{
+  WORD        wCode;                 // telegram code 
+  WORD        wSize;                 // telegram length
+  WORD        wInterfaceID;          // number/ID of interface/device 
+                                     //   range: 0, 1 to number of interfaces - 1
+  BYTE        bCks;                  // checksum byte
+}
+SC2_Get_User_Interface_Info;    
+
+typedef struct
+{
+  WORD        wCode;                 // telegram code 
+  WORD        wSize;                 // telegram length
+  WORD        wInterfaceID;          // ID of interface = 0, 1 to number of interfaces - 1
+  WORD        wNumberOfInterfaces;   // total number of user interfaces in the camera 
+  WORD        wInterfaceType;        // type of interface, UART, SPI, I2C, see sc2_defs.h
+  BYTE        bBitsPerWord[4];       // any of 7, 8, 9, eol = 0, remaining filled with 0
+  DWORD       dwFrequency[12];       // possible baudrates/frequencies from low to high, 
+                                     //   eol = 0, remaining filled with 0
+  DWORD       dwInterfaceOptions;    // optional settings for interface (e.g. parity)
+  WORD        wInterfaceEnabled;     // enable/disable/autodisable/powersave/... interface 
+  DWORD       dwAllowedEquipment;    // flags for allowed accessories/equipment 
+                                     //   e.g. LensCtrlBirger (for Camware) 
+  WORD        wHandshakeType;        // bit mask, see below
+  WORD        wTxBufferMaxSize;      // transmit buffer size 
+  WORD        wRxBufferMaxSize;      // receive buffer size 
+  WORD        wTxBufferFree;         // actual number of bytes which can be written to tx 
+                                     //   buffer, 0xFFFF for not applicable
+  WORD        wRxBufferAvail;        // actual number of bytes which can be read from rx 
+                                     //   buffer, 0xFFF for not applicable 
+  WORD        wRFU[4];               // reserved for future use, camera will return 0, 
+                                     //   until they are defined.
+  BYTE        bCks;                  // checksum byte
+}
+SC2_Get_User_Interface_Info_Response;    
+
+
+typedef struct
+{
+  WORD        wCode;                 // telegram code 
+  WORD        wSize;                 // telegram length
+  WORD        wInterfaceID;          // ID of interface = 0, 1 to number of interfaces - 1
+  BYTE        bInterfaceEnable;      // 1 = enable / 0 = disable interface
+  BYTE        bClearBuffers;         // 0x00 do nothing, 0x01 clear rx buffer, 0x02 clear 
+                                     //   tx buffer, 0x03 clear rx and tx buffer
+  DWORD       dwFrequency;           // selected frequency/bit rate 
+  BYTE        bBitsPerWord;          // any of 7, 8, 9
+  BYTE        bReserved;             // alignment filler 
+  WORD        wHandshakeType;        // handshake type, interface specific
+  DWORD       dwInterfaceOptions;    // optional settings for interface (e.g. parity)
+  WORD        wRFU[4];               // reserved for future use, set to 0!
+  BYTE        bCks;                  // checksum byte
+}
+SC2_Set_User_Interface_Settings;    
+
+typedef struct
+{
+  WORD        wCode;                 // telegram code 
+  WORD        wSize;                 // telegram length
+  WORD        wInterfaceID;          // ID of interface = 0, 1 to number of interfaces - 1
+  BYTE        bCks;                  // checksum byte
+}
+SC2_Get_User_Interface_Settings;    
+
+//#define SC2_Set_Interface_Settings_Response  SC2_Set_User_Interface_Settings
+//#define SC2_Get_Interface_Settings_Response  SC2_Set_User_Interface_Settings
+
+#define SC2_User_Interface_Settings_Response  SC2_Set_User_Interface_Settings
+
+
+typedef struct
+{
+  WORD        wCode;           // telegram code 
+  WORD        wSize;           // telegram length
+  WORD        wInterfaceID;    // ID of interface = 0, 1 to number of interfaces - 1
+  WORD        wTimeout_ms;     // timeout in ms (relevant if handshake is used), 
+                               //   set to 0 for buffered I/O!
+  WORD        wTxNum;          // number of bytes to send <= 256
+  BYTE        bTxData[257];    // space for data *plus* checksum byte!
+                               // telegram is cut after wTxNum bytes, where bTxData[wTxNum] 
+                               // is checksum byte => max. 256 byte real data
+}
+SC2_User_Interface_Transmit_Data;    
+
+typedef struct
+{
+  WORD        wCode;           // telegram code 
+  WORD        wSize;           // telegram length
+  WORD        wInterfaceID;    // ID of interface = 0, 1 to number of interfaces - 1
+  WORD        wTxSent;         // actual number of bytes sent = written to send buffer 
+  BYTE        bCks;            // checksum byte
+}
+SC2_User_Interface_Transmit_Data_Response;    
+
+
+typedef struct
+{
+  WORD        wCode;           // telegram code 
+  WORD        wSize;           // telegram length
+  WORD        wInterfaceID;    // ID of interface = 0, 1 to number of interfaces - 1
+  WORD        wTimeout_ms;     // timeout in ms, set to 0 for buffered I/O
+  WORD        wRxNum;          // number of bytes expected, max. 256
+  BYTE        bCks;            // checksum byte
+}
+SC2_User_Interface_Receive_Data;    
+
+typedef struct
+{
+  WORD        wCode;           // telegram code 
+  WORD        wSize;           // telegram length
+  WORD        wInterfaceID;    // ID of interface = 0, 1 to number of interfaces - 1
+  WORD        wRxNum;          // actual number of bytes received 
+  BYTE        bRxData[257];    // space for received data *plus* checksum byte!
+                               // telegram is cut after wRxNum bytes, where bRxData[wRxNum] 
+                               // is checksum byte => max. 256 byte real data
+}
+SC2_User_Interface_Receive_Data_Response;    
 
 
 
@@ -837,6 +977,44 @@ typedef struct
   DWORD       dwReserved[16];                                                         //(132)
   BYTE        bCks;                    // checksum byte
 } SC2_Camera_Description_2_Response;
+
+
+typedef struct
+{
+  WORD        wCode;                   // telegram code 
+  WORD        wSize;                   // Sizeof this struct
+  WORD        wChannelNumberIntensifiedDESC; // 0: Master channel; 1...x: Slave channels
+  WORD        wNumberOfChannelsIntensifiedDESC; // Number of active channels in this camera
+
+  WORD        wMinVoltageIntensifiedDESC; // Min voltage for MCP, usually ~700V (GaAs, ~600V)
+  WORD        wMaxVoltageIntensifiedDESC; // Max voltage for MCP, usually ~1100V (GaAs, ~900V)
+  WORD        wVoltageStepIntensifiedDESC; // Voltage step for MCP, usually 10V
+  WORD        wExtendedMinVoltageIntensifiedDESC; // Extended min voltage for MCP, 600V (GaAs, ~500V)
+
+  WORD        wMaxLoopCountIntensifiedDESC;  // Maximum loop count for multi exposure (18)
+
+  DWORD       dwMinPhosphorDecayIntensified_ns_DESC; // Minimum decay time in (nsec)
+  DWORD       dwMaxPhosphorDecayIntensified_ms_DESC; // Maximum decay time in (msec)        (26)
+
+  DWORD       dwFlagsIntensifiedDESC;        // General flags:
+                                             // Gating modes supported        (30)
+                                             // 0x0001: Gating mode 1 (switch off MCP after and till next exposure)
+                                             // 0x0002: Gating mode 2 (switch off MCP and on when a trigger signal is detected)
+  char        szIntensifierTypeDESC[24];     // Type of image intensifier;    (54)
+
+  // dwMCP_Rectangle??_DESC describes the position of the rectangle including the MCP circle area 
+  //   referenced to the sensor format which is greater. Note that the data in 1/100 pixel reso-
+  //   lution, thus you have to divide the values by 100 to get the pixel coordinate
+  // If data is not valid, all values are 0x80000000!
+
+  DWORD       dwMCP_RectangleXL_DESC;        // rectangle of the MCP circle area, x left
+  DWORD       dwMCP_RectangleXR_DESC;        // rectangle of the MCP circle area, x right 
+  DWORD       dwMCP_RectangleYT_DESC;        // rectangle of the MCP circle area, y top
+  DWORD       dwMCP_RectangleYB_DESC;        // rectangle of the MCP circle area, y bottom (70)
+
+  DWORD       dwReserved[7];
+  BYTE        bCks;
+} SC2_Camera_Description_Intensified_Response;
 
 typedef struct
 {
@@ -1112,6 +1290,46 @@ typedef struct
 
 #define SC2_Get_CDI_Mode_Response SC2_Set_CDI_Mode
 
+
+typedef struct
+{
+  WORD        wCode;                   // telegram code 
+  WORD        wSize;                   // telegram length
+  WORD        wIntensifiedVoltage;     // MCP voltage (~700-~1100V)
+  WORD        wRsrvd;                  // RFU
+  DWORD       dwIntensifiedPhosphorDecay_us; // Phosphor decay in [us]
+  DWORD       dwRsrvd1;                // RFU
+  DWORD       dwRsrvd2;                // RFU
+  BYTE        bCks;                    // checksum byte
+} SC2_Set_Intensified_MCP;
+
+typedef struct
+{
+  WORD        wCode;                   // telegram code 
+  WORD        wSize;                   // telegram length
+  BYTE        bCks;                    // checksum byte
+} SC2_Get_Intensified_MCP;
+
+#define SC2_Get_Intensified_MCP_Response SC2_Set_Intensified_MCP
+
+typedef struct
+{
+  WORD        wCode;                   // telegram code 
+  WORD        wSize;                   // telegram length
+  WORD        wMode;                   // Gating operating mode
+  WORD        wRsrvd;                  // RFU
+  BYTE        bCks;                    // checksum byte
+} SC2_Set_Intensified_Gating_Mode;
+
+typedef struct
+{
+  WORD        wCode;                   // telegram code 
+  WORD        wSize;                   // telegram length
+  BYTE        bCks;                    // checksum byte
+} SC2_Get_Intensified_Gating_Mode;
+
+#define SC2_Get_Intensified_Gating_Mode_Response SC2_Set_Intensified_Gating_Mode
+
 /////////////////////////////////////////////////////////////////////
 // hot pixel commands, belongs to sensor related commands
 /////////////////////////////////////////////////////////////////////
@@ -1130,8 +1348,8 @@ typedef struct
 
 typedef struct
 {
-  WORD        wX;                   // HotPixel X-value 
-  WORD        wY;                   // HotPixel y-value
+  WORD        wX;                   // telegram code 
+  WORD        wY;                   // telegram length
 }
 SC2_HOTPIX;
 
@@ -1672,7 +1890,10 @@ typedef struct
   WORD        wParameter;              // Parameter (on/off)
   WORD        wTimebase;               // timebase for dwLineTime
   DWORD       dwLineTime;              // time for one line
-  DWORD       dwReserved[4];           // Reserved
+  DWORD       dwMinLineTime;
+  DWORD       dwMaxLineTime;
+  DWORD       dwLineCaps;
+  DWORD       dwReserved[1];           // Reserved
   BYTE        bCks;                    // checksum byte
 } SC2_Set_CMOS_Line_Timing;
 
@@ -1750,6 +1971,23 @@ typedef struct
 #define SC2_Get_HW_LED_Signal_Response    SC2_Set_HW_LED_Signal
 
 
+typedef struct
+{
+  WORD        wCode;                   // telegram code 
+  WORD        wSize;                   // telegram length
+  WORD        wCount;                  // Loop count
+  WORD        wRsrvd;                  // RFU
+  BYTE        bCks;                    // checksum byte
+} SC2_Set_Intensified_Loop_Count;
+
+typedef struct
+{
+  WORD        wCode;                   // telegram code 
+  WORD        wSize;                   // telegram length
+  BYTE        bCks;                    // checksum byte
+} SC2_Get_Intensified_Loop_Count;
+
+#define SC2_Get_Intensified_Loop_Count_Response SC2_Set_Intensified_Loop_Count
 
 /////////////////////////////////////////////////////////////////////
 // storage control
@@ -2530,11 +2768,14 @@ typedef struct
 
 
 
-#if defined(WIN32) || defined(__linux__)
+#ifdef WIN32
 //#pragma message("Structures packed back to normal!")
 #pragma pack(pop)  
 #endif
 
+#ifdef __GNUC__
+#pragma pack(pop) 
+#endif
 
 
 #ifdef __MICROBLAZE__

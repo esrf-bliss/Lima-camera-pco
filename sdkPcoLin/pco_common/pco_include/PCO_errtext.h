@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------//
-// Name        | PCO_errt.h                  | Type: ( ) source    //
+// Name        | PCO_errtext.h               | Type: ( ) source    //
 //-------------------------------------------|       (*) header    //
 // Project     | PCO                         |       ( ) others    //
 //-----------------------------------------------------------------//
@@ -10,7 +10,7 @@
 //-----------------------------------------------------------------//
 // Purpose     | PCO - Error text defines                          //
 //-----------------------------------------------------------------//
-// Author      | FRE, MBL, LWA, PCO AG                             //
+// Author      | FRE PCO AG                                        //
 //-----------------------------------------------------------------//
 // Revision    | versioned using SVN                               //
 //-----------------------------------------------------------------//
@@ -23,61 +23,17 @@
 // *  Fax:   +49 (0)9441 / 2005-20 *  Email: info@pco.de           //
 //-----------------------------------------------------------------//
 
-
 //-----------------------------------------------------------------//
 // Revision History:                                               //
 //-----------------------------------------------------------------//
 // Rev.:     | Date:      | Changed:                               //
 // --------- | ---------- | ---------------------------------------//
-//  00.01    | 26.06.2003 |  new file, FRE                         //
-//-----------------------------------------------------------------//
-//  00.03    | 14.10.2003 |  - FRE:Error text file changed (new V.)//
-//           |            |    moved some errors to common area    //
-//           | 23.10.2003 |  - LWA:added text strings for:         //
-//           |            |  SC2_ERROR_CONNY                       //
-//           |            |  PCO_ERROR_FIRMWARE_DEVICE_OPEN_FAILED // 
-//-----------------------------------------------------------------//
-//  00.04    | 04.11.2003 |  - LWA: completely new developed file  //
-//-----------------------------------------------------------------//
-//  00.05    | 12.12.2003 |  - FRE: changed GetErrorText to        //
-//           |            |         PCO_GetErrorText               //
-//           | 17.03.2004 |  - LWA added:                          //
-//           |            |    Error text for:                     // 
-//           |            |    PCO_ERROR_FIRMWARE_UNKNOWN_COMMAND  // 
-//           |            |  (just addition, no new version!)      //
-//           | 23.03.2004 |  - descriptions for temperature error  //
-//           |            |    and temperature warning.            // 
-//           | 24.03.2004 |  - FRW added:                          //
-//           |            |  PCO_ERROR_SDKDLL_WRONGBUFFERNR        //
-//           | 26.07.2004 |  - FRW added:                          //
-//           |            |  PCO_ERROR_SDKDLL_DLLNOTFOUND          //
-//           | 10.11.2004 |  - FRE added:                          //
-//           |            |  PCO_ERROR_SDKDLL_BUFALREADYASSIGNED   //
-//           |            |  PCO_ERROR_SDKDLL_EVENTALREADYASSIGNED //
-//           | 08.03.2005 |  - FRE: Added                          //
-//           |            |        PCO_ERROR_APPLICATION_WRONGRES  //
-//           | 19.12.2005 | - FRE: Added                           //
-//           |            |   PCO_ERROR_APPLICATION_DISKFULL       //
-//           | 22.08.2006 | - FRE: Added                           //
-//           |            |   PCO_ERROR_NOTINIT                    //
-//           | 13.04.2007 | - FRE: Added                           //
-//           |            |   PCO_ERROR_FILEDLL                    //
-//           | 25.06.2008 | - FRE: Added                           //
-//           |            |   PCO_ERROR_APPLICATION_SET_VALUES     //
-//           | 08.12.2008 | - FRE: Added                           //
-//           |            |   PCO_ERROR_SDKDLL_RECORDINGMUSTBEON   //
-//           | 12.01.2009 | - FRE: Reviewed error/txt assembly     //
-//           |            |   Enhanced error decoding due to       //
-//           |            |   device and layer numbering           //
+//  01.00    | 26.02.2018 |  new file, FRE                         //
 //-----------------------------------------------------------------//
 
 #include "PCO_err.h"
-
-#ifndef PCO_ERRT_H
-#define PCO_ERRT_H
-
-#if defined PCO_ERRT_H_CREATE_OBJECT
-
+#ifndef PCO_ERRTEXT_H
+#define PCO_ERRTEXT_H
 
 // Error messages are built with the error source + error code.
 // In case of 'no error' the error source is not added.
@@ -92,15 +48,15 @@
 // Commmon error messages                                                                                 //
 //========================================================================================================//
 
-static const char* PCO_ERROR_COMMON_TXT[] = 
+static const char* PCO_ERROR_COMMON_TXT[] =
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "Function call with wrong parameter.",           // 0xA0000001  PCO_ERROR_WRONGVALUE 
-  "Handle is invalid.",                            // 0xA0000002  PCO_ERROR_INVALIDHANDLE 
-  "No memory available.",                          // 0xA0000003  PCO_ERROR_NOMEMORY 
+  "Function call with wrong parameter.",           // 0xA0000001  PCO_ERROR_WRONGVALUE
+  "Handle is invalid.",                            // 0xA0000002  PCO_ERROR_INVALIDHANDLE
+  "No memory available.",                          // 0xA0000003  PCO_ERROR_NOMEMORY
 
-  "A file handle could not be opened.",            // 0xA0000004  PCO_ERROR_NOFILE 
-  "Timeout in function.",                          // 0xA0000005  PCO_ERROR_TIMEOUT 
+  "A file handle could not be opened.",            // 0xA0000004  PCO_ERROR_NOFILE
+  "Timeout in function.",                          // 0xA0000005  PCO_ERROR_TIMEOUT
   "A buffer is to small.",                         // 0xA0000006  PCO_ERROR_BUFFERSIZE
   "The called module is not initialized.",         // 0xA0000007  PCO_ERROR_NOTINIT
   "Disk full.",                                    // 0xA0000008  PCO_ERROR_DISKFULL
@@ -115,6 +71,17 @@ static const char* PCO_ERROR_COMMON_TXT[] =
   "Wrong library version",                         // 0xA0000011  PCO_ERROR_LIBRARYVERSION
   "Wrong camera version",                          // 0xA0000012  PCO_ERROR_CAMERAVERSION
   "Option is not available",                       // 0xA0000013  PCO_ERROR_NOTAVAILABLE
+  "",                                              // 0xA0000014
+  "",                                              // 0xA0000015
+  "",                                              // 0xA0000016
+  "",                                              // 0xA0000017
+  "A file could not be opened",                    // 0xA0000018
+  "Read file failed",                              // 0xA0000019
+  "Write file failed",                             // 0xA000001A
+  "File format unknown",                           // 0xA000001B
+  "Test checksum of file failed",                  // 0xA000001C
+  "Test of values in file failed",                 // 0xA000001D
+  "Test version of file failed",                   // 0xA000001E  
 };
 
 const int COMMON_MSGNUM = sizeof(PCO_ERROR_COMMON_TXT) / sizeof(PCO_ERROR_COMMON_TXT[0]);
@@ -123,8 +90,8 @@ const int COMMON_MSGNUM = sizeof(PCO_ERROR_COMMON_TXT) / sizeof(PCO_ERROR_COMMON
 //========================================================================================================//
 // Driver error messages                                                                                  //
 //========================================================================================================//
-  
-static const char* PCO_ERROR_DRIVER_TXT[] = 
+
+static const char* PCO_ERROR_DRIVER_TXT[] =
 {
   "OK.",                                           // 0x00002000  PCO_NOERROR
   "Initialization failed; no camera connected.",   // 0x80002001  PCO_ERROR_DRIVER_NOTINIT
@@ -132,8 +99,8 @@ static const char* PCO_ERROR_DRIVER_TXT[] =
   "",                                              // 0x80002003  
   "",                                              // 0x80002004  
   "Wrong driver for this OS.",                     // 0x80002005  PCO_ERROR_DRIVER_WRONGOS
-  "Open driver or driver class failed.",           // 0x80002006  PCO_ERROR_DRIVER_NODRIVER    
-  "I/O operation failed.",                         // 0x80002007  PCO_ERROR_DRIVER_IOFAILURE    
+  "Open driver or driver class failed.",           // 0x80002006  PCO_ERROR_DRIVER_NODRIVER
+  "I/O operation failed.",                         // 0x80002007  PCO_ERROR_DRIVER_IOFAILURE
 
   "Error in telegram checksum.",                   // 0x80002008  PCO_ERROR_DRIVER_CHECKSUMERROR
   "Invalid Camera mode.",                          // 0x80002009  PCO_ERROR_DRIVER_INVMODE
@@ -154,9 +121,9 @@ static const char* PCO_ERROR_DRIVER_TXT[] =
   "Device is disconnected or power off.",          // 0x80002015  PCO_ERROR_DRIVER_DEVICEOFF
   "Necessary system resource not available.",      // 0x80002016  PCO_ERROR_DRIVER_RESOURCE
   "Busreset occured during system call.",          // 0x80002017  PCO_ERROR_DRIVER_BUSRESET
-  "Image(s) lost in transfer",                     // 0x80002018  PCO_ERROR_DRIVER_BUFFER_LOSTIMAGE  
+  "Image(s) lost in transfer",                     // 0x80002018  PCO_ERROR_DRIVER_BUFFER_LOSTIMAGE
 
-  "", "", "", "", "", "", "",                  // 0x80002019 - 0x8000201F
+  "", "", "", "", "", "", "",                      // 0x80002019 - 0x8000201F
 
   "A call to a windows-function fails.",           // 0x80002020  PCO_ERROR_DRIVER_SYSERR
   "",                                              // 0x80002021  
@@ -178,8 +145,8 @@ static const char* PCO_ERROR_DRIVER_TXT[] =
   "firmware does not support camera head.",        // 0x8000202F  PCO_ERROR_DRIVER_HEAD_BOARD_MISMATCH
   "camera head is not connected.",                 // 0x80002030  PCO_ERROR_DRIVER_HEAD_LOST
   "camera head power down.",                       // 0x80002031  PCO_ERROR_DRIVER_HEAD_POWER_DOWN
-  "camera started."                                // 0x80002032  PCO_ERROR_DRIVER_CAMERA_BUSY
-  "camera busy."                                   // 0x80002033  PCO_ERROR_DRIVER_BUFFERS_PENDING
+  "camera started.",                               // 0x80002032  PCO_ERROR_DRIVER_CAMERA_BUSY
+  "pending buffers in driver queue."               // 0x80002033  PCO_ERROR_DRIVER_BUFFERS_PENDING
 
 };
 
@@ -190,20 +157,20 @@ const int DRIVER_MSGNUM = sizeof(PCO_ERROR_DRIVER_TXT) / sizeof(PCO_ERROR_DRIVER
 // Error messages for errors in SDK DLL                                                                   //
 //========================================================================================================//
 
-static const char* PCO_ERROR_SDKDLL_TXT[] = 
+static const char* PCO_ERROR_SDKDLL_TXT[] =
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "wSize of an embedded buffer is to small.",      // 0x80003001  PCO_ERROR_SDKDLL_NESTEDBUFFERSIZE   
-  "wSize of a buffer is to small.",                // 0x80003002  PCO_ERROR_SDKDLL_BUFFERSIZE   
-  "A dialog is not available.",                    // 0x80003003  PCO_ERROR_SDKDLL_DIALOGNOTAVAILABLE   
-  "Option is not available.",                      // 0x80003004  PCO_ERROR_SDKDLL_NOTAVAILABLE   
+  "wSize of an embedded buffer is to small.",      // 0x80003001  PCO_ERROR_SDKDLL_NESTEDBUFFERSIZE
+  "wSize of a buffer is to small.",                // 0x80003002  PCO_ERROR_SDKDLL_BUFFERSIZE
+  "A dialog is not available.",                    // 0x80003003  PCO_ERROR_SDKDLL_DIALOGNOTAVAILABLE
+  "Option is not available.",                      // 0x80003004  PCO_ERROR_SDKDLL_NOTAVAILABLE
   "A call to a windows-function fails.",           // 0x80003005  PCO_ERROR_SDKDLL_SYSERR
-  "Memory area is invalid.",                       // 0x80003006  PCO_ERROR_SDKDLL_BADMEMORY   
+  "Memory area is invalid.",                       // 0x80003006  PCO_ERROR_SDKDLL_BADMEMORY
   "",                                              // 0x80003007    
-  "Number of available buffers is exhausted.",     // 0x80003008  PCO_ERROR_SDKDLL_BUFCNTEXHAUSTED   
-  "Dialog is already open.",                       // 0x80003009  PCO_ERROR_SDKDLL_ALREADYOPENED   
-  "Error while destroying dialog.",                // 0x8000300A  PCO_ERROR_SDKDLL_ERRORDESTROYWND   
-  "A requested buffer is not available.",          // 0x8000300B  PCO_ERROR_SDKDLL_BUFFERNOTVALID  
+  "Number of available buffers is exhausted.",     // 0x80003008  PCO_ERROR_SDKDLL_BUFCNTEXHAUSTED
+  "Dialog is already open.",                       // 0x80003009  PCO_ERROR_SDKDLL_ALREADYOPENED
+  "Error while destroying dialog.",                // 0x8000300A  PCO_ERROR_SDKDLL_ERRORDESTROYWND
+  "A requested buffer is not available.",          // 0x8000300B  PCO_ERROR_SDKDLL_BUFFERNOTVALID
   "The buffer nr is out of range.",                // 0x8000300C  PCO_ERROR_SDKDLL_WRONGBUFFERNR
   "A DLL could not be found.",                     // 0x8000300D  PCO_ERROR_SDKDLL_DLLNOTFOUND  
   "Buffer already assigned to another buffernr.",  // 0x8000300E  PCO_ERROR_SDKDLL_BUFALREADYASSIGNED
@@ -212,6 +179,12 @@ static const char* PCO_ERROR_SDKDLL_TXT[] =
   "A DLL could not be found, due to div by zero.", // 0x80003011  PCO_ERROR_SDKDLL_DLLNOTFOUND_DIVZERO
   "Buffer is already queued.",                     // 0x80003012  PCO_ERROR_SDKDLL_BUFFERALREADYQUEUED
   "Buffer is not queued.",                         // 0x80003013  PCO_ERROR_SDKDLL_BUFFERNOTQUEUED
+  "", "", "", "", "", "", "", "", "", "", "", "",             // 0x80003014 - 0x8000301F
+  "",                                              // 0x80003020
+  "Recording of camera must be off for recorder",  // 0x80003021  PCO_ERROR_SDKDLL_RECORDER_RECORD_MUST_BE_OFF     
+  "Acquisition in Recorder must be off",           // 0x80003022  PCO_ERROR_SDKDLL_RECORDER_ACQUISITION_MUST_BE_OFF
+  "Camera settings changed outside of recorder",   // 0x80003023  PCO_ERROR_SDKDLL_RECORDER_SETTINGS_CHANGED       
+  "No acquired images available in recorder",      // 0x80003024  PCO_ERROR_SDKDLL_RECORDER_NO_IMAGES_AVAILABLE    
 };
 
 const int SDKDLL_MSGNUM = sizeof(PCO_ERROR_SDKDLL_TXT) / sizeof(PCO_ERROR_SDKDLL_TXT[0]);
@@ -221,19 +194,35 @@ const int SDKDLL_MSGNUM = sizeof(PCO_ERROR_SDKDLL_TXT) / sizeof(PCO_ERROR_SDKDLL
 // Application error messages                                                                             //
 //========================================================================================================//
 
-static const char* PCO_ERROR_APPLICATION_TXT[] = 
+static const char* PCO_ERROR_APPLICATION_TXT[] =
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "Error while waiting for a picture.",            // 0x80004001  PCO_ERROR_APPLICATION_PICTURETIMEOUT   
-  "Error while saving file.",                      // 0x80004002  PCO_ERROR_APPLICATION_SAVEFILE 
-  "A function inside a DLL could not be found.",   // 0x80004003  PCO_ERROR_APPLICATION_FUNCTIONNOTFOUND 
+  "Error while waiting for a picture.",            // 0x80004001  PCO_ERROR_APPLICATION_PICTURETIMEOUT
+  "Error while saving file.",                      // 0x80004002  PCO_ERROR_APPLICATION_SAVEFILE
+  "A function inside a DLL could not be found.",   // 0x80004003  PCO_ERROR_APPLICATION_FUNCTIONNOTFOUND
 
-  "A DLL could not be found.",                     // 0x80004004  PCO_ERROR_APPLICATION_DLLNOTFOUND 
-  "The board number is out of range.",             // 0x80004005  PCO_ERROR_APPLICATION_WRONGBOARDNR 
+  "A DLL could not be found.",                     // 0x80004004  PCO_ERROR_APPLICATION_DLLNOTFOUND
+  "The board number is out of range.",             // 0x80004005  PCO_ERROR_APPLICATION_WRONGBOARDNR
   "The decive does not support this function.",    // 0x80004006  PCO_ERROR_APPLICATION_FUNCTIONNOTSUPPORTED
   "Started Math with different resolution than reference.",// 0x80004007 PCO_ERROR_APPLICATION_WRONGRES
   "Disk full.",                                    // 0x80004008  PCO_ERROR_APPLICATION_DISKFULL
   "Error setting values to camera.",               // 0x80004009  PCO_ERROR_APPLICATION_SET_VALUES
+  "",                                              // 0x8000400A  
+  "",                                              // 0x8000400B  
+  "",                                              // 0x8000400C  
+  "",                                              // 0x8000400D  
+  "",                                              // 0x8000400E  
+  "",                                              // 0x8000400F 
+  //programmer
+  "Firmware packet wrong camera type",             // 0x80004010  PCO_ERROR_APPLICATION_CAMERATYPE
+  "Firmware packet constraint mismatch",           // 0x80004011  PCO_ERROR_APPLICATION_FIRMWARE_CONSTRAINT
+  "Firmware packet variant constraint mismatch",   // 0x80004012  PCO_ERROR_APPLICATION_VARIANTE_CONSTRAINT
+  "Firmware packet serialnumber mismatch",         // 0x80004013  PCO_ERROR_APPLICATION_SERIALNUM
+  "Firmware packet devicecount mismatch",          // 0x80004014  PCO_ERROR_APPLICATION_DEVICECOUNT            
+  "No matching devcode found in camera.",          // 0x80004015  PCO_ERROR_APPLICATION_DEVCODE                 
+
+  "Image is too bright.",                          // 0x80004016  PCO_ERROR_APPLICATION_IMAGE_TOO_BRIGHT        
+  "Image is too dark.",                            // 0x80004017 PCO_ERROR_APPLICATION_IMAGE_TOO_DARK          
 };
 
 const int APPLICATION_MSGNUM = sizeof(PCO_ERROR_APPLICATION_TXT) / sizeof(PCO_ERROR_APPLICATION_TXT[0]);
@@ -244,69 +233,69 @@ const int APPLICATION_MSGNUM = sizeof(PCO_ERROR_APPLICATION_TXT) / sizeof(PCO_ER
 // Firmware error messages                                                                                //
 //========================================================================================================//
 
-static const char* PCO_ERROR_FIRMWARE_TXT[] = 
+static const char* PCO_ERROR_FIRMWARE_TXT[] =
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
-  "Timeout in telegram.",                          // 0x80001001  PCO_ERROR_FIRMWARE_TELETIMEOUT   
-  "Wrong checksum in telegram.",                   // 0x80001002  PCO_ERROR_FIRMWARE_WRONGCHECKSUM   
-  "No acknowledge.",                               // 0x80001003  PCO_ERROR_FIRMWARE_NOACK   
+  "Timeout in telegram.",                          // 0x80001001  PCO_ERROR_FIRMWARE_TELETIMEOUT
+  "Wrong checksum in telegram.",                   // 0x80001002  PCO_ERROR_FIRMWARE_WRONGCHECKSUM
+  "No acknowledge.",                               // 0x80001003  PCO_ERROR_FIRMWARE_NOACK
 
-  "Wrong size in array.",                          // 0x80001004  PCO_ERROR_FIRMWARE_WRONGSIZEARR   
-  "Data is inkonsistent.",                         // 0x80001005  PCO_ERROR_FIRMWARE_DATAINKONSISTENT   
+  "Wrong size in array.",                          // 0x80001004  PCO_ERROR_FIRMWARE_WRONGSIZEARR
+  "Data is inkonsistent.",                         // 0x80001005  PCO_ERROR_FIRMWARE_DATAINKONSISTENT
   "Unknown command telegram.",                     // 0x80001006  PCO_ERROR_FIRMWARE_UNKNOWN_COMMAND
   "",                                              // 0x80001007  
 
-  "FPGA init failed.",                             // 0x80001008  PCO_ERROR_FIRMWARE_INITFAILED   
-  "FPGA configuration failed.",                    // 0x80001009  PCO_ERROR_FIRMWARE_CONFIGFAILED   
+  "FPGA init failed.",                             // 0x80001008  PCO_ERROR_FIRMWARE_INITFAILED
+  "FPGA configuration failed.",                    // 0x80001009  PCO_ERROR_FIRMWARE_CONFIGFAILED
   "High temperature.",                             // 0x8000100A  PCO_ERROR_FIRMWARE_HIGH_TEMPERATURE
   "Supply voltage out of range.",                  // 0x8000100B  PCO_ERROR_FIRMWARE_VOLTAGEOUTOFRANGE
 
-  "No response from I2C Device.",                  // 0x8000100C  PCO_ERROR_FIRMWARE_I2CNORESPONSE  
-  "Checksum in code area is wrong.",               // 0x8000100D  PCO_ERROR_FIRMWARE_CHECKSUMCODEFAILED  
-  "An address is out of range.",                   // 0x8000100E  PCO_ERROR_FIRMWARE_ADDRESSOUTOFRANGE  
-  "No device is open for update.",                 // 0x8000100F  PCO_ERROR_FIRMWARE_NODEVICEOPENED  
+  "No response from I2C Device.",                  // 0x8000100C  PCO_ERROR_FIRMWARE_I2CNORESPONSE
+  "Checksum in code area is wrong.",               // 0x8000100D  PCO_ERROR_FIRMWARE_CHECKSUMCODEFAILED
+  "An address is out of range.",                   // 0x8000100E  PCO_ERROR_FIRMWARE_ADDRESSOUTOFRANGE
+  "No device is open for update.",                 // 0x8000100F  PCO_ERROR_FIRMWARE_NODEVICEOPENED
 
-  "The delivered buffer is to small.",             // 0x80001010  PCO_ERROR_FIRMWARE_BUFFERTOSMALL   
-  "To much data delivered to function.",           // 0x80001011  PCO_ERROR_FIRMWARE_TOMUCHDATA   
-  "Error while writing to camera.",                // 0x80001012  PCO_ERROR_FIRMWARE_WRITEERROR   
-  "Error while reading from camera.",              // 0x80001013  PCO_ERROR_FIRMWARE_READERROR   
+  "The delivered buffer is to small.",             // 0x80001010  PCO_ERROR_FIRMWARE_BUFFERTOSMALL
+  "To much data delivered to function.",           // 0x80001011  PCO_ERROR_FIRMWARE_TOMUCHDATA
+  "Error while writing to camera.",                // 0x80001012  PCO_ERROR_FIRMWARE_WRITEERROR
+  "Error while reading from camera.",              // 0x80001013  PCO_ERROR_FIRMWARE_READERROR
 
-  "Was not able to render graph.",                 // 0x80001014  PCO_ERROR_FIRMWARE_NOTRENDERED   
-  "The handle is not known.",                      // 0x80001015  PCO_ERROR_FIRMWARE_NOHANDLEAVAILABLE   
-  "Value is out of allowed range.",                // 0x80001016  PCO_ERROR_FIRMWARE_DATAOUTOFRANGE   
-  "Desired function not possible.",                // 0x80001017  PCO_ERROR_FIRMWARE_NOTPOSSIBLE   
+  "Was not able to render graph.",                 // 0x80001014  PCO_ERROR_FIRMWARE_NOTRENDERED
+  "The handle is not known.",                      // 0x80001015  PCO_ERROR_FIRMWARE_NOHANDLEAVAILABLE
+  "Value is out of allowed range.",                // 0x80001016  PCO_ERROR_FIRMWARE_DATAOUTOFRANGE
+  "Desired function not possible.",                // 0x80001017  PCO_ERROR_FIRMWARE_NOTPOSSIBLE
 
-  "SDRAM type read from SPD unknown.",             // 0x80001018  PCO_ERROR_FIRMWARE_UNSUPPORTED_SDRAM   
-  "Different SDRAM modules mounted.",              // 0x80001019  PCO_ERROR_FIRMWARE_DIFFERENT_SDRAMS   
-  "For CMOS sensor two modules needed.",           // 0x8000101A  PCO_ERROR_FIRMWARE_ONLY_ONE_SDRAM   
-  "No SDRAM mounted.",                             // 0x8000101B  PCO_ERROR_FIRMWARE_NO_SDRAM_MOUNTED   
+  "SDRAM type read from SPD unknown.",             // 0x80001018  PCO_ERROR_FIRMWARE_UNSUPPORTED_SDRAM
+  "Different SDRAM modules mounted.",              // 0x80001019  PCO_ERROR_FIRMWARE_DIFFERENT_SDRAMS
+  "For CMOS sensor two modules needed.",           // 0x8000101A  PCO_ERROR_FIRMWARE_ONLY_ONE_SDRAM
+  "No SDRAM mounted.",                             // 0x8000101B  PCO_ERROR_FIRMWARE_NO_SDRAM_MOUNTED
 
-  "Segment size is too large.",                    // 0x8000101C  PCO_ERROR_FIRMWARE_SEGMENTS_TOO_LARGE   
-  "Segment is out of range.",                      // 0x8000101D  PCO_ERROR_FIRMWARE_SEGMENT_OUT_OF_RANGE   
-  "Value is out of range.",                        // 0x8000101E  PCO_ERROR_FIRMWARE_VALUE_OUT_OF_RANGE    
-  "Image read not possible.",                      // 0x8000101F  PCO_ERROR_FIRMWARE_IMAGE_READ_NOT_POSSIBLE   
+  "Segment size is too large.",                    // 0x8000101C  PCO_ERROR_FIRMWARE_SEGMENTS_TOO_LARGE
+  "Segment is out of range.",                      // 0x8000101D  PCO_ERROR_FIRMWARE_SEGMENT_OUT_OF_RANGE
+  "Value is out of range.",                        // 0x8000101E  PCO_ERROR_FIRMWARE_VALUE_OUT_OF_RANGE
+  "Image read not possible.",                      // 0x8000101F  PCO_ERROR_FIRMWARE_IMAGE_READ_NOT_POSSIBLE
 
-  "Command/data not supported by this hardware.",  // 0x80001020  PCO_ERROR_FIRMWARE_NOT_SUPPORTED            
-  "Starting record failed due not armed.",         // 0x80001021  PCO_ERROR_FIRMWARE_ARM_NOT_SUCCESSFUL       
-  "Arm is not possible while record active.",      // 0x80001022  PCO_ERROR_FIRMWARE_RECORD_MUST_BE_OFF       
-  "",                                              // 0x80001023             
+  "Command/data not supported by this hardware.",  // 0x80001020  PCO_ERROR_FIRMWARE_NOT_SUPPORTED
+  "Starting record failed due not armed.",         // 0x80001021  PCO_ERROR_FIRMWARE_ARM_NOT_SUCCESSFUL
+  "Arm is not possible while record active.",      // 0x80001022  PCO_ERROR_FIRMWARE_RECORD_MUST_BE_OFF
+  "",                                              // 0x80001023  
 
   "",                                              // 0x80001024  
-  "Segment too small for image.",                  // 0x80001025  PCO_ERROR_FIRMWARE_SEGMENT_TOO_SMALL        
-  "COC built is too large for internal memory.",   // 0x80001026  PCO_ERROR_FIRMWARE_COC_BUFFER_TO_SMALL      
-  "COC has invalid data at fix position.",         // 0x80001027  PCO_ERROR_FIRMWARE_COC_DATAINKONSISTENT     
+  "Segment too small for image.",                  // 0x80001025  PCO_ERROR_FIRMWARE_SEGMENT_TOO_SMALL
+  "COC built is too large for internal memory.",   // 0x80001026  PCO_ERROR_FIRMWARE_COC_BUFFER_TO_SMALL
+  "COC has invalid data at fix position.",         // 0x80001027  PCO_ERROR_FIRMWARE_COC_DATAINKONSISTENT
 
   "Correction data not valid.",                    // 0x80001028  PCO_ERROR_FIRMWARE_CORRECTION_DATA_INVALID
-  "CCD calibration not finished.",                 // 0x80001029  PCO_ERROR_FIRMWARE_CCDCAL_NOT_FINISHED       
+  "CCD calibration not finished.",                 // 0x80001029  PCO_ERROR_FIRMWARE_CCDCAL_NOT_FINISHED
   "Image Transfer pending",                        // 0x8000102A  
   "",                                              // 0x8000102B  
 
-  "",                                              // 0x8000102C        
+  "",                                              // 0x8000102C  
   "",                                              // 0x8000102D  
   "",                                              // 0x8000102E  
   "",                                              // 0x8000102F  
 
-  "Camera trigger setting invalid.",               // 0x80001030  PCO_ERROR_FIRMWARE_COC_TRIGGER_INVALID 
+  "Camera trigger setting invalid.",               // 0x80001030  PCO_ERROR_FIRMWARE_COC_TRIGGER_INVALID
   "Camera pixel rate invalid.",                    // 0x80001031  PCO_ERROR_FIRMWARE_COC_PIXELRATE_INVALID
   "Camera powerdown setting invalid.",             // 0x80001032  PCO_ERROR_FIRMWARE_COC_POWERDOWN_INVALID
   "Camera sensorformat invalid.",                  // 0x80001033  PCO_ERROR_FIRMWARE_COC_SENSORFORMAT_INVALID
@@ -321,7 +310,7 @@ static const char* PCO_ERROR_FIRMWARE_TXT[] =
   "ROI setting is wrong",                          // 0x8000103C  PCO_ERROR_FIRMWARE_ROI_NOT_SYMMETRICAL
   "ROI steps do not match",                        // 0x8000103D  PCO_ERROR_FIRMWARE_ROI_STEPPING
   "ROI setting is wrong",                          // 0x8000103E  PCO_ERROR_FIRMWARE_ROI_SETTING
-  "",                                              // 0x8000103F
+  "",                                              // 0x8000103F  
 
   "COC modulate period time invalid.",             // 0x80001040 PCO_ERROR_FIRMWARE_COC_PERIOD_INVALID
   "COC modulate monitor time invalid",             // 0x80001041 PCO_ERROR_FIRMWARE_COC_MONITOR_INVALID
@@ -378,7 +367,7 @@ static const char* PCO_ERROR_FIRMWARE_TXT[] =
 const int FIRMWARE_MSGNUM = sizeof(PCO_ERROR_FIRMWARE_TXT) / sizeof(PCO_ERROR_FIRMWARE_TXT[0]);
 
 
-static const char ERROR_CODE_OUTOFRANGE_TXT[] = "Error code out of range.";
+static char ERROR_CODE_OUTOFRANGE_TXT[] = "Error code out of range.";
 
 /////////////////////////////////////////////////////////////////////
 // end: error messages
@@ -389,7 +378,7 @@ static const char ERROR_CODE_OUTOFRANGE_TXT[] = "Error code out of range.";
 // warnings:
 /////////////////////////////////////////////////////////////////////
 
-static const char* PCO_ERROR_FWWARNING_TXT[] = 
+static const char* PCO_ERROR_FWWARNING_TXT[] =
 {
   "OK.",
   "Function is already on.",                       // 0xC0001001 PCO_WARNING_FIRMWARE_FUNCALON     
@@ -400,7 +389,7 @@ static const char* PCO_ERROR_FWWARNING_TXT[] =
 
 const int FWWARNING_MSGNUM = sizeof(PCO_ERROR_FWWARNING_TXT) / sizeof(PCO_ERROR_FWWARNING_TXT[0]);
 
-static const char* PCO_ERROR_DRIVERWARNING_TXT[] = 
+static const char* PCO_ERROR_DRIVERWARNING_TXT[] =
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
 };
@@ -408,22 +397,26 @@ static const char* PCO_ERROR_DRIVERWARNING_TXT[] =
 const int DRIVERWARNING_MSGNUM = sizeof(PCO_ERROR_DRIVERWARNING_TXT) / sizeof(PCO_ERROR_DRIVERWARNING_TXT[0]);
 
 
-static const char* PCO_ERROR_SDKDLLWARNING_TXT[] = 
+static const char* PCO_ERROR_SDKDLLWARNING_TXT[] =
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
   "Buffers are still allocated",                   // 0xC0003001 PCO_WARNING_SDKDLL_BUFFER_STILL_ALLOKATED
   "No Images are in the board buffer",             // 0xC0003002 PCO_WARNING_SDKDLL_NO_IMAGE_BOARD
   "value change when testing COC",                 // 0xC0003003 PCO_WARNING_SDKDLL_COC_VALCHANGE
-  "string buffer to short for replacement"         // 0xC0003004 PCO_WARNING_SDKDLL_COC_STR_SHORT
+  "string buffer to short for replacement",        // 0xC0003004 PCO_WARNING_SDKDLL_COC_STR_SHORT
+  "", "", "", "", "", "", "", "", "", "", "",      // 0xC0003005 - 0xC000300F
+  "",                                              // 0xC0003010
+  "Files already exist"                            // 0xC0003011 PCO_WARNING_SDKDLL_RECORDER_FILES_EXIST
 };
 
 const int SDKDLLWARNING_MSGNUM = sizeof(PCO_ERROR_SDKDLLWARNING_TXT) / sizeof(PCO_ERROR_SDKDLLWARNING_TXT[0]);
 
-static const char* PCO_ERROR_APPLICATIONWARNING_TXT[] = 
+static const char* PCO_ERROR_APPLICATIONWARNING_TXT[] =
 {
   "OK.",                                           // 0x00000000  PCO_NOERROR
   "Memory recorder buffer is full.",               // 0xC0004001  PCO_WARNING_APPLICATION_RECORDERFULL
   "Settings have been adapted to valid values.",   // 0xC0004002  PCO_WARNING_APPLICATION_SETTINGSADAPTED
+  "Memory recorder buffer is wrapped.",            // 0xC0004003  PCO_WARNING_APPLICATION_RECORDERWRAPPED
 };
 
 const int APPLICATIONWARNING_MSGNUM = sizeof(PCO_ERROR_APPLICATIONWARNING_TXT) / sizeof(PCO_ERROR_APPLICATIONWARNING_TXT[0]);
@@ -433,250 +426,8 @@ const int APPLICATIONWARNING_MSGNUM = sizeof(PCO_ERROR_APPLICATIONWARNING_TXT) /
 // end: warnings
 /////////////////////////////////////////////////////////////////////
 
-#if defined _MSC_VER
-#if     _MSC_VER < 1400
-int sprintf_s(char* buf, int dwlen, const char* cp, ...)
-{
-  va_list arglist;
-
-  va_start(arglist, cp);
-  return _vsnprintf(buf, dwlen, cp, arglist);
-}
-#endif
-#endif
-
-void PCO_GetErrorText(DWORD dwerr, char* pbuf, DWORD dwlen)
-{
-  const char* layertxt;
-  const char* errortxt;
-  const char* devicetxt;
-  char  msg[200];
-  int   index;
-  DWORD device;
-  DWORD layer;
-
-  if (dwlen < 40)
-    return;
-
-  index = dwerr & PCO_ERROR_CODE_MASK;
-
-  if ((dwerr == PCO_NOERROR) || (index == 0))
-  {
-    sprintf_s(pbuf, dwlen, "OK.");
-    return;
-  }
-
-
-  // -- evaluate device information within complete error code -- //
-  // ------------------------------------------------------------ //
-
-  device = dwerr & PCO_ERROR_DEVICE_MASK;
-  layer = dwerr & PCO_ERROR_LAYER_MASK;
-    
-  // -- evaluate layer information within complete error code --- //
-  // ------------------------------------------------------------ //
-
-  switch(dwerr & PCO_ERROR_LAYER_MASK)   // evaluate layer
-  {
-    case PCO_ERROR_FIRMWARE:
-    {
-      layertxt =  "Firmware";
-      switch(device)  
-      {
-        case SC2_ERROR_POWER_CPLD:   devicetxt = "SC2 Power CPLD";   break;
-        case SC2_ERROR_HEAD_UP:      devicetxt = "SC2 Head uP";      break;
-        case SC2_ERROR_MAIN_UP:      devicetxt = "SC2 Main uP";      break;
-        case SC2_ERROR_FWIRE_UP:     devicetxt = "SC2 Firewire uP";  break;
-        case SC2_ERROR_MAIN_FPGA:    devicetxt = "SC2 Main FPGA";    break;
-        case SC2_ERROR_HEAD_FPGA:    devicetxt = "SC2 Head FPGA";    break;
-        case SC2_ERROR_MAIN_BOARD:   devicetxt = "SC2 Main board";   break;
-        case SC2_ERROR_HEAD_CPLD:    devicetxt = "SC2 Head CPLD";    break;
-        case SC2_ERROR_SENSOR:       devicetxt = "SC2 Image sensor"; break;
-        case SC2_ERROR_POWER:        devicetxt = "SC2 Power Unit";   break;
-        case SC2_ERROR_GIGE:         devicetxt = "SC2 GigE board";   break;
-        case SC2_ERROR_USB:          devicetxt = "SC2 GigE/USB board"; break;
-        case SC2_ERROR_BOOT_FPGA:    devicetxt = "BOOT FPGA";        break;
-        case SC2_ERROR_BOOT_UP:      devicetxt = "BOOT uP";          break;
-        default: devicetxt = "Unknown device";
-      }
-      break;
-    }
-    case PCO_ERROR_DRIVER:
-    {
-      layertxt =  "Driver";
-      switch(device)
-      {
-        case PCI540_ERROR_DRIVER:          devicetxt = "Pixelfly driver";    break;
-
-        case SC2_ERROR_DRIVER:             devicetxt = "pco.camera driver";    break;
-        case PCI525_ERROR_DRIVER:          devicetxt = "Sensicam driver";    break;
-
-        case PCO_ERROR_DRIVER_FIREWIRE:    devicetxt = "Firewire driver";    break;
-        case PCO_ERROR_DRIVER_USB:         devicetxt = "USB 2.0 driver";    break;
-        case PCO_ERROR_DRIVER_GIGE:        devicetxt = "GigE driver";    break;
-        case PCO_ERROR_DRIVER_CAMERALINK:  devicetxt = "CameraLink driver";    break;
-        case PCO_ERROR_DRIVER_USB3:        devicetxt = "USB 3.0 driver";    break;
-        case PCO_ERROR_DRIVER_WLAN:        devicetxt = "WLan driver";    break;
-        default: devicetxt = "Unknown device";
-      }
-      break;
-    }
-    case PCO_ERROR_SDKDLL:
-    {
-      layertxt =  "SDK DLL";
-      switch(device)
-      {
-        case  PCO_ERROR_PCO_SDKDLL:    devicetxt = "camera sdk dll";    break;
-        case  PCO_ERROR_CONVERTDLL:    devicetxt = "convert dll";    break;
-        case  PCO_ERROR_FILEDLL:       devicetxt = "file dll";    break;
-        case  PCO_ERROR_JAVANATIVEDLL: devicetxt = "java native dll";    break;
-        case  PCO_ERROR_PROGLIB:       devicetxt = "programmer library";   break;
-        default: devicetxt = "Unknown device";
-      }
-      break;
-    }
-    case PCO_ERROR_APPLICATION:
-    {
-      layertxt =  "Application";
-      switch(device)
-      {
-        case PCO_ERROR_CAMWARE:    devicetxt = "CamWare";    break;
-        case PCO_ERROR_PROGRAMMER: devicetxt = "Programmer";    break;
-        case PCO_ERROR_SDKAPPLICATION: devicetxt = "SDK Application";    break;
-        default: devicetxt = "Unknown device";
-      }
-
-      break;
-    }
-    default:
-    {
-      layertxt =  "Undefined layer";
-      devicetxt = "Unknown device";
-    }
-  }
-
-
-  // -- evaluate error information within complete error code --- //
-  // ------------------------------------------------------------ //
-
-  if (dwerr & PCO_ERROR_IS_COMMON)
-  {
-    if (index < COMMON_MSGNUM)
-      errortxt = PCO_ERROR_COMMON_TXT[index];
-    else
-      errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-  }
-  else
-  {     
-    switch(dwerr & PCO_ERROR_LAYER_MASK)   // evaluate layer
-    {
-      case PCO_ERROR_FIRMWARE:
-
-        if (dwerr & PCO_ERROR_IS_WARNING)
-        {
-          if (index < FWWARNING_MSGNUM)
-            errortxt = PCO_ERROR_FWWARNING_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        else
-        {
-          if (index < FIRMWARE_MSGNUM)
-            errortxt = PCO_ERROR_FIRMWARE_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        break;
-
-
-      case PCO_ERROR_DRIVER:
-
-        if (dwerr & PCO_ERROR_IS_WARNING)
-        {
-          if (index < DRIVERWARNING_MSGNUM)
-            errortxt = PCO_ERROR_DRIVERWARNING_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        else
-        {
-          if (index < DRIVER_MSGNUM)
-            errortxt = PCO_ERROR_DRIVER_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        break;
-
-
-      case PCO_ERROR_SDKDLL:
-
-        if (dwerr & PCO_ERROR_IS_WARNING)
-        {
-          if (index < SDKDLLWARNING_MSGNUM)
-            errortxt = PCO_ERROR_SDKDLLWARNING_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        else
-        {
-          if (index < SDKDLL_MSGNUM)
-            errortxt = PCO_ERROR_SDKDLL_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        break;
-
-
-      case PCO_ERROR_APPLICATION:
-
-        if (dwerr & PCO_ERROR_IS_WARNING)
-        {
-          if (index < APPLICATIONWARNING_MSGNUM)
-            errortxt = PCO_ERROR_APPLICATIONWARNING_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        else
-        {
-          if (index < APPLICATION_MSGNUM)
-            errortxt = PCO_ERROR_APPLICATION_TXT[index];
-          else
-            errortxt = ERROR_CODE_OUTOFRANGE_TXT;
-        }
-        break;
-
-
-      default:
-
-        errortxt = "No error text available!";
-        break;
-    }
-  }
-
-  if(dwerr & PCO_ERROR_IS_WARNING)
-    sprintf_s(msg, 200, "%s warning %x at device '%s': %s",
-            layertxt, dwerr, devicetxt, errortxt);
-  else
-    sprintf_s(msg, 200, "%s error %x at device '%s': %s",
-            layertxt, dwerr, devicetxt, errortxt);
-
-  if (dwlen <= strlen(msg))    // 1 byte more for zero at end of string
-  {
-    sprintf_s(pbuf, dwlen, "Error buffer too short. err: %x", dwerr);
-    return;
-  }
-  sprintf_s(pbuf, dwlen, "%s", msg);
-
-}
-
-#else // PCO_ERRT_H_CREATE_OBJECT
-
-// Please define 'PCO_ERRT_H_CREATE_OBJECT' in your files once,
-// to avoid a linker error-message if you call GetErrorText!
-
-void PCO_GetErrorText(DWORD dwerr, char* pbuf, DWORD dwlen);
-
-#endif//PCO_ERRT_H_CREATE_OBJECT
-#endif//PCO_ERRT_H
+#endif//PCO_ERRTEXT_H
 // please leave last cr lf intact!!
 // =========================================== end of file ============================================== //
+
+

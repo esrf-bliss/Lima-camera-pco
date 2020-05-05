@@ -47,8 +47,7 @@
 #define MAX_PATH 1024
 #endif
 
-
-/*! \page page1 Introduction
+/*!\page page1 Introduction
   This document provides an detailed description of all functions of the PCO Camera Linux API.
   The API is a class interface and provides the functionality to write own Applications in a Linux environment.\n
   Any C++ compiler can be used for development.\n 
@@ -74,10 +73,9 @@
   Error and warning codes can be found in file pco_err.h.\n
   PCO_NOERROR is defined as value '0'.
 
-
+  \latexonly \newpage \endlatexonly
 */
 
-//  \latexonly \newpage \endlatexonly
 
 /// \brief Base interface class
 ///

@@ -41,7 +41,7 @@
 #    include "../sdkPco/include/sc2_SDKStructures.h"
 
 #    include "Cpco_com.h"
-#    include "Cpco_com_func.h"
+//#    include "Cpco_com_func.h"
 
 #    include "Cpco_com_cl_me4.h"
 #    include "Cpco_grab_cl_me4.h"
