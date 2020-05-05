@@ -1495,6 +1495,7 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
     }
 
 #ifndef __linux__
+// windows
     const char *msg;
 
     int i, imax;
@@ -1532,8 +1533,11 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
     return;
 
 #else
+// linux
     int errorTot;
     errorTot = 0;
+    char buff[MSG4K + 1];
+
     const char *msg __attribute__((unused));
 
     int iSignal, iSignalMax;
@@ -1547,6 +1551,8 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
     error = camera->PCO_GetHWIOSignalCount(&m_pcoData->wNrPcoHWIOSignal0);
     msg = "PCO_GetHWIOSignalCount";
     PCO_CHECK_ERROR(error, msg);
+
+
     errorTot |= error;
 
     iSignalMax = m_pcoData->wNrPcoHWIOSignal =
@@ -1554,9 +1560,13 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
             ? m_pcoData->wNrPcoHWIOSignal0
             : SIZEARR_stcPcoHWIOSignal;
 
-    DEB_ALWAYS() << "--- size"
-                 << DEB_VAR3(iSignalMax, m_pcoData->wNrPcoHWIOSignal0,
-                             m_pcoData->wNrPcoHWIOSignal);
+	__sprintfSExt(buff, sizeof(buff), "========================\n"
+		"PCO_GetHWIOSignalCount err[0x%08x]\n"
+		"  nrSignals: sdk[%d] saved[%d]\n",
+		error, 
+		m_pcoData->wNrPcoHWIOSignal0, 
+		iSignalMax);
+	m_log.append(buff);
 
     WORD wEnabled, wType, wPolarity, wFilterSetting, wSelected;
 
@@ -1565,10 +1575,13 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
         int sizeName = SIZESTR_PcoHWIOSignal;
         char *ptrName = &(m_pcoData->sPcoHWIOSignalDesc[iSignal][0]);
 
-        DEB_ALWAYS() << "---  descriptor"
-                     << DEB_VAR2(
-                            iSignal,
-                            m_pcoData->stcPcoHWIOSignalDesc[iSignal].wSize);
+
+		__sprintfSExt(buff, sizeof(buff), "=====  descriptor / signal[%d] size[%d] [BEGIN]\n",
+			iSignal,
+			m_pcoData->stcPcoHWIOSignalDesc[iSignal].wSize);
+		m_log.append(buff);
+
+
 
         // telegram structure 4 signals * 24 char
         // memset(&m_pcoData->stcPcoHWIOSignalDesc[iSignal].szSignalName[0][0],0,24*4);
@@ -1579,6 +1592,10 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
         msg = "PCO_GetHWIOSignalDescriptor (struct)";
         PCO_CHECK_ERROR(error, msg);
         errorTot |= error;
+
+		__sprintfSExt(buff, sizeof(buff), "--- PCO_GetHWIOSignalDescriptor (struct) signal[%d] err[0x%08x]\n",
+			iSignal, error);
+		m_log.append(buff);
 
         // DEB_ALWAYS()  << "---  signal" << DEB_VAR2(iSignal,
         // m_pcoData->stcPcoHWIOSignal[iSignal].wSize) ;
@@ -1595,8 +1612,11 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
         PCO_CHECK_ERROR(error, msg);
         errorTot |= error;
 
-        DEB_ALWAYS() << "---  signal name "
-                     << DEB_VAR3(iSignal, sizeName, ptrName);
+		__sprintfSExt(buff, sizeof(buff), "--- PCO_GetHWIOSignalDescriptor (name) signal[%d] err[0x%08x]\n"
+			"  nameSize[%d] name[%s]\n",
+			iSignal, error,
+			sizeName, ptrName);
+		m_log.append(buff);
 
         // m_pcoData->stcPcoHWIOSignal[iSignal].wSignalNum = iSignal;
 
@@ -1607,6 +1627,13 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
                                               &wSelected);
             msg = "PCO_GetHWIOSignal";
             PCO_CHECK_ERROR(error, msg);
+
+			__sprintfSExt(buff, sizeof(buff), "--- PCO_GetHWIOSignal signal[%d] err[0x%08x]\n"
+				"  enabled[%d] type[%d] polarity[%d] filter[%d] selected[%d]\n",
+				iSignal, error,
+				wEnabled, wType, wPolarity,
+				wFilterSetting, wSelected);
+		m_log.append(buff);
 
             // PCO3(error, msg,PCO_GetHWIOSignal, m_handle, iSignal,
             // &m_pcoData->stcPcoHWIOSignal[i]);
@@ -1619,11 +1646,13 @@ void Camera::_pco_GetHWIOSignalAll(int &error)
                 wFilterSetting;
             m_pcoData->stcPcoHWIOSignal[iSignal].wSelected = wSelected;
 
-            DEB_ALWAYS() << "---  "
-                         << DEB_VAR6(iSignal, wEnabled, wType, wPolarity,
-                                     wFilterSetting, wSelected);
-        }
-    }
+        } // if dimax
+
+		__sprintfSExt(buff, sizeof(buff), "=====  descriptor / signal[%d] [END]\n",
+			iSignal);
+		m_log.append(buff);
+
+    } // for iSignal
 
     error = errorTot;
 
@@ -2093,37 +2122,84 @@ void Camera::_pco_GetCameraType(int &error)
 
 
 
-    error = camera->PCO_GetInfo(0, &m_pcoData->nameCamIf,
-                                sizeof(m_pcoData->nameCamIf) - 1);
-    PCO_CHECK_ERROR(error, "PCO_GetInfo(0)");
-	__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(0) err[0x%08x]\n"
-			"  nameIF[%s]\n",
-			error, 
-			m_pcoData->nameCamIf);
-	m_log.append(buff);
-
-
+/// #define INFO_STRING_CAMERA              1   // Camera name
+/// #define INFO_STRING_SENSOR              2   // Sensor name
+/// #define INFO_STRING_PCO_MATERIALNUMBER  3   // get PCO material number
+/// #define INFO_STRING_BUILD               4   // Build number and date
+/// #define INFO_STRING_PCO_INCLUDE         5   // PCO_Include rev used for building
 
     
-    error = camera->PCO_GetInfo(1, &m_pcoData->nameCam,
-                                sizeof(m_pcoData->nameCam) - 1);
+	m_pcoData->infoCamName[0] = 0;
+    error = camera->PCO_GetInfo(1, &m_pcoData->infoCamName,
+                                sizeof(m_pcoData->infoCamName) - 1);
     PCO_CHECK_ERROR(error, "PCO_GetInfo(1)");
-	__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(1) err[0x%08x]\n"
-			"  nameCam[%s]\n",
-			error, 
-			m_pcoData->nameCam);
-	m_log.append(buff);
-    
-    error = camera->PCO_GetInfo(2, &m_pcoData->nameSensor,
-                                sizeof(m_pcoData->nameSensor) - 1);
-
+	if(!error)
+	{
+		__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(1) err[0x%08x]\n"
+				"  infoCamName[%s]\n",
+				error, 
+				m_pcoData->infoCamName);
+		m_log.append(buff);
+	}
+	
+	m_pcoData->infoSensorName[0] = 0;
+    error = camera->PCO_GetInfo(2, &m_pcoData->infoSensorName,
+                                sizeof(m_pcoData->infoSensorName) - 1);
     PCO_CHECK_ERROR(error, "PCO_GetInfo(2)");
+	if(!error)
+	{
+		__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(2) err[0x%08x]\n"
+				"  infoSensorName[%s]\n",
+				error, 
+				m_pcoData->infoSensorName);
+		m_log.append(buff);
+	}
 
-	__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(2) err[0x%08x]\n"
-			"  nameSensor[%s]\n",
-			error, 
-			m_pcoData->nameSensor);
-	m_log.append(buff);
+
+
+	m_pcoData->infoMaterialNr[0] = 0;
+    error = camera->PCO_GetInfo(3, &m_pcoData->infoMaterialNr,
+                                sizeof(m_pcoData->infoMaterialNr) - 1);
+    PCO_CHECK_ERROR(error, "PCO_GetInfo(3)");
+	if(!error)
+	{
+		__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(3) err[0x%08x]\n"
+				"  infoMaterialNr[%s]\n",
+				error, 
+				m_pcoData->infoMaterialNr);
+		m_log.append(buff);
+	}
+
+
+	m_pcoData->infoBuildNr[0] = 0;
+    error = camera->PCO_GetInfo(4, &m_pcoData->infoBuildNr,
+                                sizeof(m_pcoData->infoBuildNr) - 1);
+    PCO_CHECK_ERROR(error, "PCO_GetInfo(4)");
+	if(!error)
+	{
+
+		__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(4) err[0x%08x]\n"
+				"  infoBuildNr[%s]\n",
+				error, 
+				m_pcoData->infoBuildNr);
+		m_log.append(buff);
+	}
+
+
+	m_pcoData->infoIncludeRev[0] = 0;
+    error = camera->PCO_GetInfo(5, &m_pcoData->infoIncludeRev,
+                                sizeof(m_pcoData->infoIncludeRev) - 1);
+    PCO_CHECK_ERROR(error, "PCO_GetInfo(5)");
+	if(!error)
+	{
+		__sprintfSExt(buff, sizeof(buff), "PCO_GetInfo(5) err[0x%08x]\n"
+				"  infoIncludeRev[%s]\n",
+				error, 
+				m_pcoData->infoIncludeRev);
+		m_log.append(buff);
+	}
+
+
 
     DEB_ALWAYS() << "\n   " 
  
@@ -2133,9 +2209,12 @@ void Camera::_pco_GetCameraType(int &error)
 				<< "               " << DEB_VAR1(serialnumber) << "\n   "
 				<< "               " << DEB_VAR2(iftype, m_pcoData->iface) << "\n   "
 				<< "               " << DEB_VAR1(m_pcoData->camera_name) << "\n   "
-				<< "   GetInfo(0): " << DEB_VAR1(m_pcoData->nameCamIf) << "\n   "
-                << "   GetInfo(1): " << DEB_VAR1(m_pcoData->nameCam) << "\n   "
-                << "   GetInfo(2): " << DEB_VAR1(m_pcoData->nameSensor);
+                << "   GetInfo(1): " << DEB_VAR1(m_pcoData->infoCamName) << "\n   "
+                << "   GetInfo(2): " << DEB_VAR1(m_pcoData->infoSensorName) << "\n   "
+                << "   GetInfo(3): " << DEB_VAR1(m_pcoData->infoMaterialNr) << "\n   "
+                << "   GetInfo(4): " << DEB_VAR1(m_pcoData->infoBuildNr) << "\n   "
+                << "   GetInfo(5): " << DEB_VAR1(m_pcoData->infoIncludeRev)
+                ;
 
 #endif
 

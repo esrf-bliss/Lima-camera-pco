@@ -572,9 +572,12 @@ namespace lima
             char model[MODEL_TYPE_SIZE + 1];
             char modelSubType[MODEL_TYPE_SIZE + 1];
             char iface[INTERFACE_TYPE_SIZE + 1];
-            char nameCamIf[LEN_DESCRIPTION_NAME];
-            char nameCam[LEN_DESCRIPTION_NAME];
-            char nameSensor[LEN_DESCRIPTION_NAME];
+
+            char infoCamName[LEN_DESCRIPTION_NAME];
+            char infoSensorName[LEN_DESCRIPTION_NAME];
+            char infoMaterialNr[LEN_DESCRIPTION_NAME];
+            char infoBuildNr[LEN_DESCRIPTION_NAME];
+            char infoIncludeRev[LEN_DESCRIPTION_NAME];
 
             PCO_SC2_CL_TRANSFER_PARAM clTransferParam;
             int pcoError;

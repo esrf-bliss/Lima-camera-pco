@@ -4,6 +4,158 @@
 #===================================================
 #===================================================
 
+fdcf229d1c5b9e2e127c621da03d060c 2013-11-20 PCO_me4 sc2_defs.h
+e13af97482f93073445da894ff6c9785 2015-10-16 pco_common sc2_defs.h
+7fd4e9755d074d0dca8a16477a0d877b 2015-11-23 pco_camera_me4 sc2_defs.h
+d7ca75a77939403f9cc00fd691567f32 2017-03-15 pco_clhs_x64_1_02_03 sc2_defs.h
+
+
+eedfbdf951dd6a4b9d876c6be5e03508 2020-04-27 pco_clhs_x64_1_02_05 sc2_defs.h
+
+
+-rw-r--r-- 1 homsrego soft  13951 May  5 10:45 SC2_SDKAddendum.h
+-rw-r--r-- 1 homsrego soft 113036 May  5 10:45 sc2_telegram.h
+-rw-r--r-- 1 homsrego soft   2063 May  5 10:45 simpledialog.h
+-rw------- 1 homsrego soft   2206 May  5 10:45 VersionNo.h
+rnice8-0207:pco_camera/pco_clhs/bin % rm -f /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/*rnice8-0207:pco_camera/pco_clhs/bin %
+
+find /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/ -name "*.h" | xargs  cp -t /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/
+
+cp: will not overwrite just-created ‘/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/pco_includes.h’ with ‘/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/pco_classes/pco_includes.h’
+
+cp: will not overwrite just-created ‘/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/VersionNo.h’ with ‘/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/VersionNo.h’
+
+
+rnice8-0207:pco_camera/pco_clhs/bin % md5sum /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/pco_includes.h /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/pco_classes/pco_includes.h
+d09741a06e44032c56560206773fecad  
+
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/pco_includes.h
+837e43781b38708a7c73578889a6948b  
+
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/pco_classes/pco_includes.h
+rnice8-0207:pco_camera/pco_clhs/bin % md5sum /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/VersionNo.h  /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/VersionNo.h
+a8bc444d445e6acf069620dfc0855d1a  
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/VersionNo.h
+
+e59ae646cd63ef86486497508766f353  /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/VersionNo.h
+rnice8-0207:pco_camera/pco_clhs/bin % find /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/ -name "VersionNo.h"
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_clhs/pco_classes/VersionNo.h
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/VersionNo.h
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/VersionNo.h
+rnice8-0207:pco_camera/pco_clhs/bin % meld /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/VersionNo.h /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_clhs/pco_classes/VersionNo.h
+
+
+rnice8-0207:pco_camera/pco_clhs/bin % find /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/ -name "pco_includes.h"
+
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_clhs/pco_classes/pco_includes.h
+
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/pco_classes/pco_includes.h
+
+/bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/include-all/pco_includes.h
+
+rnice8-0207:pco_camera/pco_clhs/bin % meld /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_clhs/pco_classes/pco_includes.h /bliss/users/homsrego/notes/pco-linux/PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working/pco_camera/pco_common/pco_classes/pco_includes.h
+
+
+
+
+
+% find pco_camera/ -name "VersionNo.h" | xargs md5sum
+a8bc444d445e6acf069620dfc0855d1a  pco_camera/pco_clhs/pco_classes/VersionNo.h
+e59ae646cd63ef86486497508766f353  pco_camera/pco_common/VersionNo.h
+
+% find pco_camera/ -name "pco_includes.h" | xargs md5sum
+d09741a06e44032c56560206773fecad  pco_camera/pco_clhs/pco_classes/pco_includes.h
+837e43781b38708a7c73578889a6948b  pco_camera/pco_common/pco_classes/pco_includes.h
+
+
+
+
+pco_camera/pco_clhs/pco_classes/Cpco_com_clhs.h
+pco_camera/pco_clhs/pco_classes/Cpco_grab_clhs.h
+pco_camera/pco_clhs/pco_classes/pco_includes.h
+pco_camera/pco_clhs/pco_classes/VersionNo.h
+
+pco_camera/pco_clhs/pco_clhs_common/clhs_register.h
+pco_camera/pco_clhs/pco_clhs_common/pco_clhs_cam.h
+pco_camera/pco_clhs/pco_clhs_common/portable_endian.h
+
+pco_camera/pco_clhs/qt_pco_camera_clhs/clhs_grabthreadworker.h
+pco_camera/pco_clhs/qt_pco_camera_clhs/clhs_livethreadworker.h
+pco_camera/pco_clhs/qt_pco_camera_clhs/interface_includes.h
+
+pco_camera/pco_common/pco_classes/Cpco_com_func_2.h
+pco_camera/pco_common/pco_classes/Cpco_com_func.h
+pco_camera/pco_common/pco_classes/Cpco_com.h
+pco_camera/pco_common/pco_classes/pco_includes.h
+
+pco_camera/pco_common/pco_include/Ccambuf.h
+pco_camera/pco_common/pco_include/cnvbw.h
+pco_camera/pco_common/pco_include/cnv_s.h
+pco_camera/pco_common/pco_include/correctionmode.h
+pco_camera/pco_common/pco_include/Cpcodisp.h
+pco_camera/pco_common/pco_include/Cpco_log.h
+pco_camera/pco_common/pco_include/defs.h
+pco_camera/pco_common/pco_include/file12.h
+pco_camera/pco_common/pco_include/pcocnv.h
+pco_camera/pco_common/pco_include/PCO_err.h
+pco_camera/pco_common/pco_include/PCO_errtext.h
+pco_camera/pco_common/pco_include/PCO_errt.h
+pco_camera/pco_common/pco_include/PCO_errt_w.h
+pco_camera/pco_common/pco_include/reorderfunc.h
+pco_camera/pco_common/pco_include/sc2_cl_defs.h
+pco_camera/pco_common/pco_include/sc2_command.h
+pco_camera/pco_common/pco_include/sc2_command_toString.h
+pco_camera/pco_common/pco_include/sc2_common.h
+pco_camera/pco_common/pco_include/sc2_defs.h
+pco_camera/pco_common/pco_include/SC2_drv_struct.h
+pco_camera/pco_common/pco_include/SC2_SDKAddendum.h
+pco_camera/pco_common/pco_include/sc2_telegram.h
+
+pco_camera/pco_common/qt_pco_camera/cameradescription.h
+pco_camera/pco_common/qt_pco_camera/camerasetup.h
+pco_camera/pco_common/qt_pco_camera/errorpopup.h
+pco_camera/pco_common/qt_pco_camera/exposuretime.h
+pco_camera/pco_common/qt_pco_camera/imageconvert.h
+pco_camera/pco_common/qt_pco_camera/infopopup.h
+pco_camera/pco_common/qt_pco_camera/memorymanager.h
+pco_camera/pco_common/qt_pco_camera/qt_pco_camera.h
+pco_camera/pco_common/qt_pco_camera/resource.h
+pco_camera/pco_common/qt_pco_camera/simpledialog.h
+
+pco_camera/pco_common/VersionNo.h
+
+
+pco_camera/pco_clhs/pco_classes/
+pco_camera/pco_clhs/pco_clhs_common/
+pco_camera/pco_clhs/qt_pco_camera_clhs/
+pco_camera/pco_common/pco_classes/
+pco_camera/pco_common/qt_pco_camera
+pco_camera/pco_common/
+
+pco_camera/pco_common/pco_include/
+
+
+nice8-0207:PCO-SDK-LINUX-DOWNLOAD/2020-04-27-pco_clhs_x64_1_02_05/working % find pco_camera/pco_common/pco_include/*.h | xargs grep include
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include <X11/Xlib.h>
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include <X11/X.h>
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include <X11/Intrinsic.h>
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include <X11/StringDefs.h>
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include <X11/extensions/XShm.h>
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include "defs.h" ok
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include "PCO_err.h" ok
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include "Ccambuf.h" ok
+pco_camera/pco_common/pco_include/Cpcodisp.h:#include "Cpco_log.h" ok
+
+pco_camera/pco_common/pco_include/Cpco_log.h:#include "defs.h" ok
+
+pco_camera/pco_common/pco_include/defs.h:#include <stdint.h>
+
+pco_camera/pco_common/pco_include/pcocnv.h:#include "cnv_s.h" ok
+pco_camera/pco_common/pco_include/PCO_errtext.h:#include "PCO_err.h" ok
+pco_camera/pco_common/pco_include/PCO_errt.h:#include "PCO_err.h" ok
+pco_camera/pco_common/pco_include/PCO_errt_w.h:#include "PCO_err.h" ok
+pco_camera/pco_common/pco_include/sc2_telegram.h:#include "sc2_common.h" ok
+
 
 
 2020/05/01 19:22:03.032718] Pco::Camera::_init (/users/blissadm/lima/lima/camera/pco/src/PcoCamera.cpp:816): _init linux [EXIT]
