@@ -993,6 +993,8 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 
 #ifdef CLHS
 
+    char buff[MSG4K + 1];
+
     const char *_msgAbort = "notSet";
     TIME_USEC tStart;
     TIME_USEC tXferStart;
@@ -1008,7 +1010,13 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
     void *limaBuffPtr;
     void *pcoBuffPtr;
     DWORD width, height;
+    int _nrStop;
+    int timeoutMs, timeoutMsTot;
+    int timeoutMsMax = 10 * (60 * 1000);
+    int timeoutMs0 = 1000;
 
+
+    
 
 
 	CPco_grab_clhs *grabber = m_cam.grabber_clhs;
@@ -1018,8 +1026,10 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 	}
 	
 
-    int timeoutMs;
-    grabber->Get_Grabber_Timeout(&timeoutMs);
+	err = grabber->Set_Grabber_Timeout(timeoutMs0);
+    PCO_CHECK_ERROR1(err, "Set_Grabber_Timeout");
+    err = grabber->Get_Grabber_Timeout(&timeoutMs);
+    PCO_CHECK_ERROR1(err, "Get_Grabber_Timeout");
 
     AutoMutex aLock(m_cam.m_cond_thread.mutex());
 
@@ -1165,6 +1175,19 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
         bool bAbort = false;
         Event::Severity abortSeverity = Event::Error;
 
+		double exp_time_ms = m_cam.m_pcoData->traceAcq.sExposure * 1000.0;
+		double lat_time_ms = m_cam.m_pcoData->traceAcq.sDelay * 1000.0;
+		double coc_time_ms = m_cam.m_pcoData->traceAcq.msImgCoc;
+
+		__sprintfSExt(buff, sizeof(buff), "*** %s [%s] acq loop [ENTRY]\n"
+			"  nrFrames[%d] timeout: now[%d ms] default[%d ms] max[%g min]\n"
+			"  expTime[%g ms] latTime[%g ms] cocTime[%g ms]\n",
+		fnId, getTimestamp(Iso),
+		_nb_frames, timeoutMs, timeoutMs0, timeoutMsMax/60000.0,
+		exp_time_ms, lat_time_ms, coc_time_ms);
+		DEB_ALWAYS() << buff;
+		m_cam.m_log.append(buff);
+
         while (!m_cam.m_wait_flag && continueAcq &&
                ((_nb_frames == 0) || limaFrameNr < _nb_frames))
         {
@@ -1208,18 +1231,47 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             //err=grabber->Wait_For_Next_Image(picbuf[buf_nr],timeout);
 			//err = grabber->Wait_For_Next_Image(&pcoBuffIdx, 10);
             
-            err = grabber->Wait_For_Next_Image(limaBuffPtr, timeoutMs);
-            PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
-            if (err != PCO_NOERROR)
+            timeoutMsTot = 0;
+            while(true)
             {
-                m_cam.m_pcoData->traceAcq.nrErrors++;
-                _msgAbort = "ABORT - Wait_For_Next_Image ";
-                DEB_ALWAYS() << _msgAbort << DEB_VAR1(pcoFrameNr);
-                continueAcq = false;
-                m_cam.m_wait_flag = true;
-                bAbort = true;
-                break; // while frames
-            }
+				err = grabber->Wait_For_Next_Image(limaBuffPtr, timeoutMs);
+				PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
+				
+				if ( err == PCO_NOERROR)
+				{
+					break;
+				}
+				
+				if ((m_cam.getRequestStop(_nrStop)))
+				{
+					break;
+				}
+
+				if ( err & (PCO_ERROR_TIMEOUT | PCO_ERROR_DRIVER | PCO_ERROR_DRIVER_CAMERALINK))
+				{
+					timeoutMsTot += timeoutMs;
+					if(timeoutMsTot > timeoutMsMax)
+					{
+						break;
+					}
+				}
+			} // while(true) - wait loop
+
+
+			if (err != PCO_NOERROR)
+			{
+				m_cam.m_pcoData->traceAcq.nrErrors++;
+				_msgAbort = "ABORT - Wait_For_Next_Image ";
+				DEB_ALWAYS() << _msgAbort << DEB_VAR1(pcoFrameNr);
+				continueAcq = false;
+				m_cam.m_wait_flag = true;
+				bAbort = true;
+				break; // while frames
+			}
+
+
+
+
 
             // DEB_ALWAYS()  << "lima image#  " << DEB_VAR1(limaFrameNr) <<"
             // acquired !";
@@ -1256,7 +1308,6 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             }
             ++limaFrameNr;
 
-            int _nrStop;
             if ((m_cam.getRequestStop(_nrStop)))
             {
                 _msgAbort = "STOP REQUEST";

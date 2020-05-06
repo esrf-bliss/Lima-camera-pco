@@ -4477,9 +4477,16 @@ void Camera::_pco_GetTransferParameter(int &err)
 #ifdef __linux__
     char buff[MSG4K + 1];
 	const char *cmsg;
+    cmsg = "PCO_GetTransferParameter";
+
+	if(_isInterfaceType(ifCameralinkHS))
+	{
+		__sprintfSExt(buff, sizeof(buff), "%s BYPASSED not valid in CLHS\n", cmsg);
+		m_log.append(buff);
+		return;
+	}
 
 	memset((void *) &clpar, 0, sizeof (clpar));
-    cmsg = "PCO_GetTransferParameter";
     err = camera->PCO_GetTransferParameter(&clpar, sizeof(clpar));
     PCO_CHECK_ERROR(err, cmsg);
     __sprintfSExt(buff, sizeof(buff), "%s err[0x%08x]\n"
