@@ -1234,21 +1234,27 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             timeoutMsTot = 0;
             while(true)
             {
+                DEB_ALWAYS() << "---------------- Wait_For_Next_Image [BEFORE]";
 				err = grabber->Wait_For_Next_Image(limaBuffPtr, timeoutMs);
-				PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
+                PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
+				DEB_ALWAYS() << "---------------- Wait_For_Next_Image [AFTER]";
 				
 				if ( err == PCO_NOERROR)
 				{
+                    DEB_ALWAYS() << "---------------- Wait_For_Next_Image [NO ERROR]";
 					break;
 				}
-				
+						
 				if ((m_cam.getRequestStop(_nrStop)))
 				{
+                    DEB_ALWAYS() << "---------------- Wait_For_Next_Image [STOP]";
 					break;
 				}
 
 				if ( err & (PCO_ERROR_TIMEOUT | PCO_ERROR_DRIVER | PCO_ERROR_DRIVER_CAMERALINK))
 				{
+                    DEB_ALWAYS() << "---------------- Wait_For_Next_Image [TIMEOUT]";
+                    break;
 					timeoutMsTot += timeoutMs;
 					if(timeoutMsTot > timeoutMsMax)
 					{

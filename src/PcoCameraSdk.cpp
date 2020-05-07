@@ -2709,26 +2709,44 @@ void Camera::_pco_SetTriggerMode_SetAcquireMode(int &error)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
-    const char *msg;
+    char buff[MSG4K + 1];
 
-    WORD trigmode, acqmode;
+	const char *cmsg;
+    const char *msg;
+    const char *sLimaTriggerMode, *sPcoTriggerMode, *sPcoAcqMode; 
+
+    WORD wPcoTriggerMode, wPcoAcqMode;
 
     lima::TrigMode limaTrigMode;
     m_sync->getTrigMode(limaTrigMode);
-    m_sync->xlatLimaTrigMode2Pco(limaTrigMode, trigmode, acqmode,
-                                 m_pcoData->bExtTrigEnabled, error);
+    m_sync->xlatLimaTrigMode2Pco(limaTrigMode, wPcoTriggerMode, wPcoAcqMode,
+                                &sLimaTriggerMode, &sPcoTriggerMode, &sPcoAcqMode,
+                                m_pcoData->bExtTrigEnabled, error);
 
+
+    cmsg = "_pco_SetTriggerMode_SetAcquireMode";
+    __sprintfSExt(buff, sizeof(buff), "%s err[0x%08x]\n"
+		"  limaTrigMode[%d][%s]\n"
+        "   pcoTrigMode[%d][%s]\n"
+        "    pcoAcqMode[%d][%s]\n",
+		cmsg, error, 
+        limaTrigMode, sLimaTriggerMode,
+        wPcoTriggerMode, sPcoTriggerMode,
+        wPcoAcqMode, sPcoAcqMode);
+	m_log.append(buff);
+
+    
     //------------------------------------------------- triggering mode
 #ifndef __linux__
-    PCO_FN2(error, msg, PCO_SetTriggerMode, m_handle, trigmode);
+    PCO_FN2(error, msg, PCO_SetTriggerMode, m_handle, wPcoTriggerMode);
 #else
-    error = camera->PCO_SetTriggerMode(trigmode);
+    error = camera->PCO_SetTriggerMode(wPcoTriggerMode);
     msg = "PCO_SetTriggerMode";
     PCO_CHECK_ERROR(error, msg);
 #endif
     if (error)
     {
-        DEB_ALWAYS() << "ERROR PCO_SetTriggerMode" << DEB_VAR1(trigmode);
+        DEB_ALWAYS() << "ERROR PCO_SetTriggerMode" << DEB_VAR1(wPcoTriggerMode);
         return;
     }
 
@@ -2736,15 +2754,15 @@ void Camera::_pco_SetTriggerMode_SetAcquireMode(int &error)
     // ext. signal
 
 #ifndef __linux__
-    PCO_FN2(error, msg, PCO_SetAcquireMode, m_handle, acqmode);
+    PCO_FN2(error, msg, PCO_SetAcquireMode, m_handle, wPcoAcqMode);
 #else
-    error = camera->PCO_SetAcquireMode(acqmode);
+    error = camera->PCO_SetAcquireMode(wPcoAcqMode);
     msg = "PCO_SetAcquireMode";
     PCO_CHECK_ERROR(error, msg);
 #endif
     if (error)
     {
-        DEB_ALWAYS() << "ERROR PCO_SetAcquireMode" << DEB_VAR1(acqmode);
+        DEB_ALWAYS() << "ERROR PCO_SetAcquireMode" << DEB_VAR1(wPcoAcqMode);
         return;
     }
 
