@@ -340,6 +340,49 @@ void Camera::_pco_Open_Cam(int &err)
 
 //=================================================================================================
 //=================================================================================================
+
+//=================================================================================================
+//  All these classes
+//  CPco_grab_cl_me4_camera , CPco_grab_cl_me4_edge ,CPco_grab_cl_me4_edge42, CPco_grab_cl_me4_edge_GL
+//  are subclasses from CPco_grab_cl_me4, with special acquire functions
+
+//  For cameralink and pco.2000, pco.dimax,...
+//  CPco_com *camera;
+//  CPco_grab_cl_me4* grabber;
+//  grabber=new CPco_grab_cl_me4_camera((CPco_com_cl_me4*)camera);
+
+//  For cameralink and pco.edge 5.5 Rolling shutter
+//  CPco_com *camera;
+//  CPco_grab_cl_me4* grabber;
+//  grabber=new CPco_grab_cl_me4_edge((CPco_com_cl_me4*)camera);
+
+//  For cameralink and pco.edge 4.2 Rolling shutter
+//  CPco_com *camera;
+//  CPco_grab_cl_me4* grabber;
+//  grabber=new CPco_grab_cl_me4_edge42((CPco_com_cl_me4*)camera);
+
+//  For cameralink and pco.edge Global shutter
+//  CPco_com *camera;
+//  CPco_grab_cl_me4* grabber;
+//  grabber=new CPco_grab_cl_me4_edge_GL ((CPco_com_cl_me4*)camera);
+
+//  CLHS and USB do not need special acquire functions for camera types 
+//      (resp. the specials are built in the main class) so you just have 
+//      to use the main classes.
+//  CPco_com* camera;
+//  CPco_grab_clhs* grabber;
+//  grabber=new CPco_grab_clhs((CPco_com_clhs*)camera);
+
+//  CPco_com* camera;
+//  CPco_grab_usb* grabber;
+//  grabber=new CPco_grab_usb((CPco_com_usb*)camera);
+
+//  Class CPco_com is the main class for communication with the interface specific subclasses:
+//     CPco_com_cl_me4, CPco_com_clhs, CPco_com_usb
+//=================================================================================================
+
+
+
 void Camera::_pco_Open_Grab(int &err)
 {
     DEB_MEMBER_FUNCT();
