@@ -43,7 +43,7 @@ else()
     set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
 
 
-    find_path(SISO_INCLUDE NAMES sisoboards.h HINTS ${PCO_SDKLIN_DIR}/include)
+    find_path(SISO_INCLUDE NAMES sisoboards.h HINTS ${PCO_SDKLIN_DIR}/siso_include)
     #find_path(SISO_INCLUDE sisoboards.h)
 
     message("==========================================================")
@@ -56,10 +56,13 @@ else()
         ${SISO_INCLUDE}
 
         ${PCO_SDKLIN_DIR}
-        ${PCO_SDKLIN_DIR}/include
         ${PCO_SDKLIN_DIR}/pco_common/pco_include
         ${PCO_SDKLIN_DIR}/pco_common/pco_classes
+        #${PCO_SDKLIN_DIR}/include
         ${PCO_SDKLIN_DIR}/pco_me4/pco_classes
+        ${PCO_SDKLIN_DIR}/pco_clhs/pco_classes
+        ${PCO_SDKLIN_DIR}/pco_clhs/pco_clhs_common
+        
 
         ${PCO_SDKWIN_DIR}/include
     )
@@ -68,18 +71,43 @@ else()
     set(PCOLIB2)
     set(PCOLIB3)
     set(PCOLIB4)
-    find_library(PCOLIB1 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
+    set(PCOLIB5)
+    set(PCOLIB6)
+    set(PCOLIB7)
+    
+    #find_library(PCOLIB1 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
     find_library(PCOLIB2 pcofile HINTS ${PCO_SDK_LIB_DIR})
     find_library(PCOLIB3 pcolog HINTS ${PCO_SDK_LIB_DIR})
     find_library(PCOLIB4 reorderfunc HINTS ${PCO_SDK_LIB_DIR})
+    find_library(PCOLIB5 pcocam_clhs HINTS ${PCO_SDK_LIB_DIR})
+    find_library(PCOLIB6 pcoclhs HINTS ${PCO_SDK_LIB_DIR})
+
+    #find_library(PCOLIB6 pcodisp HINTS ${PCO_SDK_LIB_DIR})
+
+#DISPLIB    = $(PCOLIBDIR)/libpcodisp.a
+#LOGLIB     = $(PCOLIBDIR)/libpcolog.a
+#FILELIB    = $(PCOLIBDIR)/libpcofile.a
+#REORDERLIB = $(PCOLIBDIR)/libreorderfunc.a
+#CAMLIB     = $(PCOLIBDIR)/libpcocam_clhs.a
+
+    message("==========================================================")
+    message("PCOLIB1: [${PCOLIB1}]")
+    message("PCOLIB2: [${PCOLIB2}]")
+    message("PCOLIB3: [${PCOLIB3}]")
+    message("PCOLIB4: [${PCOLIB4}]")
+    message("PCOLIB5: [${PCOLIB5}]")
+    message("PCOLIB6: [${PCOLIB6}]")
+    message("PCOLIB7: [${PCOLIB7}]")
+    message("==========================================================")
+
 
     set(SISOLIB1)
     set(SISOLIB2)
     set(SISOLIB3)
 
-    find_library(SISOLIB1 NAMES fglib5 HINTS ${SISODIR5}/lib)
-    find_library(SISOLIB2 NAMES clsersis HINTS ${SISODIR5}/lib)
-    find_library(SISOLIB3 NAMES haprt HINTS ${SISODIR5}/lib)
+    find_library(SISOLIB1 NAMES fglib5 HINTS ${SISODIR5}/lib64)
+    find_library(SISOLIB2 NAMES clsersis HINTS ${SISODIR5}/lib64)
+    find_library(SISOLIB3 NAMES haprt HINTS ${SISODIR5}/lib64)
 
     #find_library(SISOLIB1 fglib5)
     #find_library(SISOLIB2 clsersis)
@@ -94,7 +122,11 @@ else()
     message("==========================================================")
 
     list(APPEND PCO_LIBRARIES 
-        ${PCOLIB1} ${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
+        #${PCOLIB1} 
+        ${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
+        ${PCOLIB5} 
+        ${PCOLIB6} 
+        #${PCOLIB7}
         ${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
     )
 
