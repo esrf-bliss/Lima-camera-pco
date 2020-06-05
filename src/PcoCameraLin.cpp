@@ -1011,9 +1011,20 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
     void *pcoBuffPtr;
     DWORD width, height;
     int _nrStop;
+
+
+	/// 2020/05/18
+	/// in this moment grabber->Wait_For_Next_Image can't be recalled again
+	/// support is working to fix this
+	/// now -> we will use timeout ~ 5 - 10s
+	/// if timeout ABORT
+	
+
+
     int timeoutMs, timeoutMsTot;
-    int timeoutMsMax = 10 * (60 * 1000);
-    int timeoutMs0 = 1000;
+    int timeoutMsMax = 10 * (60 * 1000); 
+    int timeoutMs0 = 5000;  // 5 sec  will not retry Wait_For_Next_Image
+    
 
 
     
@@ -1231,7 +1242,9 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             //err=grabber->Wait_For_Next_Image(picbuf[buf_nr],timeout);
 			//err = grabber->Wait_For_Next_Image(&pcoBuffIdx, 10);
             
+            
             timeoutMsTot = 0;
+            
             while(true)
             {
                 DEB_ALWAYS() << "---------------- Wait_For_Next_Image [BEFORE]";
@@ -1255,6 +1268,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 				{
                     DEB_ALWAYS() << "---------------- Wait_For_Next_Image [TIMEOUT]";
                     break;
+                    // we will NOT retry -> ABORT
 					timeoutMsTot += timeoutMs;
 					if(timeoutMsTot > timeoutMsMax)
 					{
