@@ -1,0 +1,92 @@
+#!/bin/bash
+#====================================================================
+#====================================================================
+#====================================================================
+TIMESTAMP=`date "+%Y-%m-%d-%H%M%S" `
+
+#REMHOST=blissadm@lid193
+
+LIMA_TMP_DIR_COMMON="Lima_tmp"
+LIMA_TMP_DIR="${LIMA_TMP_DIR_COMMON}_${TIMESTAMP}"
+LIMA_TMP_DIR_FULL="${LIMA_TMP_DIR}_full"
+
+#LIMA_LIMA="/nobackup/lid00limace1/rhoms/Lima"
+LIMA_LIMA="$HOME/lima/lima"
+LIMA_PCO=${LIMA_LIMA}/camera/pco
+LIMA_INST=${LIMA_LIMA}/install-cmake
+
+BUILD_DIR=build
+
+CONDA_ENV=limadev1
+
+
+#====================================================================
+#====================================================================
+#                          MAIN
+#====================================================================
+#====================================================================
+
+echo "------------------------------- init"
+cd
+. .bashrc
+#. pcorc
+#. /opt/SiliconSoftware/Runtime5.2.2/setup-siso-env.sh
+#conda activate v18a
+#conda activate limadev 
+
+conda deactivate
+conda deactivate
+
+pwd
+
+echo "------------------------------- SISO DIR"
+echo $SISODIR5
+
+echo "------------------------------- setId"
+pwd
+cd ${LIMA_PCO}
+./setId
+
+echo "------------------------------- cleaning cache LIMA"
+cd ${LIMA_LIMA}
+pwd
+
+rm -fr ${BUILD_DIR} ${LIMA_INST}
+find ./ -name "CMakeCache.txt" | xargs rm
+
+echo "------------------------------- cleaning cache PCO"
+cd ${LIMA_PCO}
+pwd
+
+rm -fr build/CMakeFiles/ build/sip build/pco
+rm -f build/*
+
+
+echo "------------------------------- enviroment ${CONDA_ENV}"
+conda activate ${CONDA_ENV};
+
+echo "------------------------------- cd LIMA"
+cd ${LIMA_LIMA};
+pwd
+
+PREFIX=${CONDA_PREFIX}
+SP_DIR=$(python -c "import sysconfig; print(sysconfig.get_paths().get('platlib'))") 
+
+echo "------------------------------- cd PCO"
+cd ${LIMA_PCO};
+pwd
+
+echo "------------------------------- CMAKE (1)"
+cmake -Bbuild -H. -DLIMA_ENABLE_PYTHON=1 -DWITH_GIT_VERSION=1 -DCAMERA_ENABLE_TESTS=1 -DCMAKE_INSTALL_PREFIX=$PREFIX -DPYTHON_SITE_PACKAGES_DIR=$SP_DIR -DCMAKE_FIND_ROOT_PATH=$PREFIX
+
+echo "------------------------------- CMAKE (2)"
+cmake --build build
+
+
+#==================================================================
+#==================================================================
+echo "------------------------------- EXIT"
+exit
+#==================================================================
+#==================================================================
+
