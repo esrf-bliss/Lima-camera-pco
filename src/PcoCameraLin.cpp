@@ -1247,10 +1247,10 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             
             while(true)
             {
-                DEB_ALWAYS() << "---------------- Wait_For_Next_Image [BEFORE]";
+                //DEB_ALWAYS() << "---------------- Wait_For_Next_Image [BEFORE]";
 				err = grabber->Wait_For_Next_Image(limaBuffPtr, timeoutMs);
                 PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
-				DEB_ALWAYS() << "---------------- Wait_For_Next_Image [AFTER]";
+				//DEB_ALWAYS() << "---------------- Wait_For_Next_Image [AFTER]";
 				
 				if ( err == PCO_NOERROR)
 				{
