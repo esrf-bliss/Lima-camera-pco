@@ -41,7 +41,7 @@ else()
     set(SISODIR5 $ENV{SISODIR5} CACHE PATH "location of SISO Linux SDK ")
     set(PCO_SDKLIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPcoLin" CACHE PATH "location of PCO Linux SDK")
     set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
-
+    set(PCO_SDK_BIN_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_bin" CACHE PATH "location of PCO Linux SDK binary")
 
     find_path(SISO_INCLUDE NAMES sisoboards.h HINTS ${PCO_SDKLIN_DIR}/siso_include)
     #find_path(SISO_INCLUDE sisoboards.h)

@@ -197,6 +197,15 @@ install(
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
+if(NOT WIN32)
+  install(
+    PROGRAMS
+      ${PCO_SDK_BIN_DIR}/pco_clhs_info
+      ${PCO_SDK_BIN_DIR}/pco_clhs_mgr
+    DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+endif()
+
 message("... LIMA_ENABLE_PYTHON: [${LIMA_ENABLE_PYTHON}]")
 message("... PYTHON_SITE_PACKAGES_DIR: [${PYTHON_SITE_PACKAGES_DIR}]")
 if(LIMA_ENABLE_PYTHON)
