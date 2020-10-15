@@ -2476,7 +2476,7 @@ void Camera::_pco_GetPixelRate(DWORD &pixRateActual, DWORD &pixRateNext,
                       ? m_pcoData->dwPixelRateRequested
                       : pixRateActual;
 
-    DEB_ALWAYS() << "\n   " << DEB_VAR1(pixRateActual) << "\n   "
+    DEB_TRACE() << "\n   " << DEB_VAR1(pixRateActual) << "\n   "
                  << DEB_VAR1(pixRateNext);
 
 #endif
@@ -3034,7 +3034,7 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         __sprintfSExt(pbla, myblamax - pbla, " / width[%d][%d] height[%d][%d]",
                       width, wXResMax, height, wYResMax);
 
-    DEB_ALWAYS() << mybla;
+    DEB_TRACE() << mybla;
     // mylog->writelog(INFO_M, "%s", bla);
     mylog->writelog(INFO_M, mybla);
 

@@ -80,7 +80,7 @@ void BufferCtrlObj::prepareAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << "[ENTRY]";
+    DEB_TRACE() << "[ENTRY]";
     _pcoAllocBuffers();
 
     FrameDim dim;

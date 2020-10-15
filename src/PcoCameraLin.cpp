@@ -1071,8 +1071,8 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             m_cam.m_cond_thread.wait();
         } // while wait
 
-        DEB_ALWAYS() << "++++++++++++++++++++++++++++++++++Run "
-                     << getTimestamp(Iso);
+        DEB_TRACE() << "++++++++++++++++++++++++++++++++++Run "
+                    << getTimestamp(Iso);
         m_cam.m_thread_running = true;
         if (m_cam.m_quit)
             return;
@@ -1125,7 +1125,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
         if (err)
             m_cam.m_pcoData->traceAcq.nrErrors++;
 
-        DEB_ALWAYS() << DEB_VAR3(width, height, _nb_frames);
+        DEB_TRACE() << DEB_VAR3(width, height, _nb_frames);
 
         // bool acquireFirst = m_cam._isCameraType(Edge) &&
         // m_cam._isInterfaceType(INTERFACE_CAMERALINK);
@@ -1135,7 +1135,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
         errTot = 0;
         if (acquireFirst)
         {
-            DEB_ALWAYS() << "Start_Acquire";
+            DEB_TRACE() << "Start_Acquire";
             err = grabber->Start_Acquire();
             PCO_CHECK_ERROR1(err, "Start_Acquire");
             if (err)
@@ -1144,7 +1144,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
                 m_cam.m_pcoData->traceAcq.nrErrors++;
             }
 
-            DEB_ALWAYS() << "_pco_SetRecordingState(1)";
+            DEB_TRACE() << "_pco_SetRecordingState(1)";
             m_cam._pco_SetRecordingState(1, err);
             PCO_CHECK_ERROR1(err, "SetRecordingState(1)");
             if (err)
@@ -1196,7 +1196,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 		fnId, getTimestamp(Iso),
 		_nb_frames, timeoutMs, timeoutMs0, timeoutMsMax/60000.0,
 		exp_time_ms, lat_time_ms, coc_time_ms);
-		DEB_ALWAYS() << buff;
+		DEB_TRACE() << buff;
 		m_cam.m_log.append(buff);
 
         while (!m_cam.m_wait_flag && continueAcq &&
@@ -1254,7 +1254,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 				
 				if ( err == PCO_NOERROR)
 				{
-                    DEB_ALWAYS() << "---------------- Wait_For_Next_Image [NO ERROR]";
+                    //DEB_ALWAYS() << "---------------- Wait_For_Next_Image [NO ERROR]";
 					break;
 				}
 						
@@ -1839,7 +1839,7 @@ void Camera::_stopAcq(bool waitForThread)
 {
     DEB_MEMBER_FUNCT();
 
-    DEB_ALWAYS() << "[entry]" << DEB_VAR2(waitForThread, m_status);
+    DEB_TRACE() << "[entry]" << DEB_VAR2(waitForThread, m_status);
 
     m_wait_flag = true;
     return;
@@ -1880,7 +1880,7 @@ void Camera::__startAcq()
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
-    DEB_ALWAYS() << "[ENTRY]";
+    DEB_TRACE() << "[ENTRY]";
 
     m_acq_frame_nb = -1;
     m_pcoData->pcoError = 0;
@@ -1910,7 +1910,7 @@ void Camera::__startAcq()
 
     //------------------------------------------------- start acquisition
 
-    DEB_ALWAYS() << "[... starting]";
+    DEB_TRACE() << "[... starting]";
     m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
 
     setStarted(true);
@@ -1922,7 +1922,7 @@ void Camera::__startAcq()
     AutoMutex aLock(m_cond_thread.mutex());
     m_wait_flag = false;
     m_cond_thread.broadcast();
-    DEB_ALWAYS() << "[... starting after mutex] [EXIT]";
+    DEB_TRACE() << "[... starting after mutex] [EXIT]";
 
     return;
 }

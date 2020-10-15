@@ -1,3 +1,3 @@
-#define         PCO_GIT_VERSION "$Id:       PCO rev[2020-05-06 18:48:21 +0200] head[8f2b636][8f2b63611e45e638a9631d3271ac1d975d8aa3b1] ref[ (HEAD, origin/traceAcq, traceAcq)] at [2020/05/07 20:05:56] $"
+#define         PCO_GIT_VERSION "$Id:       PCO rev[2020-10-07 10:24:21 +0200] head[23c23cd][23c23cd85f477c4b6a6cf26aa177f6f1a6a40375] ref[ (HEAD -> traceAcq-local-compilation, origin/traceAcq-local-compilation)] at [2020/10/15 10:16:22] $"
 #define     PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [1.23] $"
 #define PCO_SDK_WIN_VERSION "$Id: PCOSDK_WIN [not defined] $"

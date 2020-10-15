@@ -278,9 +278,9 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
     m_pcoData->traceAcq.iPcoAcqMode = pcoAcqMode;
 
 
-    DEB_ALWAYS() << "\n ... " << DEB_VAR2(*sLimaTriggerMode, extTrig) << "\n ... "
-                 << DEB_VAR2(*sPcoTriggerMode, pcoTrigMode) << "\n ... "
-                 << DEB_VAR2(*sPcoAcqMode, pcoAcqMode);
+    DEB_TRACE() << "\n ... " << DEB_VAR2(*sLimaTriggerMode, extTrig) << "\n ... "
+                << DEB_VAR2(*sPcoTriggerMode, pcoTrigMode) << "\n ... "
+                << DEB_VAR2(*sPcoAcqMode, pcoAcqMode);
 
     return;
 }

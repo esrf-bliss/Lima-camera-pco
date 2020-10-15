@@ -117,7 +117,7 @@ void Interface::prepareAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << "[ENTRY]";
+    DEB_TRACE() << "[ENTRY]";
 
     m_cam->_setActionTimestamp(tsPrepareAcq);
 
@@ -135,7 +135,7 @@ void Interface::startAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << "[ENTRY]";
+    DEB_TRACE() << "[ENTRY]";
 
     m_cam->_setActionTimestamp(tsStartAcq);
 
@@ -153,7 +153,7 @@ void Interface::stopAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() <<  "[ENTRY]";
+    DEB_TRACE() <<  "[ENTRY]";
 
     m_cam->_setActionTimestamp(tsStopAcq);
     m_cam->stopAcq();

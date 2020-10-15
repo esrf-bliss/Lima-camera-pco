@@ -400,7 +400,7 @@ void Camera::stopAcq(bool clearQueue)
     _stopRequestIn = getRequestStop(_nrStop);
 
 
-    DEB_ALWAYS() << "--- [ENTRY]";
+    DEB_TRACE() << "--- [ENTRY]";
 
     _started0 = getStarted();
 
@@ -425,7 +425,7 @@ void Camera::stopAcq(bool clearQueue)
         _getPcoHwEventCtrlObj()->reportEvent(ev);
     }    
 
-    DEB_ALWAYS() << " [exit]: " 
+    DEB_TRACE() << " [exit]: " 
         <<  DEB_VAR6(_started0, _started, _stopRequestIn, _stopRequestOut, _nrStop, resWait);
 }
 
@@ -468,7 +468,7 @@ void Camera::setRequestStop(int requestStop)
             m_requestStop = requestStop;
             break;
     }
-    DEB_ALWAYS() << DEB_VAR4(m_requestStop0, m_requestStop, m_requestStopRetry,
+    DEB_TRACE() << DEB_VAR4(m_requestStop0, m_requestStop, m_requestStopRetry,
                              requestStop);
 }
 
@@ -492,7 +492,7 @@ void Camera::startAcq()
 
     bool _started = getStarted();
 
-    DEB_ALWAYS() << "[ENTRY]";
+    DEB_TRACE() << "[ENTRY]";
 
     if(_started)
     {
@@ -550,7 +550,7 @@ bool Camera::getStarted()
 
     AutoMutex lock(m_cond_a.mutex());
 
-    DEB_ALWAYS() <<  DEB_VAR1(m_started);
+    DEB_TRACE() <<  DEB_VAR1(m_started);
  
     return m_started;
 }
@@ -566,7 +566,7 @@ void Camera::setStarted(bool started)
     bool m_started0 = m_started;
     m_started = started;
 
-    DEB_ALWAYS() << DEB_VAR3(m_started0, m_started, started);
+    DEB_TRACE() << DEB_VAR3(m_started0, m_started, started);
 }
 
 
@@ -1148,7 +1148,7 @@ void Camera::prepareAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << "[ENTRY] " << _checkLogFiles();
+    DEB_TRACE() << "[ENTRY] " << _checkLogFiles();
 
     int error;
 
