@@ -33,6 +33,21 @@
 
 #include <cstdlib>
 
+#define PRINT_USBUFF \
+			{ \
+				char bla[256]; \
+				char *ptr = bla; \
+				int i; \
+				ptr += sprintf(ptr, "=== %s ", getTimestamp(Iso)); \
+				ptr += sprintf(ptr, "limaFrm %d pcoFrm %d pcoFrmImg %d dif %d ", \
+					limaFrameNr, pcoFrameNr, pcoFrameNrTimestamp, pcoFrameNrTimestamp - pcoFrameNr); \
+				for(i=0; i<usBuffIdx; i++){ \
+					ptr += sprintf(ptr, "%s %lld ", usBuffStr[i], usBuff[i]); \
+				} \
+				printf("%s\n", bla); \
+			} \
+
+
 #ifndef __linux__
 #    include <process.h>
 #    include <sys/stat.h>
@@ -444,7 +459,8 @@ void Camera::_AcqThread::threadFunction_Dimax()
 
                 // check PCO ImgNr with the limaFrame
                 m_cam.m_checkImgNr->update(limaFrameNr, limaBuffPtr);
-                pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPcoTimestamp;
+                //pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPcoTimestamp;
+                pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPco;
 
                 HwFrameInfoType frame_info;
                 frame_info.acq_frame_nb = limaFrameNr;
@@ -474,7 +490,8 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
-            if ((limaFrameNr % 100) == 0)
+            //if ((limaFrameNr % 100) == 0)
+            if (0)
             {
                 printf("pcoFrameNr [%d] diff[%d]\r", pcoFrameNr,
                        pcoFrameNrTimestamp - pcoFrameNr);
@@ -854,7 +871,8 @@ void Camera::_AcqThread::threadFunction_Edge()
 
                 // check PCO ImgNr with the limaFrame
                 m_cam.m_checkImgNr->update(limaFrameNr, limaBuffPtr);
-                pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPcoTimestamp;
+                //pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPcoTimestamp;
+                pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPco;
                     
                 HwFrameInfoType frame_info;
                 frame_info.acq_frame_nb = limaFrameNr;
@@ -1011,6 +1029,10 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
     void *pcoBuffPtr;
     DWORD width, height;
     int _nrStop;
+
+	long long usBuff[20];
+	const char *usBuffStr[20];
+	int usBuffIdx;
 
 
 	/// 2020/05/18
@@ -1209,21 +1231,33 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
+			usBuffIdx = 0;
+			usBuffStr[usBuffIdx] = "base";
+            usElapsedTimeSet(usBuff[usBuffIdx++]); // base
+
+
             pcoFrameNr = limaFrameNr + 1;
+
+			//--- lima get buffer
             limaBuffPtr = m_cam.m_buffer->_getFrameBufferPtr(
                 limaFrameNr, nb_allocated_buffers);
-            // DEB_ALWAYS() << DEB_VAR4(nb_allocated_buffers, _nb_frames,
-            // limaFrameNr, limaBuffPtr);
+
+			usBuffStr[usBuffIdx] = "limaGetBuff";
+            usElapsedTimeSet(usBuff[usBuffIdx++]); //--- limaGetBuff
 
             m_cam.m_pcoData->traceAcq.usTicks[traceAcq_GetImageEx].value +=
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
+			//--- set status
             m_cam.setStatus(HwInterface::StatusType::Basic::Readout, false);
 
             m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].value +=
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
+
+			usBuffStr[usBuffIdx] = "setStatus";
+            usElapsedTimeSet(usBuff[usBuffIdx++]); //--- set status
 
             usElapsedTimeSet(usStart);
 
@@ -1246,6 +1280,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             timeoutMsTot = 0;
             timeoutMs = timeoutMs0;
             
+            //--- pco wait next img
             while(true)
             {
                 //DEB_ALWAYS() << "---------------- Wait_For_Next_Image [BEFORE]";
@@ -1287,6 +1322,10 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 
 			if (err != PCO_NOERROR)
 			{
+				usBuffStr[usBuffIdx] = "pcoWaitImg";
+				usElapsedTimeSet(usBuff[usBuffIdx++]);//--- pco wait next img error
+				PRINT_USBUFF
+				
 				m_cam.m_pcoData->traceAcq.nrErrors++;
 				_msgAbort = "ABORT - Wait_For_Next_Image ";
 				DEB_ALWAYS() << _msgAbort << DEB_VAR1(pcoFrameNr);
@@ -1296,6 +1335,8 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 				break; // while frames
 			}
 
+			usBuffStr[usBuffIdx] = "pcoWaitImg";
+			usElapsedTimeSet(usBuff[usBuffIdx++]);//--- pco wait next img error
 
 
 
@@ -1311,7 +1352,9 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 
                 // check PCO ImgNr with the limaFrame
                 m_cam.m_checkImgNr->update(limaFrameNr, limaBuffPtr);
-                pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPcoTimestamp;
+                //pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPcoTimestamp;
+                pcoFrameNrTimestamp = m_cam.m_pcoData->traceAcq.checkImgNrPco;
+
                     
                 HwFrameInfoType frame_info;
                 frame_info.acq_frame_nb = limaFrameNr;
@@ -1321,18 +1364,29 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
                 m_cam.m_pcoData->traceAcq.usTicks[traceAcq_Lima].value +=
                     usElapsedTime(usStart);
                 usElapsedTimeSet(usStart);
+
+				usBuffStr[usBuffIdx] = "limaFrmRdy";
+				usElapsedTimeSet(usBuff[usBuffIdx++]);//--- limaFrmRdy
+
             }
 
             m_cam.m_pcoData->traceAcq.usTicks[traceAcq_pcoSdk].value +=
                 usElapsedTime(usStart);
             usElapsedTimeSet(usStart);
 
-            if ((limaFrameNr % 100) == 0)
+            //if ((limaFrameNr % 100) == 0)
+            if (0)
             {
                 printf("pcoFrameNr [%d] diff[%d]\r", pcoFrameNr,
                        pcoFrameNrTimestamp - pcoFrameNr);
                 // printf("\n");
             }
+            
+   			usBuffStr[usBuffIdx] = "END";
+			usElapsedTimeSet(usBuff[usBuffIdx++]);  // end
+			PRINT_USBUFF
+
+            
             ++limaFrameNr;
 
             if ((m_cam.getRequestStop(_nrStop)))
