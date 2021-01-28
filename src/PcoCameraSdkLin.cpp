@@ -278,7 +278,7 @@ void Camera::_pco_GetLut(int &err)
 
 //=================================================================================================
 //=================================================================================================
-void Camera::_pco_Open_Cam(int &err)
+void Camera::_pco_Open_Cam(int &err, int iPortNr)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
