@@ -1000,7 +1000,7 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
     TIME_USEC tXferStart;
     
     
-    long long usStart, usStartTot;
+    long long usStart, usStartTot, usWaitNextImg;
 
     m_cam.m_pcoData->traceAcq.fnId = fnId;
     // DEB_ALWAYS() << "[entry]" ;
@@ -1244,11 +1244,15 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
             
             
             timeoutMsTot = 0;
+            timeoutMs = timeoutMs0;
             
             while(true)
             {
                 //DEB_ALWAYS() << "---------------- Wait_For_Next_Image [BEFORE]";
+				usElapsedTimeSet(usWaitNextImg);
 				err = grabber->Wait_For_Next_Image(limaBuffPtr, timeoutMs);
+				if (err == 0xa0332005)
+					err = PCO_NOERROR;
                 PCO_CHECK_ERROR1(err, "Wait_For_Next_Image");
 				//DEB_ALWAYS() << "---------------- Wait_For_Next_Image [AFTER]";
 				
@@ -1266,7 +1270,10 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
 
 				if ( err & (PCO_ERROR_TIMEOUT | PCO_ERROR_DRIVER | PCO_ERROR_DRIVER_CAMERALINK))
 				{
-                    DEB_ALWAYS() << "---------------- Wait_For_Next_Image [TIMEOUT]";
+					char bla[256];
+					sprintf(bla, "---------------- Wait_For_Next_Image [TIMEOUT] tout[%d] us[%lld]", timeoutMs, usElapsedTime(usWaitNextImg));
+                    DEB_ALWAYS() << bla;
+                    //DEB_ALWAYS() << "---------------- Wait_For_Next_Image [TIMEOUT]";
                     break;
                     // we will NOT retry -> ABORT
 					timeoutMsTot += timeoutMs;
