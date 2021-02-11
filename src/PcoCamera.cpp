@@ -1467,49 +1467,47 @@ void Camera::reset(int reset_level)
 
 //=========================================================================================================
 //=========================================================================================================
-#define LEN_TMP_MSG 256
 int Camera::PcoCheckError(int line, const char *file, int err, const char *fn,
                           const char *comments)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    static char tmpMsg[LEN_TMP_MSG + 1];
-    static char tmpMsg1[LEN_TMP_MSG + 1];
+    static char tmpMsg[512];
     char *msg;
     size_t lg;
 
-    __sprintfSExt(tmpMsg, LEN_TMP_MSG, "PCOfn[%s] file[%s] line[%d]", fn, file,
-                  line);
-    if (err != 0)
-    {
-        __sprintfSExt(tmpMsg1, LEN_TMP_MSG, "ERROR - PCOfn[%s]", fn);
-        msgLog(tmpMsg);
+	if (err == 0)
+		return 0;
 
-        DWORD dwErr = err;
-        m_pcoData->pcoError = err;
-        msg = m_pcoData->pcoErrorMsg;
+	__sprintfSExt(tmpMsg, sizeof(tmpMsg), 
+			" FROM: PCOfn[%s] file[%s] line[%d] comments[%s]", 
+			fn, file, line, comments);
+	msgLog(tmpMsg);
 
-        memset(msg, 0, ERR_SIZE);
-        PCO_GetErrorText(dwErr, msg, ERR_SIZE - 14);
+	DWORD dwErr = err;
+	m_pcoData->pcoError = err;
+	msg = m_pcoData->pcoErrorMsg;
 
-        lg = strlen(msg);
-        __sprintfSExt(msg + lg, ERR_SIZE - lg, " [%s][%d]", file, line);
+	memset(msg, 0, ERR_SIZE);
+	PCO_GetErrorText(dwErr, msg, ERR_SIZE - 14);
 
-        if (err & PCO_ERROR_IS_WARNING)
-        {
-            DEB_WARNING() << fnId << ": --- WARNING - IGNORED --- "
-                          << DEB_VAR1(m_pcoData->pcoErrorMsg);
-            return 0;
-        }
-       DEB_ALWAYS() << "PCO ERROR: "
-					<< DEB_VAR2(msg, err) 
-					<< " = " <<	DEB_HEX(err);
- 			
-       DEB_WARNING() << fnId << ":\n... " << msg << "\n... " << tmpMsg;
-       return (err);
-    }
-    return (err);
+	//lg = strlen(msg);
+	// __sprintfSExt(msg + lg, ERR_SIZE - lg, " [%s][%d]", file, line);
+
+	if (err & PCO_ERROR_IS_WARNING)
+	{
+		DEB_WARNING() << fnId << ": --- WARNING - IGNORED --- "
+					  << DEB_VAR1(m_pcoData->pcoErrorMsg);
+		return 0;
+	}
+
+	DEB_ALWAYS() << "PCO ERROR: "
+				<< DEB_VAR2(msg, err) 
+				<< " = " <<	DEB_HEX(err) 
+				<< tmpMsg;
+		
+	return (err);
 }
 
 //=========================================================================================================
@@ -1518,7 +1516,7 @@ char *Camera::_PcoCheckError(int line, const char *file, int err, int &error,
                              const char *fn)
 {
     static char lastErrorMsg[ERR_SIZE];
-    static char tmpMsg[LEN_TMP_MSG + 1];
+    static char tmpMsg[512];
     char *msg;
     size_t lg;
 
@@ -1527,7 +1525,7 @@ char *Camera::_PcoCheckError(int line, const char *file, int err, int &error,
 
     if (err != 0)
     {
-        __sprintfSExt(tmpMsg, LEN_TMP_MSG, "ERROR %s (%d)", fn, line);
+        __sprintfSExt(tmpMsg, sizeof(tmpMsg), "ERROR %s (%d)", fn, line);
 
         PCO_GetErrorText(err, lastErrorMsg, ERR_SIZE - 14);
         // strncpy_s(msg, ERR_SIZE, lastErrorMsg, _TRUNCATE);
