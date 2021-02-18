@@ -38,7 +38,7 @@ if(WIN32)
 
 else()
 
-    set(SISODIR5 $ENV{SISODIR5} CACHE PATH "location of SISO Linux SDK ")
+    set(SISO_SDK_ROOT_DIR $ENV{SISO_SDK_ROOT_DIR} CACHE PATH "location of SISO Linux SDK ")
     set(PCO_SDKLIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPcoLin" CACHE PATH "location of PCO Linux SDK")
     set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
     set(PCO_SDK_BIN_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_bin" CACHE PATH "location of PCO Linux SDK binary")
@@ -62,9 +62,6 @@ else()
         ${PCO_SDKLIN_DIR}/pco_me4/pco_classes
         ${PCO_SDKLIN_DIR}/pco_clhs/pco_classes
         ${PCO_SDKLIN_DIR}/pco_clhs/pco_clhs_common
-        
-
-        ${PCO_SDKWIN_DIR}/include
     )
 
     set(PCOLIB1)
@@ -79,7 +76,7 @@ else()
     find_library(PCOLIB2 pcofile HINTS ${PCO_SDK_LIB_DIR})
     find_library(PCOLIB3 pcolog HINTS ${PCO_SDK_LIB_DIR})
     find_library(PCOLIB4 reorderfunc HINTS ${PCO_SDK_LIB_DIR})
-    find_library(PCOLIB5 pcocam_clhs HINTS ${PCO_SDK_LIB_DIR})
+    find_library(PCOLIB5 pcocom_clhs HINTS ${PCO_SDK_LIB_DIR})
     find_library(PCOLIB6 pcoclhs HINTS ${PCO_SDK_LIB_DIR})
 
     #find_library(PCOLIB6 pcodisp HINTS ${PCO_SDK_LIB_DIR})
@@ -105,17 +102,15 @@ else()
     set(SISOLIB2)
     set(SISOLIB3)
 
-    find_library(SISOLIB1 NAMES fglib5 HINTS ${SISODIR5}/lib64)
-    find_library(SISOLIB2 NAMES clsersis HINTS ${SISODIR5}/lib64)
-    find_library(SISOLIB3 NAMES haprt HINTS ${SISODIR5}/lib64)
+    find_library(SISOLIB1 NAMES fglib5 HINTS ${SISO_SDK_ROOT_DIR}/lib64)
+    find_library(SISOLIB2 NAMES clsersis HINTS ${SISO_SDK_ROOT_DIR}/lib64)
+    find_library(SISOLIB3 NAMES haprt HINTS ${SISO_SDK_ROOT_DIR}/lib64)
 
     #find_library(SISOLIB1 fglib5)
     #find_library(SISOLIB2 clsersis)
     #find_library(SISOLIB3 haprt)
 
     message("==========================================================")
-    #message("SISODIR5: [${SISODIR5}] NOT USED")
-    message("SISODIR5: [${SISODIR5}]")
     message("SISOLIB1: [${SISOLIB1}]")
     message("SISOLIB2: [${SISOLIB2}]")
     message("SISOLIB3: [${SISOLIB3}]")
@@ -139,7 +134,7 @@ message("PCO_DEFINITIONS: [${PCO_DEFINITIONS}]")
 message("==========================================================")
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PCO DEFAULT_MSG
+find_package_handle_standard_args(Pco DEFAULT_MSG
   PCO_LIBRARIES
   PCO_INCLUDE_DIRS
 )

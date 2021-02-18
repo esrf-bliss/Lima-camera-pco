@@ -166,7 +166,7 @@ void Interface::getStatus(HwInterface::StatusType &status)
     DEB_MEMBER_FUNCT();
 
 #ifndef __linux__
-#error CHECK FOR WINDOWS COMPLILATION
+//#error CHECK FOR WINDOWS COMPLILATION
     if (m_cam->_isConfig())
     {
         status.set(HwInterface::StatusType::Config);

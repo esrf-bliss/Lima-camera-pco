@@ -663,8 +663,6 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
     keys_desc[ikey++] = "(R) trace details (not all records are filled!)";
     if (_stricmp(cmd, key) == 0)
     {
-        time_t _timet;
-
         if (0 && !(_isCameraType(Dimax | Pco2k | Pco4k)))
         {
             ptr += __sprintfSExt(ptr, ptrMax - ptr,

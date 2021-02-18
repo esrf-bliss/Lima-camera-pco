@@ -195,7 +195,7 @@ void _pco_acq_thread_dimax(void *argin)
     m_sync->getExpTime(m_pcoData->traceAcq.sExposure);
     m_sync->getLatTime(m_pcoData->traceAcq.sDelay);
 
-    setExposing(pcoAcqRecordStart);
+    m_cam->setExposing(pcoAcqRecordStart);
 
     while (true)
     {
@@ -227,7 +227,7 @@ void _pco_acq_thread_dimax(void *argin)
                           _dwPcoMaxImageCnt);
             printf("%s\n", msgErr);
 
-            setExposing(pcoAcqError);
+            m_cam->setExposing(pcoAcqError);
             break;
         }
 
@@ -238,7 +238,7 @@ void _pco_acq_thread_dimax(void *argin)
         {
             // setExposing(pcoAcqRecordTimeout);
             // stopAcq();
-            setExposing(pcoAcqStop);
+            m_cam->setExposing(pcoAcqStop);
             printf("=== %s [%d]> TIMEOUT!!! tout[(%ld) 0(%ld)] recLoopTime[%ld "
                    "ms] lastImgRecorded[%ld] dwPcoRequestedFrames[%d]\n",
                    fnId, __LINE__, timeout, timeout0, msNowRecordLoop,
@@ -276,8 +276,8 @@ void _pco_acq_thread_dimax(void *argin)
     //if ((requestStop != stopRequest) && (!nb_frames_fixed))
     if ((!requestStop) && (!nb_frames_fixed))
     {
-        if (getExposing() == pcoAcqRecordStart)
-            setExposing(pcoAcqRecordEnd);
+        if (m_cam->getExposing() == pcoAcqRecordStart)
+            m_cam->setExposing(pcoAcqRecordEnd);
 
         m_cam->_pco_GetNumberOfImagesInSegment(wSegment, _dwPcoValidImageCnt,
                                                _dwPcoMaxImageCnt, error);
@@ -373,7 +373,7 @@ void _pco_acq_thread_dimax(void *argin)
 
             if (nb_frames_fixed)
                 status = pcoAcqError;
-            setExposing(status);
+            m_cam->setExposing(status);
         }
 
     } // if nb_frames_fixed && no stopRequested
@@ -471,7 +471,7 @@ void _pco_acq_thread_dimax_trig_single(void *argin)
     m_sync->getExpTime(m_pcoData->traceAcq.sExposure);
     m_sync->getLatTime(m_pcoData->traceAcq.sDelay);
 
-    setExposing(pcoAcqRecordStart);
+    m_cam->setExposing(pcoAcqRecordStart);
 
     m_cam->_pco_GetNumberOfImagesInSegment(wSegment, _dwValidImageCnt,
                                            _dwMaxImageCnt, error);
@@ -498,7 +498,7 @@ void _pco_acq_thread_dimax_trig_single(void *argin)
                       fnId, __LINE__, nb_frames, _dwMaxImageCnt);
         printf("%s\n", msgErr);
 
-        setExposing(pcoAcqError);
+        m_cam->setExposing(pcoAcqError);
         doWhile = false;
     }
 
@@ -550,8 +550,8 @@ void _pco_acq_thread_dimax_trig_single(void *argin)
     //if ((requestStop != stopRequest) && (!nb_frames_fixed))
     if ((!requestStop) && (!nb_frames_fixed))
     {
-        if (getExposing() == pcoAcqRecordStart)
-            setExposing(pcoAcqRecordEnd);
+        if (m_cam->getExposing() == pcoAcqRecordStart)
+            m_cam->setExposing(pcoAcqRecordEnd);
 
         m_cam->_pco_GetNumberOfImagesInSegment(wSegment, _dwValidImageCnt,
                                                _dwMaxImageCnt, error);
@@ -593,7 +593,7 @@ void _pco_acq_thread_dimax_trig_single(void *argin)
 
             if (nb_frames_fixed)
                 status = pcoAcqError;
-            setExposing(status);
+            m_cam->setExposing(status);
         }
 
     } // if nb_frames_fixed & no stopped
@@ -667,7 +667,7 @@ void _pco_acq_thread_edge(void *argin)
         status = (pcoAcqStatus)m_buffer->_xferImag(); // original
     }
 
-    setExposing(status);
+    m_cam->setExposing(status);
     // stopAcq();
 
     printf("=== %s [%d]> _pco_SetRecordingState(0)\n", fnId, __LINE__);
@@ -776,7 +776,7 @@ void _pco_acq_thread_dimax_live(void *argin)
         status = (pcoAcqStatus) m_buffer->_xferImag();
     }
     
-    setExposing(status);
+    m_cam->setExposing(status);
     // stopAcq();
     const char *msg = m_cam->_pco_SetRecordingState(0, error);
     if (error)
@@ -862,7 +862,7 @@ void _pco_acq_thread_ringBuffer(void *argin)
     m_pcoData->traceAcq.usTicks[1].desc = "xferImag execTime";
     usElapsedTimeSet(usStart);
 
-    setExposing(status);
+    m_cam->setExposing(status);
 
     m_pcoData->traceAcq.usTicks[2].value = usElapsedTime(usStart);
     m_pcoData->traceAcq.usTicks[2].desc = "setExposing(status) execTime";
@@ -990,9 +990,9 @@ void Camera::__startAcq()
 
     m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
 
-    m_cam->setStarted(true);
+    setStarted(true);
     // setExposing(pcoAcqRecordStart);
-    m_cam->setExposing(pcoAcqStart);
+    setExposing(pcoAcqStart);
 
     int iRequestedFrames;
     m_sync->getNbFrames(iRequestedFrames);
@@ -1047,8 +1047,8 @@ void Camera::__startAcq()
                 ulRequestedFrames, ulFramesMaxInSegment, wDoubleImage, forced);
 
             DEB_ALWAYS() << msg;
-            m_cam->setStarted(false);
-            m_cam->setExposing(pcoAcqError);
+            setStarted(false);
+            setExposing(pcoAcqError);
 
             throw LIMA_EXC(CameraPlugin, InvalidValue, msg);
             return;

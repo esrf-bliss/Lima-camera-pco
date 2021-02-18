@@ -986,7 +986,7 @@ void Camera::_init()
 
     _pco_initHWIOSignal(0, 0x4, error);
 
-	DEB_ALWAYS() << fnId << " win [EXIT]":
+	DEB_ALWAYS() << fnId << " win [EXIT]";
     // ----- windows [end]
 #endif
 
