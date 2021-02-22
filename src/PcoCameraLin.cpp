@@ -41,10 +41,10 @@
 				ptr += sprintf(ptr, "=== %s ", getTimestamp(Iso)); \
 				ptr += sprintf(ptr, "limaFrm %d pcoFrm %d pcoFrmImg %d dif %d ", \
 					limaFrameNr, pcoFrameNr, pcoFrameNrTimestamp, pcoFrameNrTimestamp - pcoFrameNr); \
-				for(i=0; i<usBuffIdx; i++){ \
-					ptr += sprintf(ptr, "%s %lld ", usBuffStr[i], usBuff[i]); \
+				for(i=1; i<usBuffIdx; i++){ \
+					ptr += sprintf(ptr, "%s %lld ", usBuffStr[i], usBuff[i]-usBuff[i-1]); \
 				} \
-				printf("%s\n", bla); \
+				printf("%s allocatedBuff %d\n", bla, nb_allocated_buffers); \
 			} \
 
 
