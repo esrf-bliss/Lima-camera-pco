@@ -742,6 +742,11 @@ void Camera::_init()
 
     board = 0;
     int iErr;
+    
+    char *value;
+    bool ret = getProperty("portNr", value);
+    board = ret ? atoi(value) : 0;
+
 
     // int bufnum=20;
 
@@ -759,7 +764,7 @@ void Camera::_init()
         camera->Close_Cam();
         delete camera;
         camera = NULL;
-        DEB_ALWAYS() << "FATAL - _pco_Open_Cam " << DEB_VAR1(iErr);
+        DEB_ALWAYS() << "FATAL - _pco_Open_Cam " << DEB_VAR2(iErr, board);
         THROW_HW_ERROR(Error);
     }
 

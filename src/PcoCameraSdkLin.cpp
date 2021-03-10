@@ -285,6 +285,7 @@ void Camera::_pco_Open_Cam(int &err)
 
     DEB_ALWAYS() << "creating the camera";
     char *value;
+    
 
     // SDK call -> depends on the interface!
     // camera = new CPco_com_cl_me4();
@@ -322,9 +323,10 @@ void Camera::_pco_Open_Cam(int &err)
     unsigned long debugSdk_get = mylog->get_logbits();
     DEB_ALWAYS() << "debugSdk_get" << DEB_VAR1(debugSdk_get);
     
-    DEB_ALWAYS() << "BEFORE Try to open Camera";
-    err = camera->Open_Cam(0);
-    DEB_ALWAYS() << "AFTER Try to open Camera" << DEB_VAR1(err);
+    DEB_ALWAYS() << "BEFORE Try to open Camera  " << DEB_VAR1(board);
+    err = camera->Open_Cam(board);
+    DEB_ALWAYS() << "AFTER Try to open Camera" << DEB_VAR2(board, err);
+
     PCO_CHECK_ERROR(err, "Open_Cam close application");
     if (err)
     {
