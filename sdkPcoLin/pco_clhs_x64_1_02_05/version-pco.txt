@@ -1,0 +1,12 @@
+# pco_clhs_x64_1_02_05  2020/04/27
+
+lbm05pco5:camera/pco/sdkPcoLin % find pco_clhs_old | xargs md5sum
+
+0af40b4b053147adc7d66ec28d648920  pco_clhs_old/pco_classes/Cpco_grab_clhs.h
+515bbcb98dc88628539c0cbea487a1e7  pco_clhs_old/pco_classes/Cpco_com_clhs.h
+d09741a06e44032c56560206773fecad  pco_clhs_old/pco_classes/pco_includes.h
+a8bc444d445e6acf069620dfc0855d1a  pco_clhs_old/pco_classes/VersionNo.h
+
+812a705b07141cac469b42283f85cc82  pco_clhs_old/pco_clhs_common/portable_endian.h
+c1b5579dbd4f2b2f7af5d118c7ef594b  pco_clhs_old/pco_clhs_common/pco_clhs_cam.h
+9ca41a1379ec21fee531a7d52afa7e73  pco_clhs_old/pco_clhs_common/clhs_register.h

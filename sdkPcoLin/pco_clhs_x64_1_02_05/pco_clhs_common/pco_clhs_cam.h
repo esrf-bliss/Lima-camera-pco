@@ -102,7 +102,6 @@ class CPco_clhs_cam
   DWORD Get_acquire_status();
 
   DWORD Set_acquire_buffer(void *bufadr);
-  DWORD Get_acquire_buffer(void *bufadr);
   DWORD Wait_acquire_buffer(int waittime);
   DWORD Cancel_acquire_buffer();
 
