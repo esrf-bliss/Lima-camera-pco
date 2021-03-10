@@ -54,3 +54,35 @@ ad9f50a58c6301fedef6577016845ad8  ./pco_clhs_x64_1_02_06/pco_common/pco_lib/libp
 dc9825dc572ebdf957c4dd3bd7160077  ./pco_common/pco_lib/libpcocom_clhs.a
 b76343637f03b8cf323964a4b8b0a29b  ./pco_common/pco_lib/libpcoclhs.a
 ad9f50a58c6301fedef6577016845ad8  ./pco_common/pco_lib/libpcocam_clhs.a
+
+
+#=========================================
+
+lbm05pco5:camera/pco/sdkPcoLin % find ./ -name "pco_clhs_*" | grep bin | xargs md5sum
+
+fabbc885bacba4d6a7bacf74e045fa51  ./pco_clhs_x64_1_02_06/pco_clhs/bin/pco_clhs_info
+63ba905df5de142fe2e08738f5e7d471  ./pco_clhs_x64_1_02_06/pco_clhs/bin/pco_clhs_mgr
+58ac64c0a539e9e2c20ff05ca42561a6  ./pco_clhs_x64_1_02_06/pco_clhs/bin/pco_clhs_svc
+
+e3fc7a0bffc95c861f98d956939d2127  ./pco_clhs_x64_1_02_06/pco_clhs/bindyn/pco_clhs_info
+c0137e197b4c6341168fb1936ded381c  ./pco_clhs_x64_1_02_06/pco_clhs/bindyn/pco_clhs_mgr
+
+d536150d7e7b3601acd6cd964687eff2  ./pco_common/pco_bin/pco_clhs_info
+86fc7b1227cfaf2dc1e6ee3471e1b4c7  ./pco_common/pco_bin/pco_clhs_mgr
+
+
+---- updated
+
+lbm05pco5:camera/pco/sdkPcoLin % find ./ -name "pco_clhs_*" | grep bin | xargs md5sum
+
+fabbc885bacba4d6a7bacf74e045fa51  ./pco_clhs_x64_1_02_06/pco_clhs/bin/pco_clhs_info
+63ba905df5de142fe2e08738f5e7d471  ./pco_clhs_x64_1_02_06/pco_clhs/bin/pco_clhs_mgr
+58ac64c0a539e9e2c20ff05ca42561a6  ./pco_clhs_x64_1_02_06/pco_clhs/bin/pco_clhs_svc
+
+e3fc7a0bffc95c861f98d956939d2127  ./pco_clhs_x64_1_02_06/pco_clhs/bindyn/pco_clhs_info
+c0137e197b4c6341168fb1936ded381c  ./pco_clhs_x64_1_02_06/pco_clhs/bindyn/pco_clhs_mgr
+
+fabbc885bacba4d6a7bacf74e045fa51  ./pco_common/pco_bin/pco_clhs_info
+63ba905df5de142fe2e08738f5e7d471  ./pco_common/pco_bin/pco_clhs_mgr
+58ac64c0a539e9e2c20ff05ca42561a6  ./pco_common/pco_bin/pco_clhs_svc
+
