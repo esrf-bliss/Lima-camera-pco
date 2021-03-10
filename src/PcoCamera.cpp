@@ -758,7 +758,7 @@ void Camera::_init()
     // SDK call -> depends on the interface!
     //THROW_FATAL(Hardware, Error) << "TRACE1";
 
-    _pco_Open_Cam(iErr, iPortNr);
+    _pco_Open_Cam(iErr);
     if (iErr)
     {
         camera->Close_Cam();

@@ -783,7 +783,7 @@ namespace lima
             _AcqThread *m_acq_threadSw;
 
             void _pco_GetLut(int &err);
-            void _pco_Open_Cam(int &err, int iPortNr = 0);
+            void _pco_Open_Cam(int &err);
             void _pco_Open_Grab(int &err);
             void _pco_GetCameraInfo(int &error);
             void _pco_ResetSettingsToDefault(int &err);
