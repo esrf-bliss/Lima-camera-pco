@@ -202,6 +202,7 @@ if(NOT WIN32)
     PROGRAMS
       ${PCO_SDK_BIN_DIR}/pco_clhs_info
       ${PCO_SDK_BIN_DIR}/pco_clhs_mgr
+      ${PCO_SDK_BIN_DIR}/pco_clhs_svc
     DESTINATION ${CMAKE_INSTALL_BINDIR}
   )
 endif()
