@@ -1,3 +1,119 @@
+# pco_clhs_x64_1_02_06_deb8 2021-03-11
+
+# ----- headers
+lbm05pco5:camera/pco/sdkPcoLin % find pco_clhs | xargs md5sum
+
+0af40b4b053147adc7d66ec28d648920  pco_clhs/pco_classes/Cpco_grab_clhs.h
+515bbcb98dc88628539c0cbea487a1e7  pco_clhs/pco_classes/Cpco_com_clhs.h
+d09741a06e44032c56560206773fecad  pco_clhs/pco_classes/pco_includes.h
+a8bc444d445e6acf069620dfc0855d1a  pco_clhs/pco_classes/VersionNo.h
+
+5dbb406c5e52c3fcb9113036c1afe1c4  pco_clhs/version-pco.txt
+
+812a705b07141cac469b42283f85cc82  pco_clhs/pco_clhs_common/portable_endian.h
+6b492410d01f8e02a9143007ecd4a680  pco_clhs/pco_clhs_common/pco_clhs_cam.h
+9ca41a1379ec21fee531a7d52afa7e73  pco_clhs/pco_clhs_common/clhs_register.h
+
+# ---- no change
+
+lbm05pco5:camera/pco/sdkPcoLin % find pco_clhs_x64_1_02_06_deb8/ -name "*.h" | xargs md5sum
+
+0af40b4b053147adc7d66ec28d648920  pco_clhs_x64_1_02_06_deb8/pco_clhs/pco_classes/Cpco_grab_clhs.h
+515bbcb98dc88628539c0cbea487a1e7  pco_clhs_x64_1_02_06_deb8/pco_clhs/pco_classes/Cpco_com_clhs.h
+d09741a06e44032c56560206773fecad  pco_clhs_x64_1_02_06_deb8/pco_clhs/pco_classes/pco_includes.h
+a8bc444d445e6acf069620dfc0855d1a  pco_clhs_x64_1_02_06_deb8/pco_clhs/pco_classes/VersionNo.h
+
+812a705b07141cac469b42283f85cc82  pco_clhs_x64_1_02_06_deb8/pco_clhs/pco_clhs_common/portable_endian.h
+6b492410d01f8e02a9143007ecd4a680  pco_clhs_x64_1_02_06_deb8/pco_clhs/pco_clhs_common/pco_clhs_cam.h
+9ca41a1379ec21fee531a7d52afa7e73  pco_clhs_x64_1_02_06_deb8/pco_clhs/pco_clhs_common/clhs_register.h
+
+# ----- libs
+
+lbm05pco5:camera/pco/sdkPcoLin % find ./ -name "*.a" | xargs md5sum
+
+dc9825dc572ebdf957c4dd3bd7160077  ./pco_common/pco_lib/libpcocom_clhs.a
+1f944144ed4178e3165d1e45120c53b9  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocom_clhs.a
+
+b76343637f03b8cf323964a4b8b0a29b  ./pco_common/pco_lib/libpcoclhs.a
+71701b4a779b23844283f2cc700ce7de  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcoclhs.a
+
+ad9f50a58c6301fedef6577016845ad8  ./pco_common/pco_lib/libpcocam_clhs.a
+f32f13fb649373a0efb2fe429ba18ddc  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocam_clhs.a
+
+# ---- no change
+c2ef753da56af76cf24820530aa0493a  ./pco_common/pco_lib/libpcocam_me4.a
+98339ae978d07c19a0f350fd64ea6046  ./pco_common/pco_lib/libpcocom_me4.a
+
+e619696188b483159b340479d2534254  ./pco_common/pco_lib/libpcolog.a
+e619696188b483159b340479d2534254  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcolog.a
+
+8d4f84907f8b91faf707465d99e57c03  ./pco_common/pco_lib/libpcocnv.a
+8d4f84907f8b91faf707465d99e57c03  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocnv.a
+
+a1c38ce119e8bf66b4ea041fcc291f57  ./pco_common/pco_lib/libreorderfunc.a
+a1c38ce119e8bf66b4ea041fcc291f57  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libreorderfunc.a
+
+44935bb426e254484baf1c3e0c61858b  ./pco_common/pco_lib/libpcofile.a
+44935bb426e254484baf1c3e0c61858b  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcofile.a
+
+0b79d78ffa75bae231c0c68f22d3ddcd  ./pco_common/pco_lib/libpcodisp.a
+0b79d78ffa75bae231c0c68f22d3ddcd  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcodisp.a
+
+#---- updated
+lbm05pco5:camera/pco/sdkPcoLin % find ./ -name "*clhs*.a" | xargs md5sum
+1f944144ed4178e3165d1e45120c53b9  ./pco_common/pco_lib/libpcocom_clhs.a
+71701b4a779b23844283f2cc700ce7de  ./pco_common/pco_lib/libpcoclhs.a
+f32f13fb649373a0efb2fe429ba18ddc  ./pco_common/pco_lib/libpcocam_clhs.a
+
+1f944144ed4178e3165d1e45120c53b9  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocom_clhs.a
+71701b4a779b23844283f2cc700ce7de  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcoclhs.a
+f32f13fb649373a0efb2fe429ba18ddc  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocam_clhs.a
+
+
+# ----- tools
+
+lbm05pco5:camera/pco/sdkPcoLin % find ./ -name "*mgr" | xargs md5sum
+
+63ba905df5de142fe2e08738f5e7d471  ./pco_clhs_x64_1_02_06/pco_clhs/bin/pco_clhs_mgr
+63ba905df5de142fe2e08738f5e7d471  ./pco_common/pco_bin/pco_clhs_mgr
+07b113c3411e50d46c6ce7355773efe4  ./pco_clhs_x64_1_02_06_deb8/pco_clhs/bin/pco_clhs_mgr
+
+
+lbm05pco5:camera/pco/sdkPcoLin % ldd ./pco_clhs_x64_1_02_06_deb8/pco_clhs/bin/pco_clhs_mgr
+	linux-vdso.so.1 (0x00007fffbad94000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fb6a27b6000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fb6a25ae000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fb6a23aa000)
+	libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fb6a209f000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fb6a1d9e000)
+	libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fb6a1b88000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fb6a17dd000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007fb6a29d3000)
+
+
+lbm05pco5:camera/pco/sdkPcoLin % find ./pco_clhs_x64_1_02_06_deb8/pco_clhs/bin/ -name "*clhs*" | xargs md5sum
+34d8466b057f3263a0be0ea5038de48f  ./pco_clhs_x64_1_02_06_deb8/pco_clhs/bin/pco_clhs_info
+07b113c3411e50d46c6ce7355773efe4  ./pco_clhs_x64_1_02_06_deb8/pco_clhs/bin/pco_clhs_mgr
+78bcfc66e481c61a0120e83c400ab957  ./pco_clhs_x64_1_02_06_deb8/pco_clhs/bin/pco_clhs_svc
+
+lbm05pco5:camera/pco/sdkPcoLin % find ./pco_common/pco_bin/ -name "*clhs*" | xargs md5sum
+fabbc885bacba4d6a7bacf74e045fa51  ./pco_common/pco_bin/pco_clhs_info
+63ba905df5de142fe2e08738f5e7d471  ./pco_common/pco_bin/pco_clhs_mgr
+58ac64c0a539e9e2c20ff05ca42561a6  ./pco_common/pco_bin/pco_clhs_svc
+
+# --- updated
+lbm05pco5:camera/pco/sdkPcoLin % find ./pco_common/pco_bin/ -name "*clhs*" | xargs md5sum
+34d8466b057f3263a0be0ea5038de48f  ./pco_common/pco_bin/pco_clhs_info
+07b113c3411e50d46c6ce7355773efe4  ./pco_common/pco_bin/pco_clhs_mgr
+78bcfc66e481c61a0120e83c400ab957  ./pco_common/pco_bin/pco_clhs_svc
+
+
+#=====================================================================
+#=====================================================================
+# ================= invalid wrong debian
+#=====================================================================
+#=====================================================================
+
 # pco_clhs_x64_1_02_06  2021/03/10
 
 lbm05pco5:camera/pco/sdkPcoLin % find pco_clhs | xargs md5sum
