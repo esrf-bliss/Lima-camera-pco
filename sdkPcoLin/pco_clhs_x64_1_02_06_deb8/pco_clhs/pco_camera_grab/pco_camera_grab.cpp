@@ -69,13 +69,17 @@
 //           |            |                                        //
 //-----------------------------------------------------------------//
 
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#define PCO_ERRT_H_CREATE_OBJECT
 
 #include <iostream>
+#include <stdio.h>
 
 #include "VersionNo.h"
 #include "Cpco_com.h"
 #include "Cpco_grab_clhs.h"
 #include "file12.h"
+#include "PCO_errt.h" 
 
 #define BUFNUM 4
 
@@ -85,22 +89,35 @@ DWORD grab_single(CPco_grab_clhs* grabber,char * filename);
 DWORD get_image(CPco_grab_clhs* grabber,char* filename,WORD Segment,DWORD ImageNr);
 DWORD grab_count_single(CPco_grab_clhs* grabber,int count);
 DWORD grab_count_wait(CPco_grab_clhs* grabber,int count);
+DWORD grab_expos_wait(CPco_com* camera,CPco_grab_clhs* grabber,int count);
+DWORD grab_expos_wait_bis7(CPco_com* camera,CPco_grab_clhs* grabber,int count);
+DWORD grab_expos_wait_bis8(CPco_com* camera,CPco_grab_clhs* grabber,int count);
+char *getTimestamp();
+
+
 
 void get_number(char* number,int len);
 void get_text(char* text,int len);
 void get_hexnumber(int* num,int len);
+double calc_mean(uint16_t* adr,int size);
 
-
-CPco_Log mylog("pco_camera_grab.log");
+CPco_Log mylog("pco_camera_grab_e.log");
 
 const char tb[3][3]={"ns","us","ms"};
 const char tmode[4][20]={"Auto","SW-Trig","Ext-Exp. Start","Ext-Exp. Ctrl"};
+
+int sleep_ms_loop = 1000;
+int sleep_ms_post = 10;
+
 
 int main(int argc, char* argv[])
 {
   DWORD err;
   CPco_com* camera;
   CPco_grab_clhs* grabber;
+
+  int loglevel=0x0000FCFF;
+  //int loglevel=0x0;
 
   int help=0;
   int board=0;
@@ -111,7 +128,7 @@ int main(int argc, char* argv[])
   char c;
   int ima_count=100;
   int loop_count=1;
-  int PicTimeOut=10000; //10 seconds
+  int PicTimeOut=5000; //10 seconds
 
   WORD act_recstate,act_align;
   DWORD exp_time,delay_time,pixelrate;
@@ -126,7 +143,6 @@ int main(int argc, char* argv[])
   WORD camtype;
   DWORD serialnumber;
   int shift;
-  int loglevel=0x000FF0FF;
 
 
   for(int x=argc;x>1;)
@@ -291,7 +307,7 @@ int main(int argc, char* argv[])
   exp_time    =10000;
   delay_time  =0;
   exp_timebase=1;
-  del_timebase=1;
+  del_timebase=0;
 
   err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
   if(err!=PCO_NOERROR)
@@ -387,6 +403,262 @@ int main(int argc, char* argv[])
 
 */
 
+/*
+  err=camera->PCO_SetRecordingState(1);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetRecordingState() Error 0x%x\n",err);
+  printf("\n");
+  printf("\n");
+
+  
+  printf("Stop camera and set exptime\n");
+  err=camera->PCO_SetRecordingState(0);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetRecordingState() Error 0x%x\n",err);
+
+  exp_timebase=2;
+  exp_time=10;
+  printf("Set exptime %d%s\n",exp_time,tb[exp_timebase]);
+  
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+  err=camera->PCO_ArmCamera();
+  if(err!=PCO_NOERROR)
+   printf("PCO_ArmCamera() Error 0x%x\n",err);
+  
+  err=camera->PCO_SetRecordingState(1);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetRecordingState() Error 0x%x\n",err);
+  
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,100);
+  printf("\n");
+  printf("\n");
+
+  printf("Stop camera and set exptime\n");
+  err=camera->PCO_SetRecordingState(0);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetRecordingState() Error 0x%x\n",err);
+
+  exp_timebase=2;
+  exp_time=2000;
+  printf("Set exptime %d%s\n",exp_time,tb[exp_timebase]);
+
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+  err=camera->PCO_ArmCamera();
+  if(err!=PCO_NOERROR)
+   printf("PCO_ArmCamera() Error 0x%x\n",err);
+
+  err=camera->PCO_SetRecordingState(1);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetRecordingState() Error 0x%x\n",err);
+
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,10);
+  printf("\n");
+  printf("\n");
+
+  exp_timebase=2;
+  exp_time=15;
+  printf("Set exptime %d%s without Stop\n",exp_time,tb[exp_timebase]);
+  
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,100);
+  printf("\n");
+  printf("\n");
+  
+  exp_timebase=2;
+  exp_time=2000;
+  printf("Set exptime %d%s without Stop\n",exp_time,tb[exp_timebase]);
+
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,10);
+  printf("\n");
+  printf("\n");
+  
+  exp_timebase=1;
+  exp_time=5000;
+  printf("Set exptime %d%s without Stop\n",exp_time,tb[exp_timebase]);
+  
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,100);
+  printf("\n");
+  printf("\n");
+
+  exp_timebase=2;
+  exp_time=2000;
+  printf("Set exptime %d%s without Stop\n",exp_time,tb[exp_timebase]);
+
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,10);
+  printf("\n");
+  printf("\n");
+
+  exp_timebase=0;
+  exp_time=1000000;
+  printf("Set exptime %d%s without Stop\n",exp_time,tb[exp_timebase]);
+  
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,100);
+  printf("\n");
+  printf("\n");
+
+  exp_timebase=2;
+  exp_time=2000;
+  printf("Set exptime %d%s without Stop\n",exp_time,tb[exp_timebase]);
+
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+
+  camera->PCO_GetRecordingState(&act_recstate);
+  camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+  camera->PCO_GetCOCRuntime(&secs,&nsecs);
+  freq=nsecs;
+  freq/=1000000000;
+  freq+=secs;
+  freq=1/freq;
+  printf(" actual recording state %s actual freq: %.3lfHz time/pic: %.2lfms  datarate:%.2lfMB/sec \n",act_recstate ? "RUN" : "STOP",freq,1000/freq,(freq*width*height*2/(1024*1024)));
+  printf("\n");
+  
+  grab_count_wait(grabber,10);
+  printf("\n");
+  printf("\n");
+
+  printf("all sequences done\n");
+  printf("\n");
+  printf("\n");
+
+  printf("Stop camera and set exptime\n");
+  err=camera->PCO_SetRecordingState(0);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetRecordingState() Error 0x%x\n",err);
+
+  exp_timebase=1;
+  exp_time=5000;
+  printf("Set exptime %d%s\n",exp_time,tb[exp_timebase]);
+  
+  err=camera->PCO_SetTimebase(del_timebase,exp_timebase);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetTimebase() Error 0x%x\n",err);
+  err=camera->PCO_SetDelayExposure(delay_time,exp_time);
+  if(err!=PCO_NOERROR)
+   printf("PCO_SetDelayExposure Error 0x%x\n",err);
+  err=camera->PCO_ArmCamera();
+  if(err!=PCO_NOERROR)
+   printf("PCO_ArmCamera() Error 0x%x\n",err);
+*/
+
   err=camera->PCO_SetRecordingState(1);
   if(err!=PCO_NOERROR)
    printf("PCO_SetRecordingState() Error 0x%x\n",err);
@@ -423,6 +695,10 @@ int main(int argc, char* argv[])
    printf("3 Single Get_Image (recording camera or camera recorder buffer) \n");
    printf("4 Loop Acquire_Image\n");
    printf("5 Loop Wait_Next_Image\n");
+   printf("6 Loop Test exposure\n");
+   printf("7 Loop Test exposure - bis7\n");
+   printf("8 Loop Test exposure - bis8\n");
+   
 
    fflush(stdin);
 
@@ -847,6 +1123,27 @@ int main(int argc, char* argv[])
      grab_count_wait(grabber,ima_count);
     printf("\n");
    }
+   else if(c=='6')
+   {
+    if(act_recstate==0)
+     printf("\nStart Camera before grabbing\n");
+    else
+     grab_expos_wait(camera,grabber,ima_count);
+    printf("\n");
+   }
+   else if(c=='7')
+   {
+    if(act_recstate==0)
+     printf("\nStart Camera before grabbing\n");
+    else
+     grab_expos_wait_bis7(camera,grabber,ima_count);
+    printf("\n");
+   }
+   else if(c=='8')
+   {
+     grab_expos_wait_bis8(camera,grabber,ima_count);
+    printf("\n");
+   }
   }
 
 
@@ -1018,7 +1315,7 @@ DWORD get_image(CPco_grab_clhs* grabber,char* filename,WORD Segment,DWORD ImageN
 DWORD grab_count_single(CPco_grab_clhs* grabber,int count)
 {
  int err,i;
- int picnum,buf_nr,first_picnum,lost;
+ int picnum,buf_nr,first_picnum,lost __attribute__((unused));
  unsigned int w,h,bp;
  WORD *picbuf[BUFNUM];
  double tim,freq;
@@ -1094,14 +1391,15 @@ DWORD grab_count_single(CPco_grab_clhs* grabber,int count)
 }
 
 
+
+
 DWORD grab_count_wait(CPco_grab_clhs* grabber,int count)
 {
  int err,i,timeout;
- int picnum,buf_nr,first_picnum,lost;
+ int picnum,buf_nr,first_picnum,lost __attribute__((unused));
  unsigned int w,h,bp;
  WORD *picbuf[BUFNUM];
  double tim,freq;
- int c;
 
  picnum=1;
  err=grabber->Get_actual_size(&w,&h,&bp);
@@ -1167,6 +1465,7 @@ DWORD grab_count_wait(CPco_grab_clhs* grabber,int count)
     first_picnum=picnum-i;
     lost++;
    }
+   calc_mean(picbuf[buf_nr],w*h);
 
    if((count<=10)||(i<3))
     printf("\n");
@@ -1197,6 +1496,1150 @@ DWORD grab_count_wait(CPco_grab_clhs* grabber,int count)
 
  return err;
 }
+
+//==============================================================================
+//==============================================================================
+
+DWORD grab_expos_wait(CPco_com* camera,CPco_grab_clhs* grabber,int count)
+{
+ int err,i,timeout;
+ int picnum,buf_nr,first_picnum,lost __attribute__((unused));
+ unsigned int w,h,bp;
+ WORD *picbuf[BUFNUM];
+ double tim,freq;
+ DWORD exp_time,delay_time,pixelrate;
+ WORD exp_timebase,del_timebase;
+ DWORD width,height;
+// WORD triggermode;
+ WORD binhorz,binvert;   
+ WORD wRoiX0, wRoiY0, wRoiX1, wRoiY1;
+ WORD ts_mode,bitalign,recmode;
+
+ 
+ picnum=1;
+ err=grabber->Get_actual_size(&w,&h,&bp);
+ if(err!=PCO_NOERROR)
+ {
+  printf("\ngrab_count_wait Get_actual_size error 0x%x\n",err);
+  return err;
+ }
+ printf("\n");
+ lost=first_picnum=0;
+
+ grabber->Get_Grabber_Timeout(&timeout);
+ if(timeout!=5000)
+  grabber->Set_Grabber_Timeout(5000);
+
+ grabber->Get_Grabber_Timeout(&timeout);
+
+ memset(picbuf,0,sizeof(WORD*)*BUFNUM); 
+ for(i=0;i< BUFNUM;i++)
+ {
+  picbuf[i]=(WORD*)malloc(w*h*sizeof(WORD));
+  if(picbuf[i]==NULL)
+  {
+   printf("\ngrab_count_wait cannot allocate buffer %d\n",i);
+   err=PCO_ERROR_NOMEMORY | PCO_ERROR_APPLICATION;
+   break;
+  }
+ }
+ if(err!=PCO_NOERROR)
+ {
+  for(i=0;i< BUFNUM;i++)
+  {
+   if(picbuf[i]!=NULL)
+    free(picbuf[i]);
+  }
+  return err;
+ }
+
+ buf_nr=0;
+ for(i=0;i<count;i++)
+ {
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetROI(&wRoiX0,&wRoiY0,&wRoiX1,&wRoiY1);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetTimestampMode(&ts_mode);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetBitAlignment(&bitalign);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetTimestampMode(&ts_mode);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetRecordingState(&recmode);
+  if(err!=PCO_NOERROR)
+   break;
+  
+  err=grabber->Start_Acquire(); 
+  if(err!=PCO_NOERROR)
+   break;
+  
+  err=camera->PCO_SetRecordingState(1);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetRecordingState(&recmode);
+  if(err!=PCO_NOERROR)
+   break;
+
+  mylog.start_time_mess();
+  
+  err=grabber->Wait_For_Next_Image(picbuf[buf_nr],timeout);
+  if(err!=PCO_NOERROR)
+   break;
+  picnum=image_nr_from_timestamp(picbuf[buf_nr],0);
+  
+  tim=mylog.stop_time_mess();
+  freq=i*1000;
+  freq/=tim;
+
+  printf("%05d. Image done to %1d ts_nr: %05d ",i+1,buf_nr,picnum);
+  calc_mean(picbuf[buf_nr],w*h);
+  printf("in %.2fms \n",tim);
+  buf_nr++;
+  if(buf_nr>=BUFNUM)
+   buf_nr=0;
+  
+  err=camera->PCO_GetRecordingState(&recmode);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_SetRecordingState(0);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetRecordingState(&recmode);
+  if(err!=PCO_NOERROR)
+   break;
+  
+ 
+  err=grabber->Stop_Acquire();   
+  if(err!=PCO_NOERROR)
+   break;
+  
+  camera->Sleep_ms(1500);     
+  
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_SetROI(wRoiX0,wRoiY0,wRoiX1,wRoiY1);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetROI(&wRoiX0,&wRoiY0,&wRoiX1,&wRoiY1);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_SetTriggerMode(0);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_SetAcquireMode(0);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetRecordingState(&recmode);
+  if(err!=PCO_NOERROR)
+   break;
+  
+  err=camera->PCO_GetDelayExposureTime(&delay_time,&exp_time,&del_timebase,&exp_timebase);
+  if(err!=PCO_NOERROR)
+   break;
+  if(i%2==0)
+   exp_time=10000;
+  else
+   exp_time=1000000;
+      
+  err=camera->PCO_SetDelayExposureTime(0,exp_time,0,1);
+  if(err!=PCO_NOERROR)
+   break;
+  printf("Set exposure time %d done\n",exp_time); 
+
+  err=camera->PCO_ArmCamera();
+  if(err!=PCO_NOERROR)
+   break;
+  printf("ArmCamera done\n"); 
+
+  err=camera->PCO_GetDelayExposureTime(&delay_time,&exp_time,&del_timebase,&exp_timebase);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetRecordingState(&recmode);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetPixelRate(&pixelrate);
+  if(err!=PCO_NOERROR)
+   break;
+
+  err=camera->PCO_GetActualSize(&width,&height);
+  if(err!=PCO_NOERROR)
+   break;
+  
+//15:20:12.102      0.029ms 29458:11960 05 _pco_GetSizes> resAct[2048][2048] resStdMax[2048][2048] resExtMax[2048][2048]
+  err=grabber->Get_actual_size(&w,&h,&bp);
+  if(err!=PCO_NOERROR)
+   break;    
+  err=camera->PCO_GetPixelRate(&pixelrate);
+  if(err!=PCO_NOERROR)
+   break;
+  err=camera->PCO_GetPixelRate(&pixelrate);
+  if(err!=PCO_NOERROR)
+   break;
+
+//15:20:12.262      0.172ms 29458:11960 05  / width[2048][2048] height[2048][2048]
+  err=camera->PCO_ArmCamera();
+  if(err!=PCO_NOERROR)
+   break;
+  printf("ArmCamera done\n"); 
+  
+//  err=grabber->PCO_Set_actual_size(w,h,bp);
+//  if(err!=PCO_NOERROR)
+//   break;    
+  
+  err=grabber->PostArm(0);
+  if(err!=PCO_NOERROR)
+   break;    
+  printf("PostArm done\n"); 
+
+//15:20:12.318      0.055ms 29458:11960 05 0x0101 Control_Command: start com_in 0x1012 GET_COC_RUNTIME timeout 200
+//15:20:12.318      0.337ms 29458:11960 05 0x0101 Control_Command: done com_in 0x1012  com_out 0x1092 err 0x00000000
+     
+  camera->Sleep_ms(15000);     
+  fflush(stdout);
+ } // for count
+ 
+/* 
+ i--;
+ tim=mylog.stop_time_mess();
+ freq=i*1000;
+ freq/=tim;
+ printf("\n %05d images grabbed in %dms lost images %d\n",i+1,(int)tim,lost);
+ printf(" freq: %.2fHz time/pic: %.3fms  %.2fMB/sec",freq,tim/i,(freq*w*h*2)/(1024*1024));
+*/
+
+ err=grabber->Stop_Acquire(); 
+ if(err!=PCO_NOERROR)
+ {
+  printf("\ngrab_count_wait Stop_Acquire error 0x%x\n",err);
+ }
+
+ for(i=0;i< BUFNUM;i++)
+ {
+  if(picbuf[i]!=NULL)
+   free(picbuf[i]);
+ }
+
+ camera->PCO_SetRecordingState(1);
+
+ return err;
+}
+
+
+
+
+//==============================================================================
+//==============================================================================
+
+DWORD grab_expos_wait_bis7(CPco_com* camera,CPco_grab_clhs* grabber,int count)
+{
+ int err,i,timeout;
+ int picnum,buf_nr,first_picnum,lost __attribute__((unused));
+ unsigned int w,h,bp;
+ WORD *picbuf[BUFNUM];
+ double tim,freq;
+ DWORD exp_time,delay_time,pixelrate;
+ WORD exp_timebase,del_timebase;
+ DWORD width,height;
+// WORD triggermode;
+ WORD binhorz,binvert;   
+ WORD wRoiX0, wRoiY0, wRoiX1, wRoiY1;
+ WORD ts_mode,bitalign,recmode;
+ 
+
+ printf("\n\n================================================= PROCEDURE grab_expos_wait_bis7\n"); 
+ 
+ picnum=1;
+
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    return err;
+  }
+
+  if(recmode)
+  {
+    err=camera->PCO_SetRecordingState(0);
+    printf("%s>   camera->PCO_SetRecordingState(0) \n",getTimestamp()); 
+  }
+  
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    return err;
+  }
+
+ err=grabber->Get_actual_size(&w,&h,&bp);
+ if(err!=PCO_NOERROR)
+ {
+  printf("\ngrab_count_wait Get_actual_size error 0x%x\n",err);
+  return err;
+ }
+ 
+  err=camera->PCO_GetROI(&wRoiX0, &wRoiY0, &wRoiX1, &wRoiY1);
+  if(err!=PCO_NOERROR)
+   printf("PCO_GetROI() Error 0x%x\n",err);
+  else
+  {
+    printf("%s>   camera->PCO_GetROI() wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(), wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+    printf("%s>   actual ROI: [%d-%d], [%d-%d]\n",getTimestamp(),wRoiX0,wRoiX1,wRoiY0,wRoiY1);
+  } 
+
+ 
+ printf("%s>   grabber->Get_actual_size() w[%d] h[%d] b[%d]\n",getTimestamp(), w, h, bp); 
+ lost=first_picnum=0;
+
+ grabber->Get_Grabber_Timeout(&timeout);
+ printf("%s>   grabber->Get_Grabber_Timeout() [%d]\n",getTimestamp(), timeout); 
+
+ if(timeout!=5000)
+ {
+    grabber->Set_Grabber_Timeout(5000);
+    printf("%s>   grabber->Set_Grabber_Timeout(5000)\n",getTimestamp()); 
+  }
+  
+ grabber->Get_Grabber_Timeout(&timeout);
+ printf("%s>   grabber->Get_Grabber_Timeout() [%d]\n",getTimestamp(), timeout); 
+
+ memset(picbuf,0,sizeof(WORD*)*BUFNUM); 
+ for(i=0;i< BUFNUM;i++)
+ {
+  picbuf[i]=(WORD*)malloc(w*h*sizeof(WORD));
+  if(picbuf[i]==NULL)
+  {
+   printf("\ngrab_count_wait cannot allocate buffer %d\n",i);
+   err=PCO_ERROR_NOMEMORY | PCO_ERROR_APPLICATION;
+   break;
+  }
+ }
+ if(err!=PCO_NOERROR)
+ {
+  for(i=0;i< BUFNUM;i++)
+  {
+   if(picbuf[i]!=NULL)
+    free(picbuf[i]);
+  }
+  return err;
+ }
+
+ // loop
+ buf_nr=0;
+ for(i=0;i<count;i++)
+ {
+
+  printf("================================================= LOOP\n"); 
+  printf("%s>   loop i[%d] count[%d] bu_nr[%d] BUFNUM[%d]\n",getTimestamp(),  i, count, buf_nr, BUFNUM); 
+
+
+
+
+  err=camera->PCO_SetRecordingState(0);
+  printf("%s>   camera->PCO_SetRecordingState(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  printf("%s>   camera->PCO_GetBinning() binhorz[%d] binvert[%d]\n",getTimestamp(),  binhorz ,binvert); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  printf("%s>   camera->PCO_GetBinning() binhorz[%d] binvert[%d]\n",getTimestamp(),  binhorz ,binvert); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_SetROI(wRoiX0,wRoiY0,wRoiX1,wRoiY1);
+  printf("%s>   camera->PCO_SetROI() wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(),  wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  printf("%s>   camera->PCO_GetBinning() binhorz[%d] binvert[%d]\n",getTimestamp(),  binhorz ,binvert); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetROI(&wRoiX0,&wRoiY0,&wRoiX1,&wRoiY1);
+  printf("%s>   camera->PCO_GetROI() wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(),  wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_SetTriggerMode(0);
+  printf("%s>   camera->PCO_SetTriggerMode(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_SetAcquireMode(0);
+  printf("%s>   camera->PCO_SetAcquireMode(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(),  recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  printf("%s>   camera->PCO_GetBinning() binhorz[%d] binvert[%d]\n",getTimestamp(),  binhorz ,binvert); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+   
+  err=camera->PCO_GetROI(&wRoiX0,&wRoiY0,&wRoiX1,&wRoiY1);
+  printf("%s>   camera->PCO_GetROI() wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(),  wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetTimestampMode(&ts_mode);
+  printf("%s>   camera->PCO_GetTimestampMode() [%d]\n",getTimestamp(), ts_mode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetBitAlignment(&bitalign);
+  printf("%s>   camera->PCO_GetBitAlignment() [%d]\n",getTimestamp(), bitalign); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetTimestampMode(&ts_mode);
+  printf("%s>   camera->PCO_GetTimestampMode() [%d]\n",getTimestamp(), ts_mode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+
+  err=camera->PCO_GetDelayExposureTime(&delay_time,&exp_time,&del_timebase,&exp_timebase);
+  printf("%s>   camera->PCO_GetDelayExposureTime() delay_time[%d] exp_time[%d] del_timebase[%d] exp_timebase[%d] ---> [%d]%s\n",
+    getTimestamp(), delay_time,exp_time,del_timebase,exp_timebase, exp_time, tb[exp_timebase]); 
+  if(err!=PCO_NOERROR)
+   break;
+  if(i%2==0)
+   exp_time=10000;
+  else
+   exp_time=1000000;
+      
+  err=camera->PCO_SetDelayExposureTime(0,exp_time,0,1);
+  printf("%s>   camera->PCO_SetDelayExposureTime() delay_time[%d] exp_time[%d] del_timebase[%d] exp_timebase[%d] ---> [%d]%s\n",
+    getTimestamp(), delay_time,exp_time,del_timebase,exp_timebase, exp_time, tb[exp_timebase]); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  //err=camera->PCO_ArmCamera();
+  //printf("... camera->PCO_ArmCamera() \n"); 
+  //if(err!=PCO_NOERROR)
+  //{
+    //printf("... ERROR [%d]\n",err); 
+    //break;
+  //}
+
+  err=camera->PCO_GetDelayExposureTime(&delay_time,&exp_time,&del_timebase,&exp_timebase);
+  printf("%s>   camera->PCO_GetDelayExposureTime() delay_time[%d] exp_time[%d] del_timebase[%d] exp_timebase[%d] ---> [%d]%s\n",
+    getTimestamp(), delay_time,exp_time,del_timebase,exp_timebase, exp_time, tb[exp_timebase]); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetPixelRate(&pixelrate);
+  printf("%s>   camera->PCO_GetPixelRate() [%d]\n",getTimestamp(), pixelrate); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetActualSize(&width,&height);
+  printf("%s>   camera->PCO_GetActualSize() width[%d] height[%d]\n",getTimestamp(), width,height); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+//15:20:12.102      0.029ms 29458:11960 05 _pco_GetSizes> resAct[2048][2048] resStdMax[2048][2048] resExtMax[2048][2048]
+  err=grabber->Get_actual_size(&w,&h,&bp);
+  printf("%s>   grabber->Get_actual_size() w[%d] h[%d] b[%d]\n",getTimestamp(), w, h, bp); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetPixelRate(&pixelrate);
+  printf("%s>   camera->PCO_GetPixelRate() [%d]\n",getTimestamp(), pixelrate); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetPixelRate(&pixelrate);
+  printf("%s>   camera->PCO_GetPixelRate() [%d]\n",getTimestamp(), pixelrate); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+//15:20:12.262      0.172ms 29458:11960 05  / width[2048][2048] height[2048][2048]
+  err=camera->PCO_ArmCamera();
+  printf("%s>   camera->PCO_ArmCamera()\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+//  err=grabber->PCO_Set_actual_size(w,h,bp);
+//  if(err!=PCO_NOERROR)
+//   break;    
+  
+  err=grabber->PostArm(0);
+  printf("%s>   grabber->PostArm(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+//15:20:12.318      0.055ms 29458:11960 05 0x0101 Control_Command: start com_in 0x1012 GET_COC_RUNTIME timeout 200
+//15:20:12.318      0.337ms 29458:11960 05 0x0101 Control_Command: done com_in 0x1012  com_out 0x1092 err 0x00000000
+     
+
+  printf("%s>   sleeping after grabber->PostArm(0) [%d]ms\n",getTimestamp(), sleep_ms_post); 
+  camera->Sleep_ms(sleep_ms_post);     
+  fflush(stdout);
+
+
+
+  err=grabber->Start_Acquire(); 
+  printf("%s>   grabber->Start_Acquire()\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+  err=camera->PCO_SetRecordingState(1);
+  printf("%s>   camera->PCO_SetRecordingState(1)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  mylog.start_time_mess();
+  
+  printf("%s>   grabber->Wait_For_Next_Image() BEFORE buff_nr[%d] timeout[%d]\n",getTimestamp(), buf_nr,timeout); 
+  err=grabber->Wait_For_Next_Image(picbuf[buf_nr],timeout);
+  printf("%s>   grabber->Wait_For_Next_Image() AFTER\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+   break;
+  picnum=image_nr_from_timestamp(picbuf[buf_nr],0);
+  
+  tim=mylog.stop_time_mess();
+  freq=i*1000;
+  freq/=tim;
+
+  printf("%s>   %05d. Image done to %1d ts_nr: %05d ",getTimestamp(),i+1,buf_nr,picnum);
+  calc_mean(picbuf[buf_nr],w*h);
+  printf("in %.2fms \n",tim);
+  buf_nr++;
+  if(buf_nr>=BUFNUM)
+   buf_nr=0;
+  
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_SetRecordingState(0);
+  printf("%s>   camera->PCO_SetRecordingState(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+ 
+  err=grabber->Stop_Acquire();   
+  printf("%s>   grabber->Stop_Acquire()\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+  printf("%s>   sleeping end of loop [%d]ms\n",getTimestamp(), sleep_ms_loop); 
+  camera->Sleep_ms(sleep_ms_loop);     
+  printf("================================================= LOOP END\n"); 
+  
+ } // for count
+ 
+/* 
+ i--;
+ tim=mylog.stop_time_mess();
+ freq=i*1000;
+ freq/=tim;
+ printf("\n %05d images grabbed in %dms lost images %d\n",i+1,(int)tim,lost);
+ printf(" freq: %.2fHz time/pic: %.3fms  %.2fMB/sec",freq,tim/i,(freq*w*h*2)/(1024*1024));
+*/
+
+
+ if(err!=PCO_NOERROR)
+ {
+     char bla[512];
+     PCO_GetErrorText((DWORD) err, bla, (DWORD) sizeof(bla));
+     printf("error [0x%x] [%d] [%s]\n",err, err, bla);
+ }
+
+
+ err=grabber->Stop_Acquire(); 
+ if(err!=PCO_NOERROR)
+ {
+  printf("\ngrab_count_wait Stop_Acquire error 0x%x\n",err);
+ }
+ printf("%s>   grabber->Stop_Acquire()\n",getTimestamp()); 
+
+ for(i=0;i< BUFNUM;i++)
+ {
+  if(picbuf[i]!=NULL)
+   free(picbuf[i]);
+ }
+ printf("%s>   free(picbuf[i])\n",getTimestamp()); 
+
+ camera->PCO_SetRecordingState(1);
+ printf("%s>   camera->PCO_SetRecordingState(1)\n",getTimestamp()); 
+ camera->PCO_GetRecordingState(&recmode);
+ printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+
+ printf("%s>   return procedure err[%d]\n",getTimestamp(), err); 
+ printf("================================================= PROCEDURE END\n"); 
+
+ return err;
+}
+
+
+
+
+
+//==============================================================================
+//==============================================================================
+
+DWORD grab_expos_wait_bis8(CPco_com* camera,CPco_grab_clhs* grabber,int count)
+{
+ int err,i,timeout;
+ int picnum,buf_nr,first_picnum,lost __attribute__((unused));
+ unsigned int w,h,bp;
+ WORD *picbuf[BUFNUM];
+ double tim,freq;
+ DWORD exp_time,delay_time,pixelrate;
+ WORD exp_timebase,del_timebase;
+ DWORD width,height;
+// WORD triggermode;
+ WORD binhorz,binvert;   
+ WORD wRoiX0, wRoiY0, wRoiX1, wRoiY1;
+ WORD ts_mode,bitalign,recmode;
+ 
+ int sleep_ms_loop = 100;
+ int sleep_ms_post = 100;
+
+ printf("\n\n================================================= PROCEDURE grab_expos_wait_bis8\n"); 
+ 
+ picnum=1;
+
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    return err;
+  }
+
+  if(recmode)
+  {
+    err=camera->PCO_SetRecordingState(0);
+    printf("%s>   camera->PCO_SetRecordingState(0) \n",getTimestamp()); 
+
+      err=camera->PCO_GetRecordingState(&recmode);
+      printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+      if(err!=PCO_NOERROR)
+      {
+        printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+        return err;
+      }
+  }
+  
+
+ err=grabber->Get_actual_size(&w,&h,&bp);
+ if(err!=PCO_NOERROR)
+ {
+  printf("\ngrab_count_wait Get_actual_size error 0x%x\n",err);
+  return err;
+ }
+ 
+  err=camera->PCO_GetROI(&wRoiX0, &wRoiY0, &wRoiX1, &wRoiY1);
+  if(err!=PCO_NOERROR)
+   printf("PCO_GetROI() Error 0x%x\n",err);
+  else
+  {
+    printf("%s>   camera->PCO_GetROI() wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(), wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+    printf("%s>   actual ROI: [%d-%d], [%d-%d]\n",getTimestamp(),wRoiX0,wRoiX1,wRoiY0,wRoiY1);
+  } 
+
+ 
+ printf("%s>   grabber->Get_actual_size() w[%d] h[%d] b[%d]\n",getTimestamp(), w, h, bp); 
+ lost=first_picnum=0;
+
+ grabber->Get_Grabber_Timeout(&timeout);
+ printf("%s>   grabber->Get_Grabber_Timeout() [%d]\n",getTimestamp(), timeout); 
+
+ if(timeout!=5000)
+ {
+    grabber->Set_Grabber_Timeout(5000);
+    printf("%s>   grabber->Set_Grabber_Timeout(5000)\n",getTimestamp()); 
+
+     grabber->Get_Grabber_Timeout(&timeout);
+     printf("%s>   grabber->Get_Grabber_Timeout() [%d]\n",getTimestamp(), timeout); 
+  }
+  
+
+ memset(picbuf,0,sizeof(WORD*)*BUFNUM); 
+ for(i=0;i< BUFNUM;i++)
+ {
+  picbuf[i]=(WORD*)malloc(w*h*sizeof(WORD));
+  if(picbuf[i]==NULL)
+  {
+   printf("\ngrab_count_wait cannot allocate buffer %d\n",i);
+   err=PCO_ERROR_NOMEMORY | PCO_ERROR_APPLICATION;
+   break;
+  }
+ }
+ if(err!=PCO_NOERROR)
+ {
+  for(i=0;i< BUFNUM;i++)
+  {
+   if(picbuf[i]!=NULL)
+    free(picbuf[i]);
+  }
+  return err;
+ }
+
+ // loop
+ buf_nr=0;
+ for(i=0;i<count;i++)
+ {
+
+  printf("================================================= LOOP [%d]/[%d]\n",i+1, count); 
+  printf("%s>   bu_nr[%d] BUFNUM[%d]\n",getTimestamp(),  buf_nr, BUFNUM); 
+
+
+
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    return err;
+  }
+
+  if(recmode)
+  {
+    err=camera->PCO_SetRecordingState(0);
+    printf("%s>   camera->PCO_SetRecordingState(0) \n",getTimestamp()); 
+
+      err=camera->PCO_GetRecordingState(&recmode);
+      printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+      if(err!=PCO_NOERROR)
+      {
+        printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+        return err;
+      }
+  }
+
+  err=camera->PCO_GetBinning(&binhorz ,&binvert);
+  printf("%s>   camera->PCO_GetBinning() binhorz[%d] binvert[%d]\n",getTimestamp(),  binhorz ,binvert); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+
+  err=camera->PCO_SetROI(wRoiX0,wRoiY0,wRoiX1,wRoiY1);
+  printf("%s>   camera->PCO_SetROI() wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(),  wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetROI(&wRoiX0,&wRoiY0,&wRoiX1,&wRoiY1);
+  printf("%s>   camera->PCO_GetROI() wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(),  wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_SetTriggerMode(0);
+  printf("%s>   camera->PCO_SetTriggerMode(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_SetAcquireMode(0);
+  printf("%s>   camera->PCO_SetAcquireMode(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetTimestampMode(&ts_mode);
+  printf("%s>   camera->PCO_GetTimestampMode() [%d]\n",getTimestamp(), ts_mode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetBitAlignment(&bitalign);
+  printf("%s>   camera->PCO_GetBitAlignment() [%d]\n",getTimestamp(), bitalign); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+
+  err=camera->PCO_GetDelayExposureTime(&delay_time,&exp_time,&del_timebase,&exp_timebase);
+  printf("%s>   camera->PCO_GetDelayExposureTime() delay_time[%d] exp_time[%d] del_timebase[%d] exp_timebase[%d] ---> [%d]%s\n",
+    getTimestamp(), delay_time,exp_time,del_timebase,exp_timebase, exp_time, tb[exp_timebase]); 
+  if(err!=PCO_NOERROR)
+   break;
+
+  if(i%2==0)
+   exp_time=10000;
+  else
+   exp_time=1000000;
+      
+  delay_time = 0;
+  del_timebase = 0;
+  exp_timebase = 1;
+      
+  err=camera->PCO_SetDelayExposureTime(delay_time,exp_time,del_timebase,exp_timebase);
+  printf("%s>   camera->PCO_SetDelayExposureTime() delay_time[%d] exp_time[%d] del_timebase[%d] exp_timebase[%d] ---> [%d]%s\n",
+    getTimestamp(), delay_time,exp_time,del_timebase,exp_timebase, exp_time, tb[exp_timebase]); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetDelayExposureTime(&delay_time,&exp_time,&del_timebase,&exp_timebase);
+  printf("%s>   camera->PCO_GetDelayExposureTime() delay_time[%d] exp_time[%d] del_timebase[%d] exp_timebase[%d] ---> [%d]%s\n",
+    getTimestamp(), delay_time,exp_time,del_timebase,exp_timebase, exp_time, tb[exp_timebase]); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetPixelRate(&pixelrate);
+  printf("%s>   camera->PCO_GetPixelRate() [%d]\n",getTimestamp(), pixelrate); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetActualSize(&width,&height);
+  printf("%s>   camera->PCO_GetActualSize() width[%d] height[%d]\n",getTimestamp(), width,height); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+//15:20:12.102      0.029ms 29458:11960 05 _pco_GetSizes> resAct[2048][2048] resStdMax[2048][2048] resExtMax[2048][2048]
+  err=grabber->Get_actual_size(&w,&h,&bp);
+  printf("%s>   grabber->Get_actual_size() w[%d] h[%d] b[%d]\n",getTimestamp(), w, h, bp); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+
+//15:20:12.262      0.172ms 29458:11960 05  / width[2048][2048] height[2048][2048]
+  err=camera->PCO_ArmCamera();
+  printf("%s>   camera->PCO_ArmCamera()\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+//  err=grabber->PCO_Set_actual_size(w,h,bp);
+//  if(err!=PCO_NOERROR)
+//   break;    
+  
+  err=grabber->PostArm(0);
+  printf("%s>   grabber->PostArm(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+//15:20:12.318      0.055ms 29458:11960 05 0x0101 Control_Command: start com_in 0x1012 GET_COC_RUNTIME timeout 200
+//15:20:12.318      0.337ms 29458:11960 05 0x0101 Control_Command: done com_in 0x1012  com_out 0x1092 err 0x00000000
+     
+
+  printf("%s>   sleeping after grabber->PostArm(0) [%d]ms\n",getTimestamp(), sleep_ms_post); 
+  camera->Sleep_ms(sleep_ms_post);     
+  fflush(stdout);
+
+
+
+  err=grabber->Start_Acquire(); 
+  printf("%s>   grabber->Start_Acquire()\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+  err=camera->PCO_SetRecordingState(1);
+  printf("%s>   camera->PCO_SetRecordingState(1)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  mylog.start_time_mess();
+  
+  printf("%s>   grabber->Wait_For_Next_Image() BEFORE buff_nr[%d] timeout[%d]\n",getTimestamp(), buf_nr,timeout); 
+  err=grabber->Wait_For_Next_Image(picbuf[buf_nr],timeout);
+  printf("%s>   grabber->Wait_For_Next_Image() AFTER\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+   break;
+  picnum=image_nr_from_timestamp(picbuf[buf_nr],0);
+  
+  tim=mylog.stop_time_mess();
+  freq=i*1000;
+  freq/=tim;
+
+  printf("%s>   image/calc[%05d]/[%05d] buf_nr[%1d] ",getTimestamp(),i+1,picnum,buf_nr);
+  calc_mean(picbuf[buf_nr],w*h);
+  printf("in %.2fms \n",tim);
+
+  buf_nr++;
+  if(buf_nr>=BUFNUM)
+   buf_nr=0;
+  
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_SetRecordingState(0);
+  printf("%s>   camera->PCO_SetRecordingState(0)\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+
+  err=camera->PCO_GetRecordingState(&recmode);
+  printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+ 
+  err=grabber->Stop_Acquire();   
+  printf("%s>   grabber->Stop_Acquire()\n",getTimestamp()); 
+  if(err!=PCO_NOERROR)
+  {
+    printf("%s>   ERROR [%d]\n",getTimestamp(),err); 
+    break;
+  }
+  
+  printf("%s>   sleeping end of loop [%d]ms\n",getTimestamp(), sleep_ms_loop); 
+  camera->Sleep_ms(sleep_ms_loop);     
+  printf("================================================= LOOP END\n"); 
+  
+ } // for count
+ 
+/* 
+ i--;
+ tim=mylog.stop_time_mess();
+ freq=i*1000;
+ freq/=tim;
+ printf("\n %05d images grabbed in %dms lost images %d\n",i+1,(int)tim,lost);
+ printf(" freq: %.2fHz time/pic: %.3fms  %.2fMB/sec",freq,tim/i,(freq*w*h*2)/(1024*1024));
+*/
+
+
+ if(err!=PCO_NOERROR)
+ {
+     char bla[512];
+     PCO_GetErrorText((DWORD) err, bla, (DWORD) sizeof(bla));
+     printf("error [0x%x] [%d] [%s]\n",err, err, bla);
+ }
+
+
+ err=grabber->Stop_Acquire(); 
+ if(err!=PCO_NOERROR)
+ {
+  printf("\ngrab_count_wait Stop_Acquire error 0x%x\n",err);
+ }
+ printf("%s>   grabber->Stop_Acquire()\n",getTimestamp()); 
+
+ for(i=0;i< BUFNUM;i++)
+ {
+  if(picbuf[i]!=NULL)
+   free(picbuf[i]);
+ }
+ printf("%s>   free(picbuf[i])\n",getTimestamp()); 
+
+ camera->PCO_SetRecordingState(0);
+ printf("%s>   camera->PCO_SetRecordingState(0)\n",getTimestamp()); 
+ camera->PCO_GetRecordingState(&recmode);
+ printf("%s>   camera->PCO_GetRecordingState() [%d]\n",getTimestamp(), recmode); 
+
+ printf("%s>   return procedure err[%d]\n",getTimestamp(), err); 
+ printf("================================================= PROCEDURE END\n"); 
+
+ return err;
+}
+
+
+
+
 
 
 int image_nr_from_timestamp(void *buf,int shift)
@@ -1267,4 +2710,44 @@ void get_hexnumber(int *num,int len)
    *num=cmd;
   else
    *num=-1;
+}
+
+
+double calc_mean(uint16_t* adr,int size)
+{
+ uint64_t val=0;   
+ double d;
+ for(int i=0;i<size;i++)
+  val+=*(adr+i);
+ d=val;
+ d/=size;
+ printf(" mean: %.2f ",d);
+ return d;    
+}    
+
+
+char *getTimestamp()
+{
+    static char timeline[128];
+    time_t ltime;
+    struct tm today;
+
+    struct timespec tickNow = {0, 0};
+    time_t timeRaw;
+    struct tm *timeInfo;
+
+    
+    clock_gettime(CLOCK_REALTIME, &tickNow);
+    time(&timeRaw);
+
+    timeInfo = localtime(&timeRaw);
+
+    snprintf(timeline, sizeof(timeline),
+            "%4d/%02d/%02d_%02d:%02d:%02d.%03d",
+            timeInfo->tm_year + 1900, timeInfo->tm_mon + 1,
+            timeInfo->tm_mday, timeInfo->tm_hour, timeInfo->tm_min,
+            timeInfo->tm_sec, int((tickNow.tv_nsec / 1000000)));
+
+
+    return timeline;
 }

@@ -1,0 +1,8 @@
+pco_camera_grab_e.log logfile started at 29.03.2021 14:27:16 
+PCO Common Lib VERSION: 1.01.08
+
+14:27:16.174      0.154ms 12229:12229 13 0x0001 Open_Cam_Ext: Common Version 01.01.17
+14:27:16.174      0.022ms 12229:12229 13 0x0001 Open_Cam_Ext: CLHS libpcocom_clhs Version 01.02.03
+14:27:16.180      5.878ms 12229:12229 13 0x0000 ERROR Open_Cam_Ext: Cclhs_cam->Open failed 0x80332006
+14:27:16.180      0.057ms 12229:12229 13 0x0000 ~CPco_com_clhs: before Close_Cam()
+14:27:16.180      0.012ms 12229:12229 13 0x0000 Close_Cam: driver was closed before

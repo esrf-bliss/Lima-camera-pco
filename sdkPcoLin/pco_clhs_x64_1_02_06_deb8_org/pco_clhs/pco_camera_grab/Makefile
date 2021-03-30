@@ -25,8 +25,7 @@ LIBADDX = -lpthread -lrt -ldl -lX11 -lXext
 
 
 
-#TARGETS = pco_camera_grab pcox_camera_grab
-TARGETS = pco_camera_grab
+TARGETS = pco_camera_grab pcox_camera_grab
 
 
 all:		$(TARGETS) copy
@@ -45,7 +44,7 @@ pco_%:		pco_%.cpp $(CAMLIB) $(HEADERS)
 		$(CXX) $(CFLAGS) -rdynamic -L../bindyn $@.cpp -o ../bindyn/$@  $(PCOLIB) $(LIBADD)
 
 
-#pcox_%:		pcox_%.cpp $(CAMLIB) $(HEADERS) 
-#		$(CXX) $(CFLAGS) $@.cpp -o $@ $(LFLAGS) $(PCOLIBX) $(LIBADDX)
-#		$(CXX) $(CFLAGS) -rdynamic -L../bindyn $@.cpp -o ../bindyn/$@  $(PCOLIBX) $(LIBADDX)
+pcox_%:		pcox_%.cpp $(CAMLIB) $(HEADERS) 
+		$(CXX) $(CFLAGS) $@.cpp -o $@ $(LFLAGS) $(PCOLIBX) $(LIBADDX)
+		$(CXX) $(CFLAGS) -rdynamic -L../bindyn $@.cpp -o ../bindyn/$@  $(PCOLIBX) $(LIBADDX)
 

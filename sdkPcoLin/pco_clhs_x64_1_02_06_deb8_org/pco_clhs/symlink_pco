@@ -1,0 +1,95 @@
+#!/bin/bash
+#
+if [ "$1" == "-h" ]; then
+ echo "usage:"
+ echo "symlink_pco -b -u -h [ path ]"
+ echo "-b create symlinks in directory ./bindir"
+ echo "-u create symlinks in directory /usr/local/lib"
+ echo "[ path ] create symlinks in given path"
+ echo "-h this info"
+ exit
+fi
+
+BINDIR=""
+
+CURDIR=`pwd`
+DEV=`echo ${CURDIR##*_}`
+echo "current directory is \"$CURDIR\""
+echo "current dev \"$DEV\""
+
+if [ "$1" == "-b" ] ; then
+  BINDIR=$CURDIR/bindyn
+  if [ ! -e $CURDIR/bindyn ] ; then
+   mkdir $CURDIR/bindyn
+  fi
+elif [ "$1" == "-u" ] ; then
+  BINDIR=/usr/local/lib
+else
+  BINDIR=$1
+fi
+
+if [ -z "$BINDIR" ] ; then
+ echo "please input target directory, -h for more information"
+ exit 
+fi
+
+if [ ! -e $BINDIR ] ; then
+  echo "target directory \"$1\" does not exist, -h for more information"
+  exit 
+fi 
+
+echo "current target directory is \"$BINDIR\""
+
+PCOLIBDIR="pco_common/pco_libdyn"
+
+cd ..
+COMDIR=`pwd`
+echo "common directory is \"$COMDIR\""
+
+COUNT=`ls ./$PCOLIBDIR |wc -l`
+echo "$COUNT files found in $PCOLIBDIR" 
+
+LIBLIST=`ls ./$PCOLIBDIR/lib* ` 
+#echo "following pcolibs found:" $LIBLISTls
+
+
+cd $BINDIR
+
+for NAME in $LIBLIST
+do
+ CREATE=0 
+ LIBNAME=`basename $NAME`
+ LIBNAME2=`echo ${LIBNAME%.*}`
+ LIBNAME1=`echo ${LIBNAME2%.*}`
+ LIBNAME0=`echo ${LIBNAME1%.*}`
+
+ VAR=`echo ${LIBNAME##*_}`
+ if [ $VAR == $LIBNAME ] 
+  then CREATE=1
+ else
+  VAR3=`echo ${VAR%%.*}`
+#  echo $VAR3
+  if [ $VAR3 == $DEV ] 
+   then CREATE=1
+  fi
+ fi 
+
+ if [ $CREATE -eq 1 ] ; then
+  echo "found names $LIBNAME $LIBNAME2 $LIBNAME1 $LIBNAME0"
+  if [ -e "$BINDIR/$LIBNAME0*" ] ; then
+   rm $BINDIR/$LIBNAME0*
+  fi
+  echo "create symlink \"$LIBNAME1\" to \"$COMDIR/$PCOLIBDIR/$LIBNAME\" in \"$BINDIR\""
+  ln -sf $COMDIR/$PCOLIBDIR/$LIBNAME $LIBNAME1 
+  echo "create symlink \"$LIBNAME0\" to \"$LIBNAME1\" in \"$BINDIR\""
+  ln -sf $LIBNAME1 $LIBNAME0 ;
+ fi
+done
+
+cd $CURDIR 
+
+#ls ./bindyn/libpco*.so*
+
+
+
+
