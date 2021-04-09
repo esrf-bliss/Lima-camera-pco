@@ -1111,6 +1111,8 @@ namespace lima
                                                         int &error);
             int _pco_GetStorageMode_GetRecorderSubmode();
 
+            void _pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase);
+
             void _pco_SetDelayExposureTime(int &error, int ph = 0);
             void _pco_SetImageParameters(int &error);
 

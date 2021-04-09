@@ -88,7 +88,11 @@ void _pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase)
 }
 
 
+<<<<<<< HEAD
 void _pco_time2dwbase_bis(double exp_time, DWORD &dwExp, WORD &wBase)
+=======
+void Camera::_pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase)
+>>>>>>> 1be44d9... tmp save / coding min prepareAcq
 {
     // conversion time(s) to PCO standard DWORD + UNIT(ms, us, ns)
     // exp & lat time is saved in seconds (LIMA).
