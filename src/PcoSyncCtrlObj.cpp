@@ -193,7 +193,7 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             _pcoTrigMode = 0x0000; // 0 = SOFT (spec)
 
             *sPcoAcqMode = "acqEnbl_Ignored";
-            pcoAcqMode = 0x0000;
+            _pcoAcqMode = 0x0000;
             break;
 
         case ExtTrigSingle:
@@ -211,7 +211,7 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             _pcoTrigMode = 0x0000;
 
             *sPcoAcqMode = "acqEnbl_Ignored";
-            pcoAcqMode = 0x0000;
+            _pcoAcqMode = 0x0000;
             break;
 
             // TRIG MODE PCO = 0x0002
@@ -227,7 +227,7 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             _pcoTrigMode = 0x0002; // 1 = START (spec)
 
             *sPcoAcqMode = "acqEnbl_Ignored";
-            pcoAcqMode = 0x0000;
+            _pcoAcqMode = 0x0000;
             break;
 
             // TRIG MODE PCO = 0x0003
@@ -248,9 +248,9 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
 
 #ifdef DISABLE_ACQ_ENBL_SIGNAL
             *sPcoAcqMode = "acqEnbl_Ignored";
-            pcoAcqMode = 0x0000;
+            _pcoAcqMode = 0x0000;
 #else
-            pcoAcqMode = 0x0001;
+            _pcoAcqMode = 0x0001;
             *sPcoAcqMode = "acqEnbl_TrigAccepted";
 #endif
             break;
@@ -278,9 +278,9 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
     m_pcoData->traceAcq.iPcoAcqMode = pcoAcqMode;
 
 
-    DEB_TRACE() << "\n ... " << DEB_VAR2(*sLimaTriggerMode, extTrig) << "\n ... "
-                << DEB_VAR2(*sPcoTriggerMode, pcoTrigMode) << "\n ... "
-                << DEB_VAR2(*sPcoAcqMode, pcoAcqMode);
+    DEB_ALWAYS() << "\n ... " << DEB_VAR2(*sLimaTriggerMode, extTrig) << "\n ... "
+                 << DEB_VAR2(*sPcoTriggerMode, pcoTrigMode) << "\n ... "
+                 << DEB_VAR2(*sPcoAcqMode, pcoAcqMode);
 
     return;
 }

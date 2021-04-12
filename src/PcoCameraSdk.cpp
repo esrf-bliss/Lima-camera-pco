@@ -3038,7 +3038,8 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     // mylog->writelog(INFO_M, "%s", bla);
     mylog->writelog(INFO_M, mybla);
 
-    if (doLut)
+    //if (doLut)
+    if (0)
     {
         actlut = lut;
         error = camera->PCO_SetLut(actlut, 0);
