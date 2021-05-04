@@ -850,7 +850,6 @@ void Camera::_init()
     
 
 
-    _armRequired(true);
 
     __sprintfSExt(msg, sizeof(msg), "*** Pco log %s\n", getTimestamp(Iso));
     m_log.append(msg);
@@ -1195,7 +1194,6 @@ void Camera::prepareAcq()
 
     DEB_TRACE() << "\n   PCO_GetROI> " << DEB_VAR5(x0, x1, y0, y1, roiNow);
 
-    _armRequired(true);
 
     //-------------------------------------------------
 

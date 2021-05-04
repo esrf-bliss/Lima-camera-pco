@@ -337,7 +337,7 @@ struct stcLongLongStr
 
 //================================================================
 //================================================================
-struct STC_traceAcq
+typedef struct
 {
     DWORD nrImgRecorded;
     DWORD maxImgCount;
@@ -387,7 +387,7 @@ struct STC_traceAcq
 
     void traceMsg(char *s);
 
-};
+} STC_traceAcq;
 
 //================================================================
 //================================================================
@@ -880,14 +880,6 @@ namespace lima
             };
             void _pco_set_shutter_rolling_edge(int &error);
             void msgLog(const char *s);
-            bool _getIsArmed()
-            {
-                return m_isArmed;
-            };
-            void _armRequired(bool armRequiered)
-            {
-                m_isArmed = !armRequiered;
-            };
             void _traceMsg(char *s);
 
             void init_properties(const char *str);
@@ -932,7 +924,6 @@ namespace lima
             int m_acq_frame_nb;
             bool m_config;
 
-            bool m_isArmed;
             long long m_state;
 
             int m_pco_buffer_nrevents;

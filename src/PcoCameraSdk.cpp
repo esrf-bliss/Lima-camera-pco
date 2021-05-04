@@ -87,6 +87,42 @@ void _pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase)
     return;
 }
 
+
+void _pco_time2dwbase_bis(double exp_time, DWORD &dwExp, WORD &wBase)
+{
+    // conversion time(s) to PCO standard DWORD + UNIT(ms, us, ns)
+    // exp & lat time is saved in seconds (LIMA).
+    // PCO requires them expressed in DWORD as ms(base=2), us(base=1) or
+    // ns(base=0) max DWORD 0xFFFFFFFF = 4 294 967 295.0 find the lowest unit (ns
+    // -> us -> ms) which does not overflow DWORD
+
+	double factor = 1000.0;
+    DWORD dwExpMask = 0x0007;
+    DWORD dwExpMin  = 0x1000;
+	
+	for(int base = 2; base >= 0; base--) 
+	{
+		dwExp = DWORD(exp_time * factor);
+		wBase = base;
+
+		if(dwExp > dwExpMin)
+		{
+			// set to 0 the 3 LSBits ... XXXX X000
+			dwExp |= dwExpMask;
+			dwExp ^= dwExpMask;
+			break;
+		}
+
+		factor *= 1000.0;
+	}
+
+
+    return;
+}
+
+
+
+
 //====================================================================
 //====================================================================
 // extract image number and time from the image
@@ -677,7 +713,6 @@ const char *Camera::_pco_SetRecordingState(int state, int &err)
     usElapsedTimeSet(usStart);
 #endif
 
-    _armRequired(true);
 
 #ifndef __linux__
     m_pcoData->traceAcq.usTicks[10].value = usElapsedTime(usStart);
@@ -1436,7 +1471,6 @@ void Camera::_pco_SetBinning(Bin binNew, Bin &binActual, int &err)
     PCO_THROW_OR_TRACE(err, "PCO_SetBinning");
 
 #endif
-    _armRequired(true);
 
     _pco_GetBinning(binActual, err0);
 }
@@ -2330,7 +2364,6 @@ void Camera::_pco_SetPixelRate(int &error)
             DEB_TRACE() << "PIXEL rate SET (old/new): "
                         << DEB_VAR2(_dwPixelRateOld, _dwPixelRate);
 
-            _armRequired(true);
         }
         m_pcoData->dwPixelRateRequested = 0;
         return;
@@ -2366,7 +2399,6 @@ void Camera::_pco_SetPixelRate(int &error)
             DEB_TRACE() << "PIXEL rate SET (old/new): "
                         << DEB_VAR2(_dwPixelRateOld, _dwPixelRate);
 
-            _armRequired(true);
         }
         return;
     }
@@ -2398,7 +2430,6 @@ void Camera::_pco_SetPixelRate(int &error)
             // DEB_ALWAYS() << "PIXEL rate SET (old/new): "  <<
             // DEB_VAR2(_dwPixelRateOld, _dwPixelRate) ;
 
-            _armRequired(true);
         }
         m_pcoData->dwPixelRateRequested = 0;
         return;
@@ -2432,7 +2463,6 @@ void Camera::_pco_SetPixelRate(int &error)
             DEB_TRACE() << "PIXEL rate SET (old/new): "
                         << DEB_VAR2(_dwPixelRateOld, _dwPixelRate);
 
-            _armRequired(true);
         }
         return;
     }
@@ -2476,7 +2506,7 @@ void Camera::_pco_GetPixelRate(DWORD &pixRateActual, DWORD &pixRateNext,
                       ? m_pcoData->dwPixelRateRequested
                       : pixRateActual;
 
-    DEB_TRACE() << "\n   " << DEB_VAR1(pixRateActual) << "\n   "
+    DEB_ALWAYS() << "\n   " << DEB_VAR1(pixRateActual) << "\n   "
                  << DEB_VAR1(pixRateNext);
 
 #endif
@@ -2865,7 +2895,6 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 
 #else // linux prep
 
-#    define USERSET
     struct stcPcoData _pcoData;
     char *pbla = mybla;
     const char *msg;
@@ -2874,7 +2903,6 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     // WORD lutparam;
     int pcoBuffNr = 10;
 
-#    ifdef USERSET // USERSET
     WORD lut;
 
     _pco_GetPixelRate(pixelrate, pixRateNext, error);
@@ -2894,7 +2922,6 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     m_pcoData->clTransferParam.DataFormat = clpar.DataFormat;
     m_pcoData->clTransferParam.Transmit = clpar.Transmit;
 
-#    endif // USERSET
 
 #endif // linux prep
 
@@ -2978,7 +3005,6 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         throw LIMA_HW_EXC(Error, msg);
     }
 
-    _armRequired(true);
 
     //================================================================================================
     // PCO_SetActiveLookupTable
@@ -3007,7 +3033,6 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
                 DEB_ALWAYS() << "ERROR - PCO_SetActiveLookupTable";
             }
 
-            _armRequired(true);
 
             error =
                 PCO_GetActiveLookupTable(m_handle, &m_pcoData->wLUT_Identifier,
@@ -3022,7 +3047,6 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 
 #else // linux pcoSet
 
-#    ifdef USERSET // USERSET
 
     // m_pcoData->clTransferParam.baudrate = PCO_CL_BAUDRATE_115K2;
 
@@ -3072,75 +3096,50 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 	{	
 #ifdef ME4
 		error = grabber_me4->Set_DataFormat(clpar.DataFormat);
+        msg = "Set_DataFormat";
+        PCO_CHECK_ERROR(error, msg);
+        if (error != PCO_NOERROR)
+        {
+            DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
+        }
+
+		error = grabber_me4->Set_Grabber_Size(width, height);
+    	msg = "Set_Grabber_Size";
+        PCO_CHECK_ERROR(error, msg);
+
+		error = grabber_me4->PostArm(1);
+        msg = "grabber->PostArm(1)";
+        PCO_CHECK_ERROR(error, msg);
+
+		error = grabber_me4->Allocate_Framebuffer(pcoBuffNr);
+		msg = "Allocate_Framebuffer";
+        PCO_CHECK_ERROR(error, msg);
+        error = 0;
 #endif
 	}
 	else
 	{
 		error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
-	}
-	msg = "Set_DataFormat";
-    PCO_CHECK_ERROR(error, msg);
-    if (error != PCO_NOERROR)
-    {
-        DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
-    }
+        msg = "Set_DataFormat";
+        PCO_CHECK_ERROR(error, msg);
+        if (error != PCO_NOERROR)
+        {
+            DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
+        }
 
-	
-	if(grabber_me4)
-	{	
-#ifdef ME4
-		error = grabber_me4->Set_Grabber_Size(width, height);
-#endif
-    }
-    else
-    {
 		error = grabber_clhs->Set_Grabber_Size(width, height);
-	}
-	msg = "Set_Grabber_Size";
-    PCO_CHECK_ERROR(error, msg);
+        msg = "Set_Grabber_Size";
+        PCO_CHECK_ERROR(error, msg);
 
-    if(grabber_me4)
-	{	
-#ifdef ME4
-		error = grabber_me4->PostArm(1);
-#endif
-	}
-	else
-	{
 		error = grabber_clhs->PostArm(1);
-	}
-    msg = "PostArm(1)";
-    PCO_CHECK_ERROR(error, msg);
+        msg = "grabber->PostArm(1)";
+        PCO_CHECK_ERROR(error, msg);
 
-#    else  // USERSET
-    if(grabber_me4)
-	{	
-#ifdef ME4
-		error = grabber_me4->PostArm();
-#endif
-    }
-    else
-    {
-		error = grabber_clhs->PostArm();
-	}
-	msg = "PostArm(0)";
-    PCO_CHECK_ERROR(error, msg);
-#    endif // USERSET
-
-    
-    if(grabber_me4)
-	{	
-#ifdef ME4
-		error = grabber_me4->Allocate_Framebuffer(pcoBuffNr);
-#endif
-    }
-    else
-    {
 		error = grabber_clhs->Allocate_Framebuffer(pcoBuffNr);
-	}
 		msg = "Allocate_Framebuffer";
-    PCO_CHECK_ERROR(error, msg);
-    error = 0;
+        PCO_CHECK_ERROR(error, msg);
+        error = 0;
+	}
 
 #endif // linux pcoSet
 
@@ -3325,7 +3324,6 @@ void Camera::_pco_SetROI(Roi roi, int &err)
         DEB_ALWAYS() << "ERROR - PCO_SetROI";
     }
 
-    _armRequired(true);
 }
 
 //=================================================================================================
@@ -3787,6 +3785,14 @@ void Camera::_pco_SetDelayExposureTime(int &error, int ph)
     PCO_CHECK_ERROR(error, "PCO_SetDelayExposureTime");
 #else
     int err;
+    DWORD exp_time,delay_time, exp_time0,delay_time0;
+    WORD exp_timebase,del_timebase, exp_timebase0,del_timebase0;
+
+    camera->PCO_SetRecordingState(0);
+    err=camera->PCO_GetDelayExposure(&delay_time0,&exp_time0);
+    PCO_CHECK_ERROR(err, "PCO_GetDelayExposure");
+    err=camera->PCO_GetTimebase(&del_timebase0,&exp_timebase0);
+    PCO_CHECK_ERROR(err, "PCO_GetTimebase");
 
     err = camera->PCO_SetTimebase(wDelay_base, wExposure_base);
     PCO_CHECK_ERROR(err, "PCO_SetTimebase");
@@ -3795,6 +3801,22 @@ void Camera::_pco_SetDelayExposureTime(int &error, int ph)
     err = camera->PCO_SetDelayExposure(dwDelay, dwExposure);
     PCO_CHECK_ERROR(err, "PCO_SetDelayExposure");
     error |= err;
+    
+    err=camera->PCO_ArmCamera();
+    PCO_CHECK_ERROR(err, "PCO_ArmCamera");
+    
+    err=camera->PCO_GetDelayExposure(&delay_time,&exp_time);
+    PCO_CHECK_ERROR(err, "PCO_GetDelayExposure");
+    err=camera->PCO_GetTimebase(&del_timebase,&exp_timebase);
+    PCO_CHECK_ERROR(err, "PCO_GetTimebase");
+
+
+    DEB_ALWAYS() << 
+        "\n... timebase: ns(0), us(1) ms(2)" << 
+        "\n... get " << DEB_VAR4(delay_time0,exp_time, del_timebase0, exp_timebase0) <<
+        "\n... set " << DEB_VAR3(_exposure, dwExposure, wExposure_base) <<
+        "\n... set " << DEB_VAR3(_delay, dwDelay, wDelay_base) <<
+        "\n... get " << DEB_VAR4(delay_time,exp_time, del_timebase, exp_timebase);
 #endif
 
     m_pcoData->traceAcq.dLimaExposure = _exposure;
