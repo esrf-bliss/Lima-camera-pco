@@ -1145,14 +1145,358 @@ void Camera::_init_edge()
     m_pcoData->fTransferRateMHzMax = 550.;
 }
 
+#ifdef __linux__
 //=================================================================================================
+// Camera::prepareAcq() LINUX
 //=================================================================================================
 void Camera::prepareAcq()
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_TRACE() << "[ENTRY] " << _checkLogFiles();
+    //DEB_ALWAYS() << "[ENTRY] " << _checkLogFiles();
+    DEB_ALWAYS() << "[ENTRY] " ;
+
+    int error, err;
+    WORD binhorz,binvert;
+    WORD wRoiX0, wRoiY0, wRoiX1, wRoiY1;
+
+    const char *msg ;
+    
+    m_pcoData->traceAcqClean();
+
+    
+    DEB_ALWAYS() << "sync" ;
+    int iRequestedFrames;
+    // live video requested frames = 0
+    m_sync->getNbFrames(iRequestedFrames);
+
+
+    //------------------------------------------------- check recording state to 0
+    // camera->PCO_GetRecordingState(&wRecState_actual);
+    // if != 0
+    //      if != edge
+    //          err = camera->PCO_CancelImage();
+    //          err = camera->PCO_CancelImageTransfer();
+    //      camera->PCO_SetRecordingState(wRecState_new);
+    //      camera->PCO_GetRecordingState(&wRecState_actual);
+    //-------------------------------------------------
+    
+    DEB_ALWAYS() << "recording " ;
+    WORD recmode;
+
+    msg = "camera->PCO_GetRecordingState()";
+    err=camera->PCO_GetRecordingState(&recmode);
+    printf("%s %s> %s [%d]\n",getTimestamp(Iso), fnId, msg, recmode); 
+    PCO_THROW_OR_TRACE(err, msg);
+ 
+    if(recmode)
+    {
+        msg = "camera->PCO_SetRecordingState(0)";
+        err=camera->PCO_SetRecordingState(0);
+        printf("%s %s> %s\n",getTimestamp(Iso), fnId, msg); 
+        PCO_THROW_OR_TRACE(err, msg);
+
+        msg = "camera->PCO_GetRecordingState()";
+        err=camera->PCO_GetRecordingState(&recmode);
+        printf("%s %s> %s [%d]\n",getTimestamp(Iso), fnId, msg, recmode); 
+        PCO_THROW_OR_TRACE(err, msg);
+    }
+
+
+    //------------------------------------------------- check binning 
+    msg = "camera->PCO_GetBinning()";
+    err=camera->PCO_GetBinning(&binhorz ,&binvert);
+    printf("%s %s> %s binhorz[%d] binvert[%d]\n",getTimestamp(Iso), fnId, msg,binhorz ,binvert); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+
+    //------------------------------------------------- check roi
+    // info only, hw already set
+
+    //msg = "camera->PCO_SetROI()";
+    //err=camera->PCO_SetROI(wRoiX0,wRoiY0,wRoiX1,wRoiY1);
+    //printf("%s %s> %s wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(Iso), fnId, msg,wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+    //PCO_THROW_OR_TRACE(err, msg);
+
+    msg = "camera->PCO_GetROI()";
+    err=camera->PCO_GetROI(&wRoiX0,&wRoiY0,&wRoiX1,&wRoiY1);
+    printf("%s %s> %s wRoiX0[%d] wRoiY0[%d] wRoiX1[%d] wRoiY1[%d]\n",getTimestamp(Iso), fnId, msg,wRoiX0, wRoiY0, wRoiX1, wRoiY1); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+    m_pcoData->traceAcq.iPcoRoiX0 = m_pcoData->wRoiX0Now = wRoiX0;
+    m_pcoData->traceAcq.iPcoRoiX1 = m_pcoData->wRoiX1Now = wRoiX1;
+    m_pcoData->traceAcq.iPcoRoiY0 = m_pcoData->wRoiY0Now = wRoiY0;
+    m_pcoData->traceAcq.iPcoRoiY1 = m_pcoData->wRoiY1Now = wRoiY1;
+
+
+    //-------------------------------------------------
+
+
+
+    //------------------------------------------------- triggering mode
+    //------------------------------------- acquire mode : ignore or not ext.
+    // signal
+
+    WORD wPcoTrigMode, wPcoAcqMode;
+    const char *sLimaTriggerMode, *sPcoTriggerMode, *sPcoAcqMode;
+    bool extTrig;
+                                       
+    TrigMode lima_trig_mode;
+    m_sync->getTrigMode(lima_trig_mode);
+    
+    m_sync->xlatLimaTrigMode2Pco(lima_trig_mode,
+        wPcoTrigMode, wPcoAcqMode,
+        &sLimaTriggerMode, &sPcoTriggerMode, &sPcoAcqMode, 
+        extTrig, err);
+
+    msg = "camera->PCO_SetTriggerMode()";
+    err=camera->PCO_SetTriggerMode(wPcoTrigMode);
+    printf("%s %s> %s wPcoTrigMode[%d]\n",getTimestamp(Iso), fnId, msg,wPcoTrigMode); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+    msg = "camera->PCO_SetAcquireMode";
+    err=camera->PCO_SetAcquireMode(wPcoAcqMode);
+    printf("%s %s> %s wPcoAcqMode[%d]\n",getTimestamp(Iso), fnId, msg, wPcoAcqMode); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+    
+    WORD ts_mode,bitalign;
+
+    //------------------------------------------------- GET timestampMode
+    msg = "camera->PCO_GetTimestampMode()";
+    err=camera->PCO_GetTimestampMode(&ts_mode);
+    printf("%s %s> %s ts_mode[%d]\n",getTimestamp(Iso), fnId, msg, ts_mode); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+    //------------------------------------------------- PCO_GetBitAlignment
+    msg = "camera->PCO_GetBitAlignment()";
+    err=camera->PCO_GetBitAlignment(&bitalign);
+    printf("%s %s> %s bitalign[%d]\n",getTimestamp(Iso), fnId, msg, bitalign); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+   
+
+    //-------------------------------------------------
+
+    // ----------------------------------------- storage mode (recorder +
+    // sequence)
+    if (_isCameraType(Dimax | Pco4k | Pco2k))
+    {
+        //TODO
+    }
+
+
+
+    //----------------------------------- set exposure time & delay time
+
+
+    const char tb[3][3]={"ns","us","ms"};
+    DWORD pco_exp_time,pco_del_time,pixelrate;
+    WORD pco_exp_timebase,pco_del_timebase;
+    double lima_exp_time, lima_del_time;
+
+    msg = "camera->PCO_GetDelayExposureTime()";
+    err=camera->PCO_GetDelayExposureTime(&pco_del_time,&pco_exp_time,&pco_del_timebase,&pco_exp_timebase);
+    printf("%s %s> %s pco_del_time[%d] pco_exp_time[%d] pco_del_timebase[%d] pco_exp_timebase[%d] ---> [%d]%s\n",
+        getTimestamp(Iso), fnId, msg, 
+        pco_del_time,pco_exp_time,pco_del_timebase,pco_exp_timebase, 
+        pco_exp_time, tb[pco_exp_timebase]); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+    m_sync->getExpTime(lima_exp_time);
+    m_sync->setLatTime(lima_del_time);
+    _pco_time2dwbase(lima_exp_time,  pco_exp_time, pco_exp_timebase);
+    _pco_time2dwbase(lima_del_time,  pco_del_time, pco_del_timebase);
+
+
+    msg = "camera->PCO_SetDelayExposureTime()";
+    err=camera->PCO_SetDelayExposureTime(pco_del_time,pco_exp_time,pco_del_timebase,pco_exp_timebase);
+    printf("%s %s> %s pco_del_time[%d] pco_exp_time[%d] pco_del_timebase[%d] pco_exp_timebase[%d] ---> [%d]%s\n",
+        getTimestamp(Iso), fnId, msg, 
+        pco_del_time,pco_exp_time,pco_del_timebase,pco_exp_timebase, 
+        pco_exp_time, tb[pco_exp_timebase]); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+    msg = "camera->PCO_GetDelayExposureTime()";
+    err=camera->PCO_GetDelayExposureTime(&pco_del_time,&pco_exp_time,&pco_del_timebase,&pco_exp_timebase);
+    printf("%s %s> %s pco_del_time[%d] pco_exp_time[%d] pco_del_timebase[%d] pco_exp_timebase[%d] ---> [%d]%s\n",
+        getTimestamp(Iso), fnId, msg, 
+        pco_del_time,pco_exp_time,pco_del_timebase,pco_exp_timebase, 
+        pco_exp_time, tb[pco_exp_timebase]); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+    //-------------------------------------------------
+
+    DWORD width,height;
+    unsigned int w,h,bp;
+
+
+
+    msg = "camera->PCO_GetPixelRate()";
+    err=camera->PCO_GetPixelRate(&pixelrate);
+    printf("%s %s> %s pixelrate[%d]\n",getTimestamp(Iso), fnId, msg, pixelrate); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+    msg = "camera->PCO_GetActualSize()";
+    err=camera->PCO_GetActualSize(&width,&height);
+    printf("%s %s> %s width[%d] height[%d]\n",getTimestamp(Iso), fnId, msg, width,height); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+    msg = "grabber_clhs->Get_actual_size()";
+    err=grabber_clhs->Get_actual_size(&w,&h,&bp);
+    printf("%s %s> %s w[%d] h[%d] b[%d]\n",getTimestamp(Iso), fnId, msg, w, h, bp); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+
+
+    //------------------------------------------------- TOCHECK
+
+    // ----------------------------------------- set Record Stop Event (used for
+    // dimax for ExtTrigSingle)
+    if (_isCameraType(Dimax))
+    {
+        //TODO
+    }
+
+    //-------------------------------------------------
+
+
+    //--------------------------- metadata
+    // for dimax only
+    //    camera->PCO_SetMetadataMode(wMetaDataMode,
+    //            &m_pcoData->wMetaDataSize,
+    //            &m_pcoData->wMetaDataVersion)
+        //TODO
+    //    _pco_SetMetaDataMode(0, error);
+    //PCO_THROW_OR_TRACE(error, "_pco_SetMetaDataMode");
+    //-------------------------------------------------
+
+    //--------------------------- PREPARE / pixel rate - ARM required
+    // camera->PCO_GetPixelRate(&_dwPixRate)
+    // if req is valid and != actual
+    //    camera->PCO_SetPixelRate(_dwPixelRateReq)
+    //    camera->PCO_GetPixelRate(&_dwPixRate)
+    
+    
+    
+
+    if (_isCameraType(Edge))
+    {
+        DWORD _dwPixelRateReq, _dwPixRate;
+
+        msg = "camera->PCO_GetPixelRate()";
+        err = camera->PCO_GetPixelRate(&_dwPixRate);
+        printf("%s %s> %s _dwPixRate[%d]\n",getTimestamp(Iso), fnId, msg, _dwPixRate); 
+        PCO_THROW_OR_TRACE(err, msg);
+
+        m_pcoData->dwPixelRate = _dwPixRate;
+
+        _dwPixelRateReq = m_pcoData->dwPixelRateRequested;
+
+        if (_isValid_pixelRate(_dwPixelRateReq) &&
+            (_dwPixRate != _dwPixelRateReq))
+        {
+            msg = "camera->PCO_SetPixelRate()";
+            err = camera->PCO_SetPixelRate(_dwPixelRateReq);
+            printf("%s %s> %s _dwPixelRateReq[%d]\n",getTimestamp(Iso), fnId, msg, _dwPixelRateReq); 
+            PCO_THROW_OR_TRACE(err, msg);
+
+            msg = "camera->PCO_GetPixelRate()";
+            err = camera->PCO_GetPixelRate(&_dwPixRate);
+            printf("%s %s> %s _dwPixRate[%d]\n",getTimestamp(Iso), fnId, msg, _dwPixRate); 
+            PCO_THROW_OR_TRACE(err, msg);
+
+            m_pcoData->dwPixelRate = _dwPixRate;
+            m_pcoData->dwPixelRateRequested = 0;
+        }
+    }
+    
+    //-------------------------------------------------
+
+    //--------------------------- PREPARE / clXferParam, LUT - ARM required
+    //_pco_SetTransferParameter_SetActiveLookupTable(error);
+    //PCO_THROW_OR_TRACE(error, "_pco_SetTransferParameter_SetActiveLookupTable");
+    //-------------------------------------------------
+
+
+
+    msg = "camera->PCO_ArmCamera()";
+    err=camera->PCO_ArmCamera();
+    printf("%s %s> %s\n",getTimestamp(Iso), fnId, msg); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+    msg = "grabber_clhs->PostArm(0)";
+    err = grabber_clhs->PostArm(0);
+    printf("%s %s> %s\n",getTimestamp(Iso), fnId, msg); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+
+#if 0
+    msg = "camera->PCO_GetActualSize()";
+    err=camera->PCO_GetActualSize(&width,&height);
+    printf("%s %s> %s width[%d] height[%d]\n",getTimestamp(Iso), fnId, msg, width,height); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+
+
+    msg = "grabber_clhs->Get_actual_size()";
+    err=grabber_clhs->Get_actual_size(&w,&h,&bp);
+    printf("%s %s> %s w[%d] h[%d] b[%d]\n",getTimestamp(Iso), fnId, msg, w, h, bp); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+
+    msg = "grabber_clhs->PostArm(1)";
+    err = grabber_clhs->PostArm(1);
+    printf("%s %s> %s\n",getTimestamp(Iso), fnId, msg); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+
+
+
+    DWORD dwTime_s, dwTime_ns;
+    double runTime, frameRate;
+
+    msg = "camera->PCO_GetCOCRuntime()";
+    err = camera->PCO_GetCOCRuntime(&dwTime_s, &dwTime_ns);
+    printf("%s %s> %s dwTime_s[%d] dwTime_ns[%d]\n",getTimestamp(Iso), fnId, msg, dwTime_s, dwTime_ns); 
+    PCO_THROW_OR_TRACE(err, msg);
+
+    m_pcoData->cocRunTime = runTime =
+        ((double)dwTime_ns * NANO) + (double)dwTime_s;
+    m_pcoData->frameRate = frameRate = (dwTime_ns | dwTime_s) ? 1.0 / runTime : 0.0;
+
+    printf("... cocRunTime[%g] frameRate[%g]\n", runTime, frameRate); 
+#endif
+
+ ::Sleep(100);
+
+}
+
+#endif
+
+//==========================================================================================================
+//==========================================================================================================
+
+#ifndef __linux__
+//=================================================================================================
+// Camera::prepareAcq() windows
+//=================================================================================================
+void Camera::prepareAcq()
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    DEB_ALWAYS() << "[ENTRY] " << _checkLogFiles();
 
     int error;
 
@@ -1312,7 +1656,6 @@ void Camera::prepareAcq()
     PCO_THROW_OR_TRACE(error, "_pco_SetTransferParameter_SetActiveLookupTable");
     //-------------------------------------------------
 
-#ifndef __linux__
     //--------------------------- PREPARE / ARM
     DEB_TRACE() << "\n   ARM the camera / PCO_ArmCamera (1)";
     _pco_ArmCamera(error);
@@ -1335,7 +1678,6 @@ void Camera::prepareAcq()
     PCO_THROW_OR_TRACE(error, "_pco_SetImageParameters");
     //-------------------------------------------------
 
-#endif
 
     //--------------------------- PREPARE / cocruntime (valid after
     // PCO_SetDelayExposureTime and ARM)
@@ -1344,7 +1686,6 @@ void Camera::prepareAcq()
 
     //-------------------------------------------------
 
-#ifndef __linux__
     //------------------------------------------------- checking nr of frames
     // for cams with memory
 
@@ -1400,11 +1741,11 @@ void Camera::prepareAcq()
 
     //------------------------------------------------- checking nr of frames
     // for cams with memory
-#endif
 
  ::Sleep(100);
 
 }
+#endif
 
 //==========================================================================================================
 //==========================================================================================================
