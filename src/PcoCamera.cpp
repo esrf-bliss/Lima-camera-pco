@@ -778,6 +778,7 @@ void Camera::_init()
         DEB_ALWAYS() << "WARNING - _pco_GetCameraType " << DEB_VAR1(iErr);
     }
 
+    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Grab";
     _pco_Open_Grab(iErr);
     __sprintfSExt(msg, sizeof(msg), "_pco_Open_Grab err[0x%08x]\n", iErr );
 	m_log.append(msg);
@@ -1476,13 +1477,13 @@ void Camera::prepareAcq()
     m_pcoData->frameRate = frameRate = (dwTime_ns | dwTime_s) ? 1.0 / runTime : 0.0;
 
     printf("... cocRunTime[%g] frameRate[%g]\n", runTime, frameRate); 
-#endif
+#endif   // 0/1
 
  ::Sleep(100);
 
 }
 
-#endif
+#endif   // linux
 
 //==========================================================================================================
 //==========================================================================================================
@@ -1698,7 +1699,7 @@ void Camera::prepareAcq()
             throw LIMA_HW_EXC(Error, "frames OUT OF RANGE");
         }
     }
-#    endif
+#    endif   // 0-1
 
 #    if 0
 	unsigned long ulFramesMaxInSegment = _pco_GetNumberOfImagesInSegment_MaxCalc(m_pcoData->wActiveRamSegment);
@@ -1737,7 +1738,7 @@ void Camera::prepareAcq()
 				return;
 		}
 	}
-#    endif
+#    endif   // 0-1
 
     //------------------------------------------------- checking nr of frames
     // for cams with memory
@@ -1745,7 +1746,7 @@ void Camera::prepareAcq()
  ::Sleep(100);
 
 }
-#endif
+#endif  // win
 
 //==========================================================================================================
 //==========================================================================================================

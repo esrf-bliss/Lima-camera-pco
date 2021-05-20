@@ -302,11 +302,15 @@ void Camera::_pco_Open_Cam(int &err)
     
     if (_stricmp(value, "ME4") == 0)
     {
-        //camera = new CPco_com_cl_me4();
+#ifdef ME4
+        camera = new CPco_com_cl_me4();
+#endif
     }
     else if (_stricmp(value, "CLHS") == 0)
     {
+#ifdef CLHS
         camera = new CPco_com_clhs();
+#endif
     } 
     else 
     {

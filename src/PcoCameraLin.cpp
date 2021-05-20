@@ -33,6 +33,8 @@
 
 #include <cstdlib>
 
+
+#if 0
 #define PRINT_USBUFF \
 			{ \
 				char bla[256]; \
@@ -46,6 +48,11 @@
 				} \
 				printf("%s allocatedBuff %d\n", bla, nb_allocated_buffers); \
 			} \
+
+#else
+#define PRINT_USBUFF {}
+#endif
+
 
 
 #ifndef __linux__
@@ -472,9 +479,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
                 usElapsedTimeSet(usStart);
             }
 
-#ifdef ME4
             err = m_cam.grabber_me4->Unblock_buffer(pcoBuffIdx);
-#endif
             PCO_CHECK_ERROR1(err, "Unblock_buffer");
             if (err != PCO_NOERROR)
             {
@@ -583,7 +588,7 @@ void Camera::_AcqThread::threadFunction_Dimax()
         }
 
     } // while quit
-#endif
+#endif    // ME4
 
     DEB_ALWAYS() << fnId << "[EXIT]" ;
 }
@@ -713,9 +718,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         if (acquireFirst)
         {
             DEB_ALWAYS() << "Start_Acquire";
-#ifdef ME4
             err = m_cam.grabber_me4->Start_Acquire(_nb_frames);
-#endif
             PCO_CHECK_ERROR1(err, "Start_Acquire");
             if (err)
             {
@@ -744,9 +747,7 @@ void Camera::_AcqThread::threadFunction_Edge()
             }
 
             DEB_ALWAYS() << "Start_Acquire";
-#ifdef ME4
             err = m_cam.grabber_me4->Start_Acquire(_nb_frames);
-#endif
             PCO_CHECK_ERROR1(err, "Start_Acquire");
             if (err)
             {
@@ -809,9 +810,7 @@ void Camera::_AcqThread::threadFunction_Edge()
 
             if (err == PCO_NOERROR)
             {
-#ifdef ME4
                 err = m_cam.grabber_me4->Check_DMA_Length(pcoBuffIdx);
-#endif
                 PCO_CHECK_ERROR1(err, "Check_DMA_Length");
                 if (err != PCO_NOERROR)
                 {
@@ -844,9 +843,7 @@ void Camera::_AcqThread::threadFunction_Edge()
             // DEB_ALWAYS()  << "lima image#  " << DEB_VAR1(limaFrameNr) <<"
             // acquired !";
 
-#ifdef ME4
             err = m_cam.grabber_me4->Get_Framebuffer_adr(pcoBuffIdx, &pcoBuffPtr);
-#endif
             PCO_CHECK_ERROR1(err, "Get_Framebuffer_adr");
             if (err != PCO_NOERROR)
             {
@@ -860,10 +857,8 @@ void Camera::_AcqThread::threadFunction_Edge()
             }
             if (err == PCO_NOERROR)
             {
-#ifdef ME4
                 m_cam.grabber_me4->Extract_Image(limaBuffPtr, pcoBuffPtr, width,
                                              height);
-#endif
 
                 m_cam.m_pcoData->traceAcq.usTicks[traceAcq_pcoSdk].value +=
                     usElapsedTime(usStart);
@@ -884,9 +879,7 @@ void Camera::_AcqThread::threadFunction_Edge()
                 usElapsedTimeSet(usStart);
             }
 
-#ifdef ME4
             err = m_cam.grabber_me4->Unblock_buffer(pcoBuffIdx);
-#endif
             PCO_CHECK_ERROR1(err, "Unblock_buffer");
             if (err != PCO_NOERROR)
             {
@@ -991,7 +984,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         }
 
     } // while quit
-#endif
+#endif // ME4
 
         DEB_ALWAYS() << fnId << "[EXIT]" ;
 }
@@ -1469,19 +1462,12 @@ void Camera::_AcqThread::threadFunction_Edge_clhs()
         }
 
     } // while quit
-#endif
+#endif  // CLHS
     DEB_ALWAYS() << fnId << "[EXIT]" ;
 }
 //=================================================================================================
 // FOR EDGE HS - END
 //=================================================================================================
-
-
-
-
-
-
-
 
 //=========================================================================================================
 //=========================================================================================================
@@ -1519,8 +1505,6 @@ Camera::Camera(const std::string &camPar)
 
     m_config = true;
     DebParams::checkInit();
-
-
 
     setStatus(HwInterface::StatusType::Basic::Config, true);
 

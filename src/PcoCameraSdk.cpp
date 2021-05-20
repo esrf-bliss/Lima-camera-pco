@@ -88,7 +88,7 @@ void Camera::_pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase)
 }
 
 
-void _pco_time2dwbase_bis(double exp_time, DWORD &dwExp, WORD &wBase)
+void Camera::_pco_time2dwbase_bis(double exp_time, DWORD &dwExp, WORD &wBase)
 {
     // conversion time(s) to PCO standard DWORD + UNIT(ms, us, ns)
     // exp & lat time is saved in seconds (LIMA).
@@ -3063,6 +3063,7 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     mylog->writelog(INFO_M, mybla);
 
     //if (doLut)
+    // to precise the cases (edge cl)
     if (0)
     {
         actlut = lut;
@@ -3119,6 +3120,7 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 	}
 	else
 	{
+#ifdef CLHS
 		error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
         msg = "Set_DataFormat";
         PCO_CHECK_ERROR(error, msg);
@@ -3139,6 +3141,7 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 		msg = "Allocate_Framebuffer";
         PCO_CHECK_ERROR(error, msg);
         error = 0;
+#endif
 	}
 
 #endif // linux pcoSet

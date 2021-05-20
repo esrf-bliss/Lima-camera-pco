@@ -45,8 +45,11 @@
 
 #    include "Cpco_com_cl_me4.h"
 #    include "Cpco_grab_cl_me4.h"
+#    include "Cpco_grab_cl_me4_GL.h"
+
 #    include "Cpco_com_clhs.h"
 #    include "Cpco_grab_clhs.h"
+
 #    include "file12.h"
 #    include "sc2_telegram.h"
 //---- linux sdk [end]
@@ -337,7 +340,7 @@ struct stcLongLongStr
 
 //================================================================
 //================================================================
-typedef struct
+struct STC_traceAcq
 {
     DWORD nrImgRecorded;
     DWORD maxImgCount;
@@ -387,7 +390,7 @@ typedef struct
 
     void traceMsg(char *s);
 
-} STC_traceAcq;
+};
 
 //================================================================
 //================================================================
@@ -1112,6 +1115,7 @@ namespace lima
             int _pco_GetStorageMode_GetRecorderSubmode();
 
             void _pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase);
+            void _pco_time2dwbase_bis(double exp_time, DWORD &dwExp, WORD &wBase);
 
             void _pco_SetDelayExposureTime(int &error, int ph = 0);
             void _pco_SetImageParameters(int &error);
