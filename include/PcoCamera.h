@@ -36,24 +36,22 @@
 //#include "PcoBufferCtrlObj.h"
 #include "PcoHwEventCtrlObj.h"
 
-#ifdef __linux__
 //---- linux sdk [begin]
-#    include "../sdkPco/include/sc2_SDKStructures.h"
+#include "../sdkPco/include/sc2_SDKStructures.h"
 
-#    include "Cpco_com.h"
-//#    include "Cpco_com_func.h"
+#include "Cpco_com.h"
+//#include "Cpco_com_func.h"
 
-#    include "Cpco_com_cl_me4.h"
-#    include "Cpco_grab_cl_me4.h"
-#    include "Cpco_grab_cl_me4_GL.h"
+#include "Cpco_com_cl_me4.h"
+#include "Cpco_grab_cl_me4.h"
+#include "Cpco_grab_cl_me4_GL.h"
 
-#    include "Cpco_com_clhs.h"
-#    include "Cpco_grab_clhs.h"
+#include "Cpco_com_clhs.h"
+#include "Cpco_grab_clhs.h"
 
-#    include "file12.h"
-#    include "sc2_telegram.h"
+#include "file12.h"
+#include "sc2_telegram.h"
 //---- linux sdk [end]
-#endif
 
 // --------------------- cam utils
 
@@ -184,7 +182,6 @@ struct stcSegmentInfo
 //================================================================
 // LINUX
 //================================================================
-#ifdef __linux__
 typedef struct
 {
     WORD wSize;      // Sizeof this struct
@@ -197,7 +194,6 @@ typedef struct
     WORD ZZwReserved;
     DWORD ZZdwReserved[11]; // 60
 } PCO_SignalLinux;
-#endif
 //================================================================
 //================================================================
 
@@ -521,13 +517,6 @@ namespace lima
             PCO_CameraType stcPcoCamType;
             PCO_Sensor stcPcoSensor;
 
-#ifndef __linux__
-            PCO_Description
-                stcPcoDescription; /* camera description structure */
-            PCO_Signal stcPcoHWIOSignal[SIZEARR_stcPcoHWIOSignal];
-            PCO_Single_Signal_Desc
-                stcPcoHWIOSignalDesc[SIZEARR_stcPcoHWIOSignal];
-#else
             PCO_Description
                 stcPcoDescriptionWin; /* camera description structure */
             SC2_Camera_Description_Response
@@ -540,7 +529,6 @@ namespace lima
                 stcPcoHWIOSignalDesc[SIZEARR_stcPcoHWIOSignal];
             char sPcoHWIOSignalDesc[SIZEARR_stcPcoHWIOSignal]
                                    [SIZESTR_PcoHWIOSignal + 1];
-#endif
 
             const char *sClTransferParameterSettings;
 
@@ -696,9 +684,6 @@ namespace lima
             void update(int iLimaFrame, void *ptrImage);
 
             int _get_imageNr_from_imageTimestamp(void *buf, int shift);
-#ifndef __linux__
-            int _get_time_from_imageTimestamp(void *buf, int shift, SYSTEMTIME *st);
-#endif
 
           private:
             Camera *m_cam;
@@ -762,7 +747,6 @@ namespace lima
           public:
 
 
-#ifdef __linux__
 
         // --- specific for LINUX
         public:
@@ -790,11 +774,6 @@ namespace lima
             void _pco_Open_Grab(int &err);
             void _pco_GetCameraInfo(int &error);
             void _pco_ResetSettingsToDefault(int &err);
-#else
-        // --- specific for WIN
-        private:
-            bool _isRunAfterAssign();
-#endif
 
           // ----------
           public:
@@ -1307,7 +1286,6 @@ char *str_toupper(char *s);
 // LINUX
 //================================================================
 //--------------------- dummies for linux
-#ifdef __linux__
 
 int PCO_GetActiveRamSegment(HANDLE ph, WORD *);
 int PCO_GetActiveLookupTable(HANDLE ph, WORD *wIdentifier, WORD *wParameter);
@@ -1320,7 +1298,6 @@ enum traceAcqId
 };
 int image_nr_from_timestamp(void *buf, int shift, bool bDisable);
 
-#endif
 //================================================================
 //================================================================
 

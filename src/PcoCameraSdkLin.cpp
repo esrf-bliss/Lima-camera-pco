@@ -21,7 +21,6 @@
  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 **************************************************************************/
-#ifdef __linux__
 
 #    include <cstdlib>
 
@@ -536,5 +535,3 @@ void Camera::_pco_ResetSettingsToDefault(int &error)
     return;
 
 }
-
-#endif

@@ -22,23 +22,13 @@
 ###########################################################################
 **************************************************************************/
 
-#ifdef __linux__
-#    include <sys/utsname.h>
-#endif
+#include <sys/utsname.h>
 
-#ifndef __linux__
-#    include <windows.h>
-#    include <tchar.h>
-#endif
 #include <stdio.h>
 
 #include <cstdlib>
 
-#ifndef __linux__
-#    include <process.h>
-#else
-#    include <unistd.h>
-#endif
+#include <unistd.h>
 
 #include <sys/stat.h>
 
@@ -102,14 +92,6 @@ char *getTimestamp(timestampFmt fmtIdx, time_t xtime)
 
     if ((xtime == 0) && (fmtIdx == IsoMilliSec))
     {
-#ifndef __linux__
-        SYSTEMTIME st;
-        GetLocalTime(&st);
-        __sprintfSExt(timeline, sizeof(timeline),
-                      "%4d/%02d/%02d %02d:%02d:%02d.%03d", st.wYear, st.wMonth,
-                      st.wDay, st.wHour, st.wMinute, st.wSecond,
-                      st.wMilliseconds);
-#else
         struct timespec tickNow = {0, 0};
         time_t timeRaw;
         struct tm *timeInfo;
@@ -124,7 +106,6 @@ char *getTimestamp(timestampFmt fmtIdx, time_t xtime)
                       timeInfo->tm_year + 1900, timeInfo->tm_mon + 1,
                       timeInfo->tm_mday, timeInfo->tm_hour, timeInfo->tm_min,
                       timeInfo->tm_sec, int((tickNow.tv_nsec / 1000000)));
-#endif
         return timeline;
     }
 
@@ -312,16 +293,9 @@ char *str_toupper(char *s)
 //=========================================================================================================
 void Camera::Sleep_ms(unsigned int time_ms) // time in ms
 {
-#ifdef __linux__
-
     useconds_t time_us = time_ms * 1000;
     usleep(time_us);
 
-#else
-
-    ::Sleep(time_ms);
-
-#endif
 }
 
 //=========================================================================================================
@@ -417,25 +391,6 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
 
     //----------------------------------------------------------------------------------------------------------
 
-#ifndef __linux__
-    key = keys[ikey] = "getVersionDLL";
-    keys_desc[ikey++] = "(R) get verions of loaded DLLs";
-    if (_stricmp(cmd, key) == 0)
-    {
-        char buff[MSG1K];
-
-        ptr += __sprintfSExt(
-            ptr, ptrMax - ptr, "%s",
-            _getPcoSdkVersion(buff, sizeof(buff), (char *)"sc2_cam.dll"));
-        ptr += __sprintfSExt(
-            ptr, ptrMax - ptr, "%s",
-            _getPcoSdkVersion(buff, sizeof(buff), (char *)"sc2_cl_me4.dll"));
-        ptr += __sprintfSExt(
-            ptr, ptrMax - ptr, "%s",
-            _getPcoSdkVersion(buff, sizeof(buff), (char *)"sc2_clhs.dll"));
-        return output;
-    }
-#endif
 
     //----------------------------------------------------------------------------------------------------------
     key = keys[ikey] = "getVersionFile";
@@ -783,22 +738,6 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
         }
 
         //--- test of close
-#ifndef __linux__
-        if ((tokNr >= 1) && (_stricmp(tok[1], "close") == 0))
-        {
-            int error;
-            // char *msg;
-
-            m_cam_connected = false;
-
-            // m_sync->_getBufferCtrlObj()->_pcoAllocBuffersFree();
-            m_buffer->_pcoAllocBuffersFree();
-            _pco_CloseCamera(error);
-
-            ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s> closed cam\n", tok[1]);
-            return output;
-        }
-#endif
 
         //--- test of callback   "testCmd cb"
         if ((tokNr >= 1) && (_stricmp(tok[1], "cb") == 0))
@@ -1448,13 +1387,8 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
             ptr += __sprintfSExt(ptr, ptrMax - ptr, "* Signal Names:\n");
             for (int iSel = 0; iSel < 4; iSel++)
             {
-#ifdef __linux__
                 char *ptrName =
                     m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[iSel];
-#else
-                char *ptrName =
-                    m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[iSel];
-#endif
                 if (*ptrName)
                     ptr +=
                         __sprintfSExt(ptr, ptrMax - ptr,
@@ -1580,13 +1514,8 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
                                          "* STATUS of the HWIO signal for "
                                          "descriptor[%d] selected[%d] [%s]\n",
                                          i, (int)wSelected,
-#ifndef __linux__
-                                         m_pcoData->stcPcoHWIOSignalDesc[i]
-                                             .strSignalName[wSelected]
-#else
                                          m_pcoData->stcPcoHWIOSignalDesc[i]
                                              .szSignalName[wSelected]
-#endif
 
                     );
 
@@ -1719,17 +1648,10 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
                 "-sig:    enab[0x%x] type[0x%x] pol[0x%x] filt[0x%x] "
                 "sel[0x%x]\n\n",
 
-#ifndef __linux__
-                m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[0],
-                m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[1],
-                m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[2],
-                m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[3],
-#else
                 m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[0],
                 m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[1],
                 m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[2],
                 m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[3],
-#endif
 
                 i, (int)m_pcoData->stcPcoHWIOSignal[i].wSignalNum,
 
@@ -1868,13 +1790,8 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
         {
             char cName;
 
-#ifndef __linux__
-            cName = *m_pcoData->stcPcoHWIOSignalDesc[iSignalNum]
-                         .strSignalName[iSelected];
-#else
             cName = *m_pcoData->stcPcoHWIOSignalDesc[iSignalNum]
                          .szSignalName[iSelected];
-#endif
 
             if ((iSelected > 3) || (cName == 0))
             {
@@ -1912,57 +1829,6 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
     }
 
     //----------------------------------------------------------------------------------------------------------
-#ifndef __linux__
-    key = keys[ikey] = "winMem";
-    keys_desc[ikey++] = "(R) read win memory";
-    if (_stricmp(cmd, key) == 0)
-    {
-        const float gB = 1024. * 1024. * 1024.;
-        MEMORYSTATUSEX statex;
-        statex.dwLength = sizeof(statex);
-
-        GlobalMemoryStatusEx(&statex);
-
-        ptr +=
-            __sprintfSExt(ptr, ptrMax - ptr, "               dwLength [%u]\n",
-                          (int)statex.dwLength);
-        ptr +=
-            __sprintfSExt(ptr, ptrMax - ptr, "           dwMemoryLoad [%u]\n",
-                          (int)statex.dwMemoryLoad);
-        ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "           ullTotalPhys [%g GB][%llu]\n",
-                             (double)(statex.ullTotalPhys / gB),
-                             (long long unsigned)statex.ullTotalPhys);
-        ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "           ullAvailPhys [%g GB][%llu]\n",
-                             (double)(statex.ullAvailPhys / gB),
-                             (long long unsigned)statex.ullAvailPhys);
-
-        ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "       ullTotalPageFile [%g GB][%llu]\n",
-                             (double)(statex.ullTotalPageFile / gB),
-                             (long long unsigned)statex.ullTotalPageFile);
-        ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "       ullAvailPageFile [%g GB][%llu]\n",
-                             (double)(statex.ullAvailPageFile / gB),
-                             (long long unsigned)statex.ullAvailPageFile);
-
-        ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "        ullTotalVirtual [%g GB][%llu]\n",
-                             (double)(statex.ullTotalVirtual / gB),
-                             (long long unsigned)statex.ullTotalVirtual);
-        ptr += __sprintfSExt(ptr, ptrMax - ptr,
-                             "        ullAvailVirtual [%g GB][%llu]\n",
-                             (double)(statex.ullAvailVirtual / gB),
-                             (long long unsigned)statex.ullAvailVirtual);
-        ptr += __sprintfSExt(
-            ptr, ptrMax - ptr, "ullAvailExtendedVirtual [%g GB][%llu]\n",
-            (double)(statex.ullAvailExtendedVirtual / gB),
-            (long long unsigned)statex.ullAvailExtendedVirtual);
-
-        return output;
-    }
-#endif
 
     //----------------------------------------------------------------------------------------------------------
     key = keys[ikey] = "comment";
@@ -2008,11 +1874,7 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
     {
         const char *release;
 
-#ifdef __linux__
         release = PCO_SDK_LIN_RELEASE;
-#else
-        release = PCO_SDK_WIN_RELEASE;
-#endif
 
         ptr += __sprintfSExt(ptr, ptrMax - ptr, release);
 
@@ -2490,161 +2352,31 @@ const char *Camera::_checkLogFiles(bool firstCall)
 
 char *_getComputerName(char *infoBuff, DWORD bufCharCount)
 {
-#ifndef __linux__
-    // Get and display the name of the computer.
-    if (!GetComputerName(infoBuff, &bufCharCount))
-        __sprintfSExt(infoBuff, bufCharCount, "ERROR: GetComputerName");
-#else
     char hostname[1024];
     gethostname(hostname, 1024);
 
     __sprintfSExt(infoBuff, bufCharCount, hostname);
-#endif
 
     return infoBuff;
 }
 
 char *_getUserName(char *infoBuff, DWORD bufCharCount)
 {
-#ifndef __linux__
-    // Get and display the user name.
-    if (!GetUserName(infoBuff, &bufCharCount))
-        __sprintfSExt(infoBuff, bufCharCount, "ERROR: GetUserName");
-#else
     int err = getlogin_r(infoBuff, bufCharCount);
     if (err)
     {
         __sprintfSExt(infoBuff, bufCharCount, "ERROR getlogin_r");
     }
-#endif
 
     return infoBuff;
 }
 
-#ifdef __linux__
 char *_getDllPath(const char *pzFileName, char *path, size_t strLen)
 {
     *path = 0;
     return path;
 }
 
-#else
-//====================================================================
-//====================================================================
-#    define PCOSDK_FILENAME "sc2_cam.dll"
-
-#    include <winver.h>
-#    pragma comment(lib, "version.lib")
-
-#    define LEN_DRIVE 7
-#    define LEN_DIR PATH_MAX
-
-//====================================================================
-//====================================================================
-char *_getDllPath(const char *pzFileName, char *path, size_t strLen)
-{
-    errno_t err;
-
-    char drive[LEN_DRIVE + 1];
-    char dir[LEN_DIR + 1];
-    char _pathFn[PATH_MAX + 1];
-    char _pathFnInstall[PATH_MAX + 1];
-    char *ptr;
-    size_t nr;
-    FILE *stream;
-
-    *path = 0;
-    ptr = path;
-
-#    ifndef ENABLE_GETDLLPATH
-    __sprintfSExt(ptr, strLen - 1, "_getDllPath DISABLED");
-    return path;
-#    endif
-
-    GetModuleFileName(GetModuleHandle(pzFileName), _pathFn, PATH_MAX);
-
-    err =
-        _splitpath_s(_pathFn, drive, LEN_DRIVE, dir, LEN_DIR, NULL, 0, NULL, 0);
-
-    size_t l = strlen(dir);
-    ptr = dir + l - 2;
-    while (*ptr != '\\')
-        ptr--;
-    *ptr = 0;
-
-    ptr = path;
-    err = _makepath_s(_pathFnInstall, PATH_MAX, drive, dir,
-                      FILENAME_INSTALL_VERSION, FILEEXT_INSTALL_VERSION);
-    printf("----- path[%s] path1[%s] drive[%s] dir[%s]\n", _pathFn,
-           _pathFnInstall, drive, dir);
-    nr = __sprintfSExt(ptr, strLen - 1, "%s\n", _pathFnInstall);
-    ptr += nr;
-    strLen -= nr;
-
-    err = fopen_s(&stream, _pathFnInstall, "r");
-#    if 0
-	if(err == 0) {
-		if( fgets( path, strLen, stream ) == NULL){
-			*ptr = 0;
-		}
-	}
-#    endif
-    nr = fread(ptr, 1, strLen - 1, stream);
-    ptr[nr] = 0;
-    fclose(stream);
-    return path;
-}
-
-//=======================================================================================================
-//=======================================================================================================
-HRESULT LastError()
-{
-    return -1;
-}
-
-HRESULT GetFileVersion(TCHAR *filename, VS_FIXEDFILEINFO *pvsf)
-{
-    DWORD dwHandle;
-    DWORD cchver = GetFileVersionInfoSize(filename, &dwHandle);
-    if (cchver == 0)
-        return LastError();
-
-    char *pver = new char[cchver];
-    BOOL bret = GetFileVersionInfo(filename, 0, cchver, pver);
-    if (!bret)
-    {
-        delete[] pver;
-        return LastError();
-    }
-    UINT uLen;
-    void *pbuf;
-    bret = VerQueryValue(pver, _T("\\"), &pbuf, &uLen);
-    if (!bret)
-    {
-        delete[] pver;
-        return LastError();
-    }
-    memcpy(pvsf, pbuf, sizeof(VS_FIXEDFILEINFO));
-    delete[] pver;
-    return S_OK;
-}
-
-int GetFileVerStructA(TCHAR *pzFileName, int *ima, int *imi, int *imb)
-{
-    HRESULT ret;
-
-    VS_FIXEDFILEINFO vsf1;
-    if (SUCCEEDED(ret = GetFileVersion(pzFileName, &vsf1)))
-    {
-        *ima = vsf1.dwFileVersionMS >> 16;
-        *imi = vsf1.dwFileVersionMS & 0xFFFF;
-        *imb = vsf1.dwFileVersionLS & 0xFFFF;
-        return 0;
-    }
-    return -1;
-}
-
-#endif
 //=======================================================================================================
 //=======================================================================================================
 
@@ -2652,22 +2384,8 @@ char *_getPcoSdkVersion(char *infoBuff, int strLen, char *lib)
 {
     char *ptr = infoBuff;
 
-#ifndef __linux__
-
-    int ima, imi, imb;
-    int nr;
-
-    *ptr = 0;
-
-    if (!GetFileVerStructA(lib, &ima, &imi, &imb))
-    {
-        nr = __sprintfSExt(ptr, strLen, "file[%s] ver[%d.%d.%d]\n", lib, ima,
-                           imi, imb);
-    }
-#else
     __sprintfSExt(ptr, strLen, PCO_SDK_LIN_RELEASE);
 
-#endif
     return infoBuff;
 }
 
@@ -3209,21 +2927,11 @@ const char *Camera::_sprintComment(bool bAlways, const char *comment,
 
 void usElapsedTimeSet(long long &us0)
 {
-#ifdef __linux__
     TIME_UTICKS tickNow;
     clock_gettime(CLOCK_REALTIME, &tickNow);
 
     us0 = (long long)((tickNow.tv_sec) * 1000000. + (tickNow.tv_nsec) / 1000.);
 
-#else
-    TIME_UTICKS tick; // A point in time
-    TIME_UTICKS ticksPerSecond;
-    QueryPerformanceFrequency(&ticksPerSecond);
-    QueryPerformanceCounter(&tick);
-
-    double ticsPerUSecond = ticksPerSecond.QuadPart / 1.0e6;
-    us0 = (long long)(tick.QuadPart / ticsPerUSecond);
-#endif
 }
 
 //------------------------------------------------
@@ -3231,7 +2939,6 @@ long long usElapsedTime(long long &us0)
 {
     long long usDiff;
 
-#ifdef __linux__
     TIME_UTICKS tickNow;
     clock_gettime(CLOCK_REALTIME, &tickNow);
 
@@ -3239,16 +2946,6 @@ long long usElapsedTime(long long &us0)
                               (tickNow.tv_nsec) / 1000.)) -
              us0;
 
-#else
-    TIME_UTICKS tick; // A point in time
-    TIME_UTICKS ticksPerSecond;
-    QueryPerformanceFrequency(&ticksPerSecond);
-    QueryPerformanceCounter(&tick);
-
-    double ticsPerUSecond = ticksPerSecond.QuadPart / 1.0e6;
-    long long us = (long long)(tick.QuadPart / ticsPerUSecond);
-    usDiff = us - us0;
-#endif
 
     return usDiff;
 }
@@ -3259,7 +2956,6 @@ long msElapsedTime(TIME_USEC &t0)
     long msDiff;
     TIME_USEC tNow;
 
-#ifdef __linux__
     long seconds, useconds;
     gettimeofday(&tNow, NULL);
 
@@ -3267,11 +2963,6 @@ long msElapsedTime(TIME_USEC &t0)
     useconds = tNow.tv_usec - t0.tv_usec;
 
     msDiff = long(((seconds)*1000 + useconds / 1000.0) + 0.5);
-#else
-    _ftime64_s(&tNow);
-
-    msDiff = (long)((tNow.time - t0.time) * 1000) + (tNow.millitm - t0.millitm);
-#endif
 
     return msDiff;
 }
@@ -3280,11 +2971,7 @@ long msElapsedTime(TIME_USEC &t0)
 
 void msElapsedTimeSet(TIME_USEC &t0)
 {
-#ifdef __linux__
     gettimeofday(&t0, NULL);
-#else
-    _ftime64_s(&t0);
-#endif
 }
 
 //------------------------------------------------
@@ -3292,15 +2979,8 @@ void msElapsedTimeSet(TIME_USEC &t0)
 double usElapsedTimeTicsPerSec()
 {
     double ticks = 0;
-#ifdef __linux__
     TIME_UTICKS tick; // A point in time
     clock_gettime(CLOCK_REALTIME, &tick);
-
-#else
-    LARGE_INTEGER ticksPerSecond;
-    QueryPerformanceFrequency(&ticksPerSecond);
-    ticks = (double)ticksPerSecond.QuadPart;
-#endif
     return ticks;
 }
 
@@ -3322,12 +3002,8 @@ int __sprintfSExt(char *ptr, size_t nrMax, const char *format, ...)
     va_list args;
     va_start(args, format);
 
-#ifdef __linux__
     // int vsnprintf(char*, size_t, const char*, __va_list_tag*)
     nr = vsnprintf(ptr, nrMax, format, args);
-#else
-    nr = vsnprintf_s(ptr, nrMax, _TRUNCATE, format, args);
-#endif
 
     va_end(args);
 
@@ -3352,11 +3028,7 @@ int __sprintfSExt(char *ptr, size_t nrMax, const char *format, ...)
 //====================================================================
 const char *_getEnviroment(const char *env)
 {
-#ifndef __linux__
-    return "_getEnviroment: WIN - not defined";
-#else
     return std::getenv(env);
-#endif
 }
 
 //====================================================================
@@ -3365,9 +3037,6 @@ const char *_getOs()
 {
     static char os[MSG1K];
 
-#ifndef __linux__
-    return "WINDOWS";
-#else
     struct utsname buff;
     int err, nr;
 
@@ -3377,7 +3046,6 @@ const char *_getOs()
                   buff.sysname, buff.release, buff.version, buff.machine);
 
     return os;
-#endif
 }
 
 //==========================================================================================================

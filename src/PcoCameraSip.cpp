@@ -22,19 +22,11 @@
 ###########################################################################
 **************************************************************************/
 
-#ifndef __linux__
-#    include <windows.h>
-#    include <tchar.h>
-#endif
 #include <stdio.h>
 
 #include <cstdlib>
 
-#ifndef __linux__
-#    include <process.h>
-#else
 #    include <unistd.h>
-#endif
 
 #include <sys/stat.h>
 
@@ -587,11 +579,7 @@ void Camera::getSdkRelease(std::string &o_sn)
     char *ptrMax = buff + sizeof(buff);
     const char *release;
 
-#ifdef __linux__
     release = PCO_SDK_LIN_RELEASE;
-#else
-    release = PCO_SDK_WIN_RELEASE;
-#endif
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr, release);
 
@@ -757,11 +745,7 @@ void Camera::setDebugInt(std::string &i_sn)
     unsigned long long debugLevel;
     const char *strIn = i_sn.c_str();
 
-#ifdef __linux__
     debugLevel = atoll(strIn);
-#else
-    debugLevel = _atoi64(strIn);
-#endif
     m_pcoData->debugLevel = debugLevel;
 }
 
@@ -1108,11 +1092,7 @@ void Camera::getGeneralCAPS1(std::string &o_sn)
     DWORD dwGeneralCaps1;
     DWORD dwVal;
 
-#ifndef __linux__
-    dwGeneralCaps1 = m_pcoData->stcPcoDescription.dwGeneralCapsDESC1;
-#else
     dwGeneralCaps1 = m_pcoData->stcPcoDescription.dwGeneralCaps1;
-#endif
 
     int nib[8];
     int i, j;

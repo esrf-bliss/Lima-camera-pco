@@ -55,14 +55,8 @@
 
 
 
-#ifndef __linux__
-#    include <process.h>
-#    include <sys/stat.h>
-#    include <sys/timeb.h>
-#else
 #    include <sys/stat.h>
 #    include <sys/time.h>
-#endif
 
 #include <time.h>
 

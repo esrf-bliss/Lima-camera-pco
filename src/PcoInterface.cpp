@@ -165,18 +165,6 @@ void Interface::getStatus(HwInterface::StatusType &status)
 {
     DEB_MEMBER_FUNCT();
 
-#ifndef __linux__
-//#error CHECK FOR WINDOWS COMPLILATION
-    if (m_cam->_isConfig())
-    {
-        status.set(HwInterface::StatusType::Config);
-    }
-    else
-    {
-        m_cam->getStatus(status);
-    }
-
-#else
     // linux
     
     HwInterface::StatusType::Basic _status = HwInterface::StatusType::Basic::Ready;
@@ -186,7 +174,6 @@ void Interface::getStatus(HwInterface::StatusType &status)
 
     aLock.unlock();
 
-#endif
 
     // DEB_RETURN() << DEB_VAR1(status);
 }
