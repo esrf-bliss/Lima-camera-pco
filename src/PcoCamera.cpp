@@ -26,9 +26,7 @@
 #define BYPASS
 
 #define TOUT_MIN_DIMAX 500
-#define ERROR_MSG_LINE 128
 
-//#define BUFF_INFO_SIZE 5000
 
 #include <cstdlib>
 
