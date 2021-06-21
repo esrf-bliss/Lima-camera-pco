@@ -37,7 +37,7 @@
 #include "PcoHwEventCtrlObj.h"
 
 //---- linux sdk [begin]
-#include "../sdkPco/include/sc2_SDKStructures.h"
+#include "../sdkPcoLin/include/sc2_SDKStructures.h"
 
 #include "Cpco_com.h"
 //#include "Cpco_com_func.h"
