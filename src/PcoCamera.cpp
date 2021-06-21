@@ -581,7 +581,7 @@ bool Camera::getProperty(const char *key, char *&value)
 
     for (int i = 0; i < m_pcoData->properties.nr; i++)
     {
-        if (_stricmp(key, m_pcoData->properties.ptrKey[i]) == 0)
+        if (strcasecmp(key, m_pcoData->properties.ptrKey[i]) == 0)
         {
             ret = true;
             value = m_pcoData->properties.ptrValue[i];
@@ -629,7 +629,7 @@ void Camera::init_properties(const char *str)
 
     for (nr = i = 0; i < PROPERTIES_NR; i++)
     {
-        if ((m_pcoData->properties.ptrKey[i] = strtok_s(ptr, ";", &tokNext)) ==
+        if ((m_pcoData->properties.ptrKey[i] = strtok_r(ptr, ";", &tokNext)) ==
             NULL)
             break;
         ptr = NULL;
@@ -644,8 +644,8 @@ void Camera::init_properties(const char *str)
         bool found;
 
         ptr = str_trim(m_pcoData->properties.ptrKey[i]);
-        key = strtok_s(ptr, "=", &tokNext);
-        value = strtok_s(NULL, "=", &tokNext);
+        key = strtok_r(ptr, "=", &tokNext);
+        value = strtok_r(NULL, "=", &tokNext);
         str_toupper(key);
         m_pcoData->properties.ptrKey[i] = key = str_trim(key);
         value = str_trim(value);
@@ -656,7 +656,7 @@ void Camera::init_properties(const char *str)
         found = false;
         for (int j = 0; j < nrList; j++)
         {
-            if (_stricmp(m_pcoData->properties.ptrKey[j],
+            if (strcasecmp(m_pcoData->properties.ptrKey[j],
                          m_pcoData->properties.ptrKey[i]) == 0)
             {
                 m_pcoData->properties.ptrValue[j] = m_pcoData->properties.ptrValue[i];

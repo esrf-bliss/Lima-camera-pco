@@ -295,22 +295,6 @@ void SyncCtrlObj::setExpTime(double exp_time)
     getValidRanges(valid_ranges);
     double diff;
 
-#if 0
-  char buff[LEN_DUMP];
-
-  _hex_dump_bytes(&exp_time, sizeof(exp_time), buff, LEN_DUMP);
-	DEB_TRACE() << DEB_VAR2(exp_time, buff);
-
-	_hex_dump_bytes(&valid_ranges.min_exp_time, sizeof(valid_ranges.min_exp_time), buff, LEN_DUMP);
-	DEB_TRACE() << DEB_VAR2(valid_ranges.min_exp_time, buff);
-
-	_hex_dump_bytes(&m_pcoData->min_exp_time, sizeof(m_pcoData->min_exp_time), buff, LEN_DUMP);
-	DEB_TRACE() << DEB_VAR2(m_pcoData->min_exp_time, buff);
-
-	_hex_dump_bytes(&m_pcoData->min_exp_time_err, sizeof(m_pcoData->min_exp_time_err), buff, LEN_DUMP);
-	DEB_TRACE() << DEB_VAR2(m_pcoData->min_exp_time_err, buff);
-
-#endif
 
     if ((exp_time >= m_pcoData->min_exp_time) &&
         (exp_time <= m_pcoData->max_exp_time))

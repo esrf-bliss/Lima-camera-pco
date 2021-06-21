@@ -834,13 +834,13 @@ void Camera::setBitAlignment(std::string &i_sn)
     const char *strIn = i_sn.c_str();
     int _val;
 
-    if ((_stricmp(strIn, "0") == 0) || (_stricmp(strIn, "MSB") == 0))
+    if ((strcasecmp(strIn, "0") == 0) || (strcasecmp(strIn, "MSB") == 0))
     {
         _val = 0;
     }
     else
     {
-        if ((_stricmp(strIn, "1") == 0) || (_stricmp(strIn, "LSB") == 0))
+        if ((strcasecmp(strIn, "1") == 0) || (strcasecmp(strIn, "LSB") == 0))
         {
             _val = 1;
         }
@@ -1001,15 +1001,15 @@ void Camera::setRollingShutterStr(std::string &i_sn)
     const char *strIn = i_sn.c_str();
     int _val;
 
-    if ((_stricmp(strIn, "1") == 0) || (_stricmp(strIn, "RS") == 0))
+    if ((strcasecmp(strIn, "1") == 0) || (strcasecmp(strIn, "RS") == 0))
     {
         _val = 1;
     }
-    else if ((_stricmp(strIn, "2") == 0) || (_stricmp(strIn, "GS") == 0))
+    else if ((strcasecmp(strIn, "2") == 0) || (strcasecmp(strIn, "GS") == 0))
     {
         _val = 2;
     }
-    else if ((_stricmp(strIn, "4") == 0) || (_stricmp(strIn, "GR") == 0))
+    else if ((strcasecmp(strIn, "4") == 0) || (strcasecmp(strIn, "GR") == 0))
     {
         _val = 4;
     }
@@ -1189,7 +1189,7 @@ void Camera::setTest(std::string &i_sn)
         char *tokContext;
         for (int i = 0; i < NRTOK; i++)
         {
-            if ((tok[i] = strtok_s((char *)cmd, " ", &tokContext)) == NULL)
+            if ((tok[i] = strtok_r((char *)cmd, " ", &tokContext)) == NULL)
                 break;
             cmd = NULL;
             tokNr = i;
@@ -1207,7 +1207,7 @@ void Camera::setTest(std::string &i_sn)
     // syntax:  mode  0x123
     // mode 0x1234
     //------------------------------------------------
-    if (_stricmp(cmd, "mode") == 0)
+    if (strcasecmp(cmd, "mode") == 0)
     {
         ptr += __sprintfSExt(ptr, ptrMax - ptr, "testCmdMode [0x%llx]",
                              m_pcoData->testCmdMode);
@@ -1216,7 +1216,7 @@ void Camera::setTest(std::string &i_sn)
             int nr;
             unsigned long long _testCmdMode;
 
-            nr = sscanf_s(tok[1], "0x%llx", &_testCmdMode);
+            nr = sscanf(tok[1], "0x%llx", &_testCmdMode);
 
             if (nr == 1)
             {

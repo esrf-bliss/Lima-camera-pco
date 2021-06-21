@@ -2427,14 +2427,6 @@ void Camera::getMaxWidthHeight(unsigned int &xMax, unsigned int &yMax)
     yMax = m_pcoData->stcPcoDescription.wMaxVertResStdDESC;
 }
 
-#if 0
-void Camera::getMaxWidthHeight(DWORD &xMax, DWORD &yMax){
-	DEB_MEMBER_FUNCT();
-	DEF_FNID;
-	xMax = m_pcoData->stcPcoDescription.wMaxHorzResStdDESC;
-	yMax = m_pcoData->stcPcoDescription.wMaxVertResStdDESC;
-}
-#endif
 
 void Camera::getBytesPerPixel(unsigned int &pixbytes)
 {

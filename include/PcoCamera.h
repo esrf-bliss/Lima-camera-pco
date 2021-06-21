@@ -1090,7 +1090,6 @@ namespace lima
             void _pco_SetImageParameters(int &error);
 
             void _pco_GetCameraType(int &error);
-            // char *_pco_GetTemperatureInfo(int &error);
             void _pco_GetTemperatureInfo(int &error);
             void _pco_GetTemperatureInfo(char *ptr, char *ptrMax, int &error);
             void _pco_GetCoolingSetpointTemperature(int &val, int &error);
@@ -1263,7 +1262,6 @@ namespace lima
     }      // namespace Pco
 } // namespace lima
 
-void _pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase);
 
 int __sprintfSExt(char *ptr, size_t nrMax, const char *format, ...);
 
@@ -1272,21 +1270,11 @@ char *str_trim_right(char *s);
 char *str_trim(char *s);
 char *str_toupper(char *s);
 
-//================================================================
-// LINUX
-//================================================================
-//--------------------- dummies for linux
-
-int PCO_GetActiveRamSegment(HANDLE ph, WORD *);
-int PCO_GetActiveLookupTable(HANDLE ph, WORD *wIdentifier, WORD *wParameter);
-int PCO_SetActiveLookupTable(HANDLE ph, WORD *wIdentifier, WORD *wParameter);
-int PCO_CamLinkSetImageParameters(HANDLE ph, WORD wxres, WORD wyres);
 
 enum traceAcqId
 {
     traceAcq_execTimeTot,
 };
-int image_nr_from_timestamp(void *buf, int shift, bool bDisable);
 
 //================================================================
 //================================================================

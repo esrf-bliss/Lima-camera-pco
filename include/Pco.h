@@ -137,15 +137,11 @@ typedef struct timeval TIME_USEC;
 
 #define sprintf_s snprintf
 
-#define _stricmp strcasecmp
 #define strcpy_s(d, l, s) strncpy((d), (s), (l))
 #define strncpy_s(d, l, s, n) strncpy((d), (s), (l))
 
 #define localtime_s(stc, tm) (localtime_r((tm), (stc)))
 
-#define sscanf_s sscanf
-#define strtok_s strtok_r
-#define strncpy_s4 strncpy_s
 
 //===============================================================
 // MACROS
@@ -201,17 +197,6 @@ typedef struct timeval TIME_USEC;
 
 #define DEF_FNID const char *fnId __attribute__((unused)) = __FUNCTION__;
 
-//====================================================
-// bypass win fn
-//====================================================
-
-
-unsigned int *_beginthread(void (*)(void *), unsigned int, void *);
-void _endthread(void);
-void *CreateEvent(void *, bool, bool, void *);
-DWORD WaitForMultipleObjects(DWORD, void **, bool, DWORD);
-#define WAIT_OBJECT_0 0
-#define WAIT_TIMEOUT 5
 
 
 

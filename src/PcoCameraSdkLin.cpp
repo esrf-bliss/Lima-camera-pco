@@ -38,7 +38,6 @@
 using namespace lima;
 using namespace lima::Pco;
 
-void _pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase);
 
 //=================================================================================================
 //=================================================================================================
@@ -262,13 +261,13 @@ void Camera::_pco_Open_Cam(int &err)
 
     camera = NULL;
     
-    if (_stricmp(value, "ME4") == 0)
+    if (strcasecmp(value, "ME4") == 0)
     {
 #ifdef ME4
         camera = new CPco_com_cl_me4();
 #endif
     }
-    else if (_stricmp(value, "CLHS") == 0)
+    else if (strcasecmp(value, "CLHS") == 0)
     {
 #ifdef CLHS
         camera = new CPco_com_clhs();
