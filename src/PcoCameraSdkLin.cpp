@@ -216,43 +216,6 @@ void Camera::_pco_GetCameraInfo(int &error)
     m_pcoData->bMetaDataAllowed =
         !!(m_pcoData->stcPcoDescription.dwGeneralCaps1 & GENERALCAPS1_METADATA);
 
-    // -- Get General
-    // m_pcoData->stcPcoGeneral.wSize= sizeof(m_pcoData->stcPcoGeneral);
-    // m_pcoData->stcPcoGeneral.strCamType.wSize=
-    // sizeof(m_pcoData->stcPcoGeneral.strCamType);
-
-    // PCO2(error, msg,PCO_GetGeneral,m_handle, &m_pcoData->stcPcoGeneral);
-    // PCO_CHECK_ERROR(error, msg); 	if(error);
-
-    // -- Get Sensor struct
-    // m_pcoData->stcPcoSensor.wSize= sizeof(m_pcoData->stcPcoSensor);
-    // m_pcoData->stcPcoSensor.strDescription.wSize=
-    // sizeof(m_pcoData->stcPcoSensor.strDescription);
-    // m_pcoData->stcPcoSensor.strDescription2.wSize=
-    // sizeof(m_pcoData->stcPcoSensor.strDescription2);
-
-    // PCO2(error, msg,PCO_GetSensorStruct, m_handle, &m_pcoData->stcPcoSensor);
-    // PCO_CHECK_ERROR(error, msg); 	if(error) return;
-
-    // -- Get timing struct
-    // m_pcoData->stcPcoTiming.wSize= sizeof(m_pcoData->stcPcoTiming);
-
-    // PCO2(error, msg,PCO_GetTimingStruct, m_handle, &m_pcoData->stcPcoTiming);
-    // PCO_CHECK_ERROR(error, msg); 	if(error) return;
-
-    // -- Get recording struct
-    // m_pcoData->stcPcoRecording.wSize= sizeof(m_pcoData->stcPcoRecording);
-
-    // PCO2(error, msg,PCO_GetRecordingStruct,m_handle,
-    // &m_pcoData->stcPcoRecording);
-    // PCO_CHECK_ERROR(error, msg); 	if(error) return;
-
-    // -- Get storage struct
-    // m_pcoData->stcPcoStorage.wSize= sizeof(m_pcoData->stcPcoStorage);
-
-    // PCO2(error, msg,PCO_GetStorageStruct, m_handle,
-    // &m_pcoData->stcPcoStorage);  PCO_CHECK_ERROR(error, msg); if(error)
-    // return;
 
     return;
 }

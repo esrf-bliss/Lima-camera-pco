@@ -37,7 +37,6 @@
 #include "PcoHwEventCtrlObj.h"
 
 //---- linux sdk [begin]
-#include "../sdkPcoLin/include/sc2_SDKStructures.h"
 
 #include "Cpco_com.h"
 //#include "Cpco_com_func.h"
@@ -513,14 +512,9 @@ namespace lima
         //--------------------------------------- stcPcoData
         struct stcPcoData
         {
-            PCO_General stcPcoGeneral;
-            PCO_CameraType stcPcoCamType;
-            PCO_Sensor stcPcoSensor;
+            //PCO_CameraType stcPcoCamType;
 
-            PCO_Description
-                stcPcoDescriptionWin; /* camera description structure */
-            SC2_Camera_Description_Response
-                stcPcoDescription; /* camera description structure */
+            SC2_Camera_Description_Response stcPcoDescription; /* camera description structure */
 
             SC2_Camera_Description_Response stcPcoDesc1;
             SC2_Camera_Description_2_Response stcPcoDesc2;
@@ -532,9 +526,6 @@ namespace lima
 
             const char *sClTransferParameterSettings;
 
-            PCO_Timing stcPcoTiming;
-            PCO_Storage stcPcoStorage;
-            PCO_Recording stcPcoRecording;
 
             WORD wNrPcoHWIOSignal0;
             WORD wNrPcoHWIOSignal;
@@ -601,6 +592,7 @@ namespace lima
             WORD m_wBitPerPixel;
 
             WORD wCamType;
+            WORD wCamSubType;
             DWORD dwSerialNumber;
             WORD wIfType;
 

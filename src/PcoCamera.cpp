@@ -341,16 +341,8 @@ stcPcoData::stcPcoData()
     ptr += __sprintfSExt(ptr, ptrMax - ptr, " PCO SDK version: %s\n",
                          _getPcoSdkVersion(buff, BUFFER_LEN, NULL));
 
-    stcPcoGeneral.wSize = sizeof(stcPcoGeneral);
-    stcPcoGeneral.strCamType.wSize = sizeof(stcPcoGeneral.strCamType);
-    stcPcoCamType.wSize = sizeof(stcPcoCamType);
-    stcPcoSensor.wSize = sizeof(stcPcoSensor);
-    stcPcoSensor.strDescription.wSize = sizeof(stcPcoSensor.strDescription);
-    stcPcoSensor.strDescription2.wSize = sizeof(stcPcoSensor.strDescription2);
+    //stcPcoCamType.wSize = sizeof(stcPcoCamType);
     stcPcoDescription.wSize = sizeof(stcPcoDescription);
-    stcPcoTiming.wSize = sizeof(stcPcoTiming);
-    stcPcoStorage.wSize = sizeof(stcPcoStorage);
-    stcPcoRecording.wSize = sizeof(stcPcoRecording);
 
     for (i = 0; i < SIZEARR_stcPcoHWIOSignal; i++)
     {
@@ -1758,13 +1750,13 @@ void Camera::msgLog(const char *s)
 DWORD Camera::_getCameraSerialNumber()
 {
     DEB_MEMBER_FUNCT();
-    return m_pcoData->stcPcoCamType.dwSerialNumber;
+    return m_pcoData->dwSerialNumber;
 }
 
 WORD Camera::_getInterfaceType()
 {
     DEB_MEMBER_FUNCT();
-    return m_pcoData->stcPcoCamType.wInterfaceType;
+    return m_pcoData->wIfType;
 }
 
 const char *Camera::_getInterfaceTypeStr()
@@ -1784,7 +1776,7 @@ const char *Camera::_getCameraIdn()
 WORD Camera::_getCameraType()
 {
     DEB_MEMBER_FUNCT();
-    return m_pcoData->stcPcoCamType.wCamType;
+    return m_pcoData->wCamType;
 }
 
 const char *Camera::_getCameraTypeStr()
@@ -1798,7 +1790,7 @@ const char *Camera::_getCameraTypeStr()
 WORD Camera::_getCameraSubType()
 {
     DEB_MEMBER_FUNCT();
-    return m_pcoData->stcPcoCamType.wCamSubType;
+    return m_pcoData->wCamSubType;
 }
 
 const char *Camera::_getCameraSubTypeStr()

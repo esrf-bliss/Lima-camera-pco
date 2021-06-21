@@ -1373,11 +1373,11 @@ void Camera::_pco_GetCameraType(int &error)
     err1=error = camera->PCO_GetCameraType(&camtype, &serialnumber, &iftype);
     PCO_CHECK_ERROR(error, "PCO_GetCameraType");
 
-    m_pcoData->stcPcoCamType.wCamType = m_pcoData->wCamType = camtype;
-    m_pcoData->stcPcoCamType.wCamSubType = 0;
-    m_pcoData->stcPcoCamType.dwSerialNumber = m_pcoData->dwSerialNumber =
+    m_pcoData->wCamType = camtype;
+    m_pcoData->wCamSubType = 0;
+    m_pcoData->dwSerialNumber =
         serialnumber;
-    m_pcoData->stcPcoCamType.wInterfaceType = m_pcoData->wIfType = iftype;
+    m_pcoData->wIfType = iftype;
 
     ptr = _xlatPcoCode2Str(camtype, ModelType, error);
     strcpy_s(m_pcoData->model, sizeof(m_pcoData->model), ptr);
