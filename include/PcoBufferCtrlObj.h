@@ -107,27 +107,15 @@ namespace lima
 
 
             void _setNewFrameReady(int iLimaFrame);
-            int _xferImagMultDoubleImage();
-            int _xferImagDoubleImage();
-            int _xferImag();
 
-            int _xferImag_buff2lima(DWORD &dwFrameIdx, int &bufIdx);
 
-            int _xferImag_getImage();
-            int _xferImag_getImage_edge();
-            int _xferImagMult();
-            void *_getLimaBuffer(int lima_buffer_nb, Sync::Status &status);
             void _pcoAllocBuffersFree();
-            void _pcoAllocBuffersInfo(int &nr, DWORD &size);
 
             void *_getFrameBufferPtr(int nb_frame, int &nb_allocated_buffers);
 
           private:
-            int _assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast,
-                                    DWORD dwRequestedFrames, int bufIdx,
-                                    bool live_mode, WORD wDoubleImage = 0);
 
-            void _pcoAllocBuffers(bool max = false);
+            //-------------------------------------------------------------
             //-------------------------------------------------------------
         };
     } // namespace Pco

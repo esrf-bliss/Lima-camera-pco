@@ -489,8 +489,6 @@ enum enumTraceAcqId
     traceAcq_GetRecordingState,
     traceAcq_SetRecordingState,
     traceAcq_CancelImages,
-    traceAcq_xferImagBefore,
-    traceAcq_xferImag,
     traceAcq_setExposing,
     traceAcq_stopAcq,
     traceAcq_uptoEndThread,

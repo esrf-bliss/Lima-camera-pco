@@ -686,26 +686,6 @@ bool Camera::_isCapsDesc(int caps)
 
 //=================================================================================================
 //=================================================================================================
-// SC2_SDK_FUNC int WINAPI PCO_GetCDIMode(HANDLE ph, WORD *wCDIMode);
-// Gets the correlated double image mode of the camera, if available.
-// Only available with a dimax
-// In: HANDLE ph -> Handle to a previously opened camera.
-//     WORD *wCDIMode -> Pointer to a WORD variable to receive the correlated
-//     double image mode.
-// Out: int -> Error message.
-
-// SC2_SDK_FUNC int WINAPI PCO_SetCDIMode(HANDLE ph,  WORD wCDIMode);
-// Sets the correlated double image mode of the camera, if available.
-// Only available with a dimax
-// In: HANDLE ph -> Handle to a previously opened camera.
-//     WORD wCDIMode -> WORD variable to set the correlated double image mode.
-// Out: int -> Error message.
-// CDI mode is available if in the camera descriptor the flag
-
-// Mode parameter is simple: 0 is off (default), 1 is on.
-// CDI mode is available if in the camera descriptor the flag
-// #define GENERALCAPS1_CDI_MODE                          0x00010000 // Camera
-// has Correlated Double Image Mode in GENERALCAPS1 is set.
 
 void Camera::_pco_GetCDIMode(WORD &wCDIMode, int &err)
 {
@@ -841,44 +821,6 @@ void Camera::_pco_GetGeneralCapsDESC(DWORD &capsDesc1, int &err)
 //=================================================================================================
 //=================================================================================================
 
-// SC2_SDK_FUNC int WINAPI PCO_GetSegmentImageSettings(HANDLE ph, WORD wSegment,
-//                                                    WORD* wXRes,
-//                                                    WORD* wYRes,
-//                                                    WORD* wBinHorz,
-//                                                    WORD* wBinVert,
-//                                                    WORD* wRoiX0,
-//                                                    WORD* wRoiY0,
-//                                                    WORD* wRoiX1,
-//                                                    WORD* wRoiY1);
-// Gets the sizes information for one segment. X0, Y0 start at 1. X1, Y1 end
-// with max. sensor size. In: HANDLE ph -> Handle to a previously opened camera.
-//     WORD *wXRes -> Pointer to a WORD variable to receive the x resolution of
-//     the image in segment WORD *wYRes -> Pointer to a WORD variable to receive
-//     the y resolution of the image in segment WORD *wBinHorz -> Pointer to a
-//     WORD variable to receive the horizontal binning of the image in segment
-//     WORD *wBinVert -> Pointer to a WORD variable to receive the vertical
-//     binning of the image in segment WORD *wRoiX0 -> Pointer to a WORD
-//     variable to receive the left x offset of the image in segment WORD
-//     *wRoiY0 -> Pointer to a WORD variable to receive the upper y offset of
-//     the image in segment WORD *wRoiX1 -> Pointer to a WORD variable to
-//     receive the right x offset of the image in segment WORD *wRoiY1 ->
-//     Pointer to a WORD variable to receive the lower y offset of the image in
-//     segment
-//      x0,y0----------|
-//      |     ROI      |
-//      ---------------x1,y1
-// Out: int -> Error message.
-// SC2_SDK_FUNC int WINAPI PCO_GetNumberOfImagesInSegment(HANDLE ph,
-//                                             WORD wSegment,
-//                                             DWORD* dwValidImageCnt,
-//                                             DWORD* dwMaxImageCnt);
-// Gets the number of images in the addressed segment.
-// In: HANDLE ph -> Handle to a previously opened camera.
-//     DWORD *dwValidImageCnt -> Pointer to a DWORD varibale to receive the
-//     valid image count. DWORD *dwMaxImageCnt -> Pointer to a DWORD varibale to
-//     receive the max image count.
-// Out: int -> Error message.
-
 void Camera::_pco_GetSegmentInfo(int &err)
 {
     DEB_MEMBER_FUNCT();
@@ -973,17 +915,6 @@ void Camera::_pco_SetCoolingSetpointTemperature(int val, int &error)
 
 //=================================================================================================
 //=================================================================================================
-// SC2_SDK_FUNC int WINAPI PCO_GetInfoString(HANDLE ph, DWORD dwinfotype, char
-// *buf_in, WORD size_in);
-// Gets the name of the camera.
-// In: HANDLE ph -> Handle to a previously opened camera.
-//     DWORD dwinfotype -> 0: Camera and interface name
-//                         1: Camera name only
-//                         2: Sensor name
-//     char *buf_in -> Pointer to a string, to receive the info string.
-//     WORD size_in -> WORD variable which holds the maximum length of the
-//     string.
-// Out: int -> Error message.
 
 void Camera::_pco_GetInfoString(int infotype, char *buf_in, int size_in,
                                 int &error)
@@ -1030,8 +961,6 @@ void Camera::_pco_SetCameraToCurrentTime(int &err)
 
 //=================================================================================================
 //=================================================================================================
-// SC2_SDK_FUNC int WINAPI PCO_SetBinning(HANDLE ph, WORD wBinHorz, WORD
-// wBinVert)
 
 void Camera::_pco_SetBinning(Bin binNew, Bin &binActual, int &err)
 {
@@ -2405,8 +2334,6 @@ void Camera::_pco_GetBinningInfo(char *buf_in, int size_in, int &err)
 
 //=================================================================================================
 //=================================================================================================
-// SC2_SDK_FUNC int WINAPI PCO_GetBinning(HANDLE ph, WORD* wBinHorz, WORD*
-// wBinVert)
 
 void Camera::_pco_GetBinning(Bin &bin, int &err)
 {

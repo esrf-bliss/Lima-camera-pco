@@ -2051,7 +2051,6 @@ void Camera::_pco_set_shutter_rolling_edge(int &error)
     if (error)
         return;
 
-    // m_sync->_getBufferCtrlObj()->_pcoAllocBuffersFree();
     m_buffer->_pcoAllocBuffersFree();
 
     cmsg = "[PCO_CloseCamera]";
