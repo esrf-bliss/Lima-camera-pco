@@ -32,8 +32,8 @@
 
 #include <cstdlib>
 
-#    include <sys/stat.h>
-#    include <sys/time.h>
+#include <sys/stat.h>
+#include <sys/time.h>
 
 #include <time.h>
 
@@ -71,32 +71,32 @@ const char *_timestamp_pcocamera()
 }
 
 #ifdef WITH_GIT_VERSION
-#    include "PcoGitVersion.h"
+#include "PcoGitVersion.h"
 
 char *_timestamp_gitversion(char *buffVersion, int len)
 {
     __sprintfSExt(buffVersion, len,
-#    ifdef PCO_GIT_VERSION
+#ifdef PCO_GIT_VERSION
                   PCO_GIT_VERSION "\n"
-#    endif
-#    ifdef PCO_SDK_VERSION
+#endif
+#ifdef PCO_SDK_VERSION
                   PCO_SDK_VERSION "\n"
-#    endif
-#    ifdef PROCLIB_GIT_VERSION
+#endif
+#ifdef PROCLIB_GIT_VERSION
                   PROCLIB_GIT_VERSION "\n"
-#    endif
-#    ifdef LIBCONFIG_GIT_VERSION
+#endif
+#ifdef LIBCONFIG_GIT_VERSION
                   LIBCONFIG_GIT_VERSION "\n"
-#    endif
-#    ifdef LIMA_GIT_VERSION
+#endif
+#ifdef LIMA_GIT_VERSION
                   LIMA_GIT_VERSION "\n"
-#    endif
-#    ifdef TANGO_GIT_VERSION
+#endif
+#ifdef TANGO_GIT_VERSION
                   TANGO_GIT_VERSION "\n"
-#    endif
-#    ifdef SPEC_GIT_VERSION
+#endif
+#ifdef SPEC_GIT_VERSION
                   SPEC_GIT_VERSION "\n"
-#    endif
+#endif
                                   "\n");
     return buffVersion;
 }
@@ -2094,4 +2094,4 @@ bool Camera::_isValid_rollingShutter(DWORD dwRolling)
 //================================= ROLLING SHUTTER / end
 //========================================
 //================================================================================================
-#    include "PcoCameraLin.cpp"
+#include "PcoCameraLin.cpp"

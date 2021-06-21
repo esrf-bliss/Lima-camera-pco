@@ -30,71 +30,59 @@ set(PCO_LIBRARIES)
 set(PCO_DEFINITIONS)
 
 
-if(WIN32)
 
-    set(PCO_SDKWIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPco" CACHE PATH "location of PCO Windows SDK")
+set(SISODIR5 $ENV{SISODIR5} CACHE PATH "location of SISO Linux SDK ")
+set(PCO_SDKLIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPcoLin" CACHE PATH "location of PCO Linux SDK")
+set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
+set(PCO_SDK_BIN_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_bin" CACHE PATH "location of PCO Linux SDK binary")
 
-    find_path(PCO_INCLUDE_DIRS "PcoSdkVersion.h" ${PCO_SDKWIN_DIR})
-    list(APPEND PCO_INCLUDE_DIRS
-        ${PCO_INCLUDE_DIRS}/include
-    )
-    find_library(PCO_LIBRARIES NAMES SC2_Cam.lib HINTS ${PCO_SDKWIN_DIR}/lib64)
+find_path(SISO_INCLUDE NAMES sisoboards.h HINTS ${PCO_SDKLIN_DIR}/siso_include)
+#find_path(SISO_INCLUDE sisoboards.h)
 
-else()
+message("==========================================================")
+message("PCO_SDKLIN_DIR: [${PCO_SDKLIN_DIR}]")
+message("PCO_SDK_LIB_DIR: [${PCO_SDK_LIB_DIR}]")
+message("SISO_INCLUDE: [${SISO_INCLUDE}]")
+message("==========================================================")
 
-    set(SISODIR5 $ENV{SISODIR5} CACHE PATH "location of SISO Linux SDK ")
-    set(PCO_SDKLIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPcoLin" CACHE PATH "location of PCO Linux SDK")
-    set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
-    set(PCO_SDK_BIN_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_bin" CACHE PATH "location of PCO Linux SDK binary")
+list(APPEND PCO_INCLUDE_DIRS
+	${SISO_INCLUDE}
 
-    find_path(SISO_INCLUDE NAMES sisoboards.h HINTS ${PCO_SDKLIN_DIR}/siso_include)
-    #find_path(SISO_INCLUDE sisoboards.h)
+	${PCO_SDKLIN_DIR}
+	${PCO_SDKLIN_DIR}/pco_common/pco_include
+	${PCO_SDKLIN_DIR}/pco_common/pco_classes
+	#${PCO_SDKLIN_DIR}/include
+	${PCO_SDKLIN_DIR}/pco_me4/pco_classes
+	${PCO_SDKLIN_DIR}/pco_clhs/pco_classes
+	${PCO_SDKLIN_DIR}/pco_clhs/pco_clhs_common
+	
 
-    message("==========================================================")
-    message("PCO_SDKLIN_DIR: [${PCO_SDKLIN_DIR}]")
-    message("PCO_SDK_LIB_DIR: [${PCO_SDK_LIB_DIR}]")
-    message("SISO_INCLUDE: [${SISO_INCLUDE}]")
-    message("==========================================================")
+)
 
-    list(APPEND PCO_INCLUDE_DIRS
-        ${SISO_INCLUDE}
+set(PCOLIB_ME4)
+set(PCOLIB_CLHS_1)
+set(PCOLIB_CLHS_2)
+set(PCOLIB2)
+set(PCOLIB3)
+set(PCOLIB4)
+set(PCOLIB7)
 
-        ${PCO_SDKLIN_DIR}
-        ${PCO_SDKLIN_DIR}/pco_common/pco_include
-        ${PCO_SDKLIN_DIR}/pco_common/pco_classes
-        #${PCO_SDKLIN_DIR}/include
-        ${PCO_SDKLIN_DIR}/pco_me4/pco_classes
-        ${PCO_SDKLIN_DIR}/pco_clhs/pco_classes
-        ${PCO_SDKLIN_DIR}/pco_clhs/pco_clhs_common
-        
+if(INTERFACE  STREQUAL "ME4")
+	# ------ PCO ME4 libs
+	find_library(PCOLIB_ME4 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
+endif()
 
-        ${PCO_SDKWIN_DIR}/include
-    )
+if(INTERFACE  STREQUAL "CLHS")
+	# ------ PCO CLHS libs
+	find_library(PCOLIB_CLHS_1 pcocam_clhs HINTS ${PCO_SDK_LIB_DIR})
+	find_library(PCOLIB_CLHS_2 pcoclhs HINTS ${PCO_SDK_LIB_DIR})
+endif()
 
-    set(PCOLIB_ME4)
-    set(PCOLIB_CLHS_1)
-    set(PCOLIB_CLHS_2)
-    set(PCOLIB2)
-    set(PCOLIB3)
-    set(PCOLIB4)
-    set(PCOLIB7)
-    
-    if(INTERFACE  STREQUAL "ME4")
-        # ------ PCO ME4 libs
-        find_library(PCOLIB_ME4 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
-    endif()
-    
-    if(INTERFACE  STREQUAL "CLHS")
-        # ------ PCO CLHS libs
-        find_library(PCOLIB_CLHS_1 pcocam_clhs HINTS ${PCO_SDK_LIB_DIR})
-        find_library(PCOLIB_CLHS_2 pcoclhs HINTS ${PCO_SDK_LIB_DIR})
-    endif()
-    
-    find_library(PCOLIB2 pcofile HINTS ${PCO_SDK_LIB_DIR})
-    find_library(PCOLIB3 pcolog HINTS ${PCO_SDK_LIB_DIR})
-    find_library(PCOLIB4 reorderfunc HINTS ${PCO_SDK_LIB_DIR})
+find_library(PCOLIB2 pcofile HINTS ${PCO_SDK_LIB_DIR})
+find_library(PCOLIB3 pcolog HINTS ${PCO_SDK_LIB_DIR})
+find_library(PCOLIB4 reorderfunc HINTS ${PCO_SDK_LIB_DIR})
 
-    #find_library(PCOLIB_CLHS_2 pcodisp HINTS ${PCO_SDK_LIB_DIR})
+#find_library(PCOLIB_CLHS_2 pcodisp HINTS ${PCO_SDK_LIB_DIR})
 
 #DISPLIB    = $(PCOLIBDIR)/libpcodisp.a
 #LOGLIB     = $(PCOLIBDIR)/libpcolog.a
@@ -102,51 +90,50 @@ else()
 #REORDERLIB = $(PCOLIBDIR)/libreorderfunc.a
 #CAMLIB     = $(PCOLIBDIR)/libpcocam_clhs.a
 
-    message("==========================================================")
-    message("PCOLIB_ME4:    [${PCOLIB_ME4}]")
-    message("PCOLIB_CLHS_1: [${PCOLIB_CLHS_1}]")
-    message("PCOLIB_CLHS_2: [${PCOLIB_CLHS_2}]")
-    message("PCOLIB2:       [${PCOLIB2}]")
-    message("PCOLIB3:       [${PCOLIB3}]")
-    message("PCOLIB4:       [${PCOLIB4}]")
-    message("PCOLIB7:       [${PCOLIB7}]")
-    message("==========================================================")
+message("==========================================================")
+message("PCOLIB_ME4:    [${PCOLIB_ME4}]")
+message("PCOLIB_CLHS_1: [${PCOLIB_CLHS_1}]")
+message("PCOLIB_CLHS_2: [${PCOLIB_CLHS_2}]")
+message("PCOLIB2:       [${PCOLIB2}]")
+message("PCOLIB3:       [${PCOLIB3}]")
+message("PCOLIB4:       [${PCOLIB4}]")
+message("PCOLIB7:       [${PCOLIB7}]")
+message("==========================================================")
 
 
-    set(SISOLIB1)
-    set(SISOLIB2)
-    set(SISOLIB3)
+set(SISOLIB1)
+set(SISOLIB2)
+set(SISOLIB3)
 
-    find_library(SISOLIB1 NAMES fglib5 HINTS ${SISODIR5}/lib64)
-    find_library(SISOLIB2 NAMES clsersis HINTS ${SISODIR5}/lib64)
-    find_library(SISOLIB3 NAMES haprt HINTS ${SISODIR5}/lib64)
+find_library(SISOLIB1 NAMES fglib5 HINTS ${SISODIR5}/lib64)
+find_library(SISOLIB2 NAMES clsersis HINTS ${SISODIR5}/lib64)
+find_library(SISOLIB3 NAMES haprt HINTS ${SISODIR5}/lib64)
 
 
-    message("==========================================================")
-    message("SISODIR5: [${SISODIR5}]")
-    message("SISOLIB1: [${SISOLIB1}]")
-    message("SISOLIB2: [${SISOLIB2}]")
-    message("SISOLIB3: [${SISOLIB3}]")
-    message("==========================================================")
+message("==========================================================")
+message("SISODIR5: [${SISODIR5}]")
+message("SISOLIB1: [${SISOLIB1}]")
+message("SISOLIB2: [${SISOLIB2}]")
+message("SISOLIB3: [${SISOLIB3}]")
+message("==========================================================")
 
-    if(INTERFACE  STREQUAL "ME4")
-        list(APPEND PCO_LIBRARIES 
-            ${PCOLIB_ME4} 
-            ${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
-            ${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
-        )
-    endif()
-    
-    if(INTERFACE  STREQUAL "CLHS")
-        list(APPEND PCO_LIBRARIES 
-            ${PCOLIB_CLHS_1} 
-            ${PCOLIB_CLHS_2} 
-            ${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
-            ${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
-        )
-    endif()
-    
+if(INTERFACE  STREQUAL "ME4")
+	list(APPEND PCO_LIBRARIES 
+		${PCOLIB_ME4} 
+		${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
+		${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
+	)
 endif()
+
+if(INTERFACE  STREQUAL "CLHS")
+	list(APPEND PCO_LIBRARIES 
+		${PCOLIB_CLHS_1} 
+		${PCOLIB_CLHS_2} 
+		${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
+		${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
+	)
+endif()
+    
 
 message("==========================================================")
 message("PCO_INCLUDE_DIRS: [${PCO_INCLUDE_DIRS}]")

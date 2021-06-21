@@ -78,39 +78,21 @@ find_package(Pco REQUIRED)
 
 file(GLOB_RECURSE PCO_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
-IF(WIN32)
-  add_library(pco SHARED
-    src/PcoBinCtrlObj.cpp
-    src/PcoBufferCtrlObj.cpp
-    src/PcoCamera.cpp
-    src/PcoCameraSdk.cpp
-    src/PcoCameraSdkWin.cpp
-    src/PcoCameraSip.cpp
-    src/PcoCameraUtils.cpp
-    src/PcoDetInfoCtrlObj.cpp
-    src/PcoHwEventCtrlObj.cpp
-    src/PcoInterface.cpp
-    src/PcoRoiCtrlObj.cpp
-    src/PcoSyncCtrlObj.cpp
-    ${PCO_INCS}
-  )
-else()
-  add_library(pco SHARED
-    src/PcoBinCtrlObj.cpp
-    src/PcoBufferCtrlObj.cpp
-    src/PcoCamera.cpp
-    src/PcoCameraSdk.cpp
-    src/PcoCameraSdkLin.cpp
-    src/PcoCameraSip.cpp
-    src/PcoCameraUtils.cpp
-    src/PcoDetInfoCtrlObj.cpp
-    src/PcoHwEventCtrlObj.cpp
-    src/PcoInterface.cpp
-    src/PcoRoiCtrlObj.cpp
-    src/PcoSyncCtrlObj.cpp
-    ${PCO_INCS}
-  )
-endif()
+add_library(pco SHARED
+	src/PcoBinCtrlObj.cpp
+	src/PcoBufferCtrlObj.cpp
+	src/PcoCamera.cpp
+	src/PcoCameraSdk.cpp
+	src/PcoCameraSdkLin.cpp
+	src/PcoCameraSip.cpp
+	src/PcoCameraUtils.cpp
+	src/PcoDetInfoCtrlObj.cpp
+	src/PcoHwEventCtrlObj.cpp
+	src/PcoInterface.cpp
+	src/PcoRoiCtrlObj.cpp
+	src/PcoSyncCtrlObj.cpp
+	${PCO_INCS}
+)
 
 # Generate export macros
 generate_export_header(pco)
@@ -151,12 +133,6 @@ target_include_directories(pco
 
 target_link_libraries(pco PUBLIC ${PCO_LIBRARIES})
 
-if(WIN32)
-  target_compile_definitions(pco
-    PRIVATE pco_EXPORTS
-    PUBLIC NOMINMAX)
-  set_target_properties(pco PROPERTIES PREFIX "lib" IMPORT_PREFIX "lib")
-endif()
 
 # Binding code for python
 if(LIMA_ENABLE_PYTHON)
@@ -197,15 +173,13 @@ install(
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-if(NOT WIN32)
-  install(
-    PROGRAMS
-      ${PCO_SDK_BIN_DIR}/pco_clhs_info
-      ${PCO_SDK_BIN_DIR}/pco_clhs_mgr
-      ${PCO_SDK_BIN_DIR}/pco_clhs_svc
-    DESTINATION ${CMAKE_INSTALL_BINDIR}
-  )
-endif()
+install(
+	PROGRAMS
+	  ${PCO_SDK_BIN_DIR}/pco_clhs_info
+	  ${PCO_SDK_BIN_DIR}/pco_clhs_mgr
+	  ${PCO_SDK_BIN_DIR}/pco_clhs_svc
+	DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
 message("... LIMA_ENABLE_PYTHON: [${LIMA_ENABLE_PYTHON}]")
 message("... PYTHON_SITE_PACKAGES_DIR: [${PYTHON_SITE_PACKAGES_DIR}]")
