@@ -851,17 +851,21 @@ void Camera::_pco_CloseCamera(int &err)
 
     err = 0;
 
+#ifdef ME4
     if (grabber_me4)
     {
         delete grabber_me4;
         grabber_me4 = NULL;
     }
+#endif
 
+#ifdef CLHS
     if (grabber_clhs)
     {
         delete grabber_clhs;
         grabber_clhs = NULL;
     }
+#endif
 
     if (camera)
     {
@@ -2027,16 +2031,24 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         DEB_ALWAYS() << "ERROR - PCO_ArmCamera() " << DEB_VAR1(error);
     }
 
-
-	if((grabber_me4 == NULL) && (grabber_clhs == NULL))
+#ifdef ME4
+	if((grabber_me4 == NULL))
 	{
         THROW_FATAL(Hardware, Error) << "any grabber is opened";
 	}
+#endif
+
+#ifdef CLHS
+	if((grabber_clhs == NULL))
+	{
+        THROW_FATAL(Hardware, Error) << "any grabber is opened";
+	}
+#endif
 
 
+#ifdef ME4
 	if(grabber_me4)
 	{	
-#ifdef ME4
 		error = grabber_me4->Set_DataFormat(clpar.DataFormat);
         msg = "Set_DataFormat";
         PCO_CHECK_ERROR(error, msg);
@@ -2057,11 +2069,12 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 		msg = "Allocate_Framebuffer";
         PCO_CHECK_ERROR(error, msg);
         error = 0;
-#endif
 	}
-	else
-	{
+#endif
+
 #ifdef CLHS
+	if(grabber_clhs)
+	{
 		error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
         msg = "Set_DataFormat";
         PCO_CHECK_ERROR(error, msg);
@@ -2082,8 +2095,8 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 		msg = "Allocate_Framebuffer";
         PCO_CHECK_ERROR(error, msg);
         error = 0;
-#endif
 	}
+#endif
 
 
     return;

@@ -1168,12 +1168,12 @@ void Camera::prepareAcq()
     printf("%s %s> %s width[%d] height[%d]\n",getTimestamp(Iso), fnId, msg, width,height); 
     PCO_THROW_OR_TRACE(err, msg);
 
-
+#ifdef CLHS
     msg = "grabber_clhs->Get_actual_size()";
     err=grabber_clhs->Get_actual_size(&w,&h,&bp);
     printf("%s %s> %s w[%d] h[%d] b[%d]\n",getTimestamp(Iso), fnId, msg, w, h, bp); 
     PCO_THROW_OR_TRACE(err, msg);
-
+#endif
 
 
 
@@ -1254,11 +1254,12 @@ void Camera::prepareAcq()
     PCO_THROW_OR_TRACE(err, msg);
 
 
+#ifdef CLHS
     msg = "grabber_clhs->PostArm(0)";
     err = grabber_clhs->PostArm(0);
     printf("%s %s> %s\n",getTimestamp(Iso), fnId, msg); 
     PCO_THROW_OR_TRACE(err, msg);
-
+#endif
 
 
 #if 0
@@ -1270,17 +1271,18 @@ void Camera::prepareAcq()
 
 
 
+#ifdef CLHS
     msg = "grabber_clhs->Get_actual_size()";
     err=grabber_clhs->Get_actual_size(&w,&h,&bp);
     printf("%s %s> %s w[%d] h[%d] b[%d]\n",getTimestamp(Iso), fnId, msg, w, h, bp); 
     PCO_THROW_OR_TRACE(err, msg);
 
 
-
     msg = "grabber_clhs->PostArm(1)";
     err = grabber_clhs->PostArm(1);
     printf("%s %s> %s\n",getTimestamp(Iso), fnId, msg); 
     PCO_THROW_OR_TRACE(err, msg);
+#endif
 
 
 
