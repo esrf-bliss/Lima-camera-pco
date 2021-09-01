@@ -717,7 +717,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         errTot = 0;
         if (acquireFirst)
         {
-            DEB_ALWAYS() << "Start_Acquire";
+            DEB_ALWAYS() << "Start_Acquire " << DEB_VAR1(_nb_frames);
             err = m_cam.grabber_me4->Start_Acquire(_nb_frames);
             PCO_CHECK_ERROR1(err, "Start_Acquire");
             if (err)

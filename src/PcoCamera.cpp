@@ -1242,8 +1242,9 @@ void Camera::prepareAcq()
     //-------------------------------------------------
 
     //--------------------------- PREPARE / clXferParam, LUT - ARM required
-    //_pco_SetTransferParameter_SetActiveLookupTable(error);
-    //PCO_THROW_OR_TRACE(error, "_pco_SetTransferParameter_SetActiveLookupTable");
+    //                            buffer allocation
+    _pco_SetTransferParameter_SetActiveLookupTable(error);
+    PCO_THROW_OR_TRACE(error, "_pco_SetTransferParameter_SetActiveLookupTable");
     //-------------------------------------------------
 
 
