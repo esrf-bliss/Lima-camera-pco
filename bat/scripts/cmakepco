@@ -4,13 +4,11 @@
 #====================================================================
 TIMESTAMP=`date "+%Y-%m-%d-%H%M%S" `
 
-#REMHOST=blissadm@lid193
 
 LIMA_TMP_DIR_COMMON="Lima_tmp"
 LIMA_TMP_DIR="${LIMA_TMP_DIR_COMMON}_${TIMESTAMP}"
 LIMA_TMP_DIR_FULL="${LIMA_TMP_DIR}_full"
 
-#LIMA_LIMA="/nobackup/lid00limace1/rhoms/Lima"
 LIMA_LIMA="$HOME/lima/lima"
 LIMA_PCO=${LIMA_LIMA}/camera/pco
 LIMA_INST=${LIMA_LIMA}/install-cmake
@@ -28,11 +26,10 @@ CONDA_ENV=limadev1
 
 echo "------------------------------- init"
 cd
-. .bashrc
-#. pcorc
-#. /opt/SiliconSoftware/Runtime5.2.2/setup-siso-env.sh
-#conda activate v18a
-#conda activate limadev 
+
+# needed to execute conda activate from bash script
+# https://github.com/conda/conda/issues/7980
+source ~/conda/miniconda/etc/profile.d/conda.sh
 
 conda deactivate
 conda deactivate
@@ -52,14 +49,18 @@ cd ${LIMA_LIMA}
 pwd
 
 rm -fr ${BUILD_DIR} ${LIMA_INST}
-find ./ -name "CMakeCache.txt" | xargs rm
+
+{
+find ./ -name "CMakeCache.txt" 
+find ./ -name "sip*.h"
+find ./ -name "sip*.cpp"
+} | xargs rm
 
 echo "------------------------------- cleaning cache PCO"
 cd ${LIMA_PCO}
 pwd
 
-rm -fr build/CMakeFiles/ build/sip build/pco
-rm -f build/*
+rm -fr build/*
 
 
 echo "------------------------------- enviroment ${CONDA_ENV}"

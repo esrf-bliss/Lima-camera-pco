@@ -24,8 +24,6 @@
 #ifndef PCOCAMERA_H
 #define PCOCAMERA_H
 
-#define CLHS
-
 #include "Pco.h"
 #include "PCO_errt.h"
 #include "lima/Debug.h"
@@ -742,8 +740,12 @@ namespace lima
         public:
             CPco_com *camera;
             //CPco_grab_clhs *grabber_me4;
+#ifdef ME4
             CPco_grab_cl_me4 *grabber_me4;
+#endif
+#ifdef CLHS
             CPco_grab_clhs *grabber_clhs;
+#endif
 
             CPco_Log *mylog;
 

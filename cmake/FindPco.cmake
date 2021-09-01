@@ -22,8 +22,8 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
 
-#set(INTERFACE "ME4")
-set(INTERFACE "CLHS")
+set(INTERFACE "ME4")
+#set(INTERFACE "CLHS")
 
 set(PCO_INCLUDE_DIRS)
 set(PCO_LIBRARIES)
@@ -123,6 +123,9 @@ if(INTERFACE  STREQUAL "ME4")
 		${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
 		${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
 	)
+
+	list(APPEND PCO_DEFINITIONS ME4)
+
 endif()
 
 if(INTERFACE  STREQUAL "CLHS")
@@ -132,6 +135,8 @@ if(INTERFACE  STREQUAL "CLHS")
 		${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
 		${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
 	)
+
+	list(APPEND PCO_DEFINITIONS CLHS)
 endif()
     
 

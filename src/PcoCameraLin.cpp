@@ -152,6 +152,7 @@ void Camera::_AcqThread::threadFunction()
         m_cam.m_quit = false;
         m_cam.m_thread_running = false;
 
+#ifdef ME4
         if (m_cam.grabber_me4 && m_cam._isCameraType(Dimax))
         {
             DEB_ALWAYS() << "+++ START threadFunction_Dimax";
@@ -164,12 +165,17 @@ void Camera::_AcqThread::threadFunction()
             threadFunction_Edge();
             DEB_ALWAYS() << "+++ EXIT threadFunction_Edge";
         }
-        else if (m_cam.grabber_clhs)
+#endif        
+        
+#ifdef CLHS
+        if (m_cam.grabber_clhs)
         {
             DEB_ALWAYS() << "+++ START threadFunction_Edge_clhs";
             threadFunction_Edge_clhs();
             DEB_ALWAYS() << "+++ EXIT threadFunction_Edge_clhs";
         }
+#endif
+
     }
 
     {
@@ -711,7 +717,7 @@ void Camera::_AcqThread::threadFunction_Edge()
         errTot = 0;
         if (acquireFirst)
         {
-            DEB_ALWAYS() << "Start_Acquire";
+            DEB_ALWAYS() << "Start_Acquire " << DEB_VAR1(_nb_frames);
             err = m_cam.grabber_me4->Start_Acquire(_nb_frames);
             PCO_CHECK_ERROR1(err, "Start_Acquire");
             if (err)
@@ -1489,7 +1495,10 @@ Camera::Camera(const std::string &camPar)
     m_handle = 0;
 
     camera = NULL;
+
+#ifdef ME4
     grabber_me4 = NULL;
+#endif
 
     m_quit = false;
     m_wait_flag = true;
@@ -2281,7 +2290,7 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
         setup_flag[2] = 0;
         setup_flag[3] = 0;
 
-        msg = "PCO_SetCameraSetup ";
+        msg = "PCO_SetCameraSetup (global/rolling shutter) ";
         m_cam.mylog->writelog(INFO_M, "++++++ INFO: %s", msg);
         val = setup_flag[0];
         DEB_ALWAYS() << msg << DEB_VAR1(val);
@@ -2298,6 +2307,22 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
         if (dwErr != PCO_NOERROR)
             goto continueWhile;
 
+		{
+			int i_sleep = 15;
+			
+			msg = "Camera rebooting and wait (seconds) ";
+			m_cam.mylog->writelog(INFO_M, "++++++ INFO: %s %d", msg, i_sleep);
+			DEB_ALWAYS() << msg << DEB_VAR1(i_sleep);
+
+			for (count =  i_sleep; count ; count--)
+			{
+				for(int i = 0; i < WAITMS_1S/WAITMS_100MS; i++)
+					m_cam.Sleep_ms(WAITMS_100MS);
+
+				DEB_ALWAYS() << "sleeping (s) ...  " << DEB_VAR1(count);
+			}
+		}
+
         msg = "Close_Cam ";
         m_cam.mylog->writelog(INFO_M, "++++++ INFO: %s", msg);
         DEB_ALWAYS() << "Close camera and wait until it is reconnected";
@@ -2306,22 +2331,6 @@ void Camera::_AcqThread::threadFunction_SwitchEdge()
         if (dwErr != PCO_NOERROR)
             goto continueWhile;
 
-        msg = "Camera rebooting and wait 8s ";
-        m_cam.mylog->writelog(INFO_M, "++++++ INFO: %s", msg);
-        DEB_ALWAYS() << msg;
-
-        fflush(stdout);
-        for (count = (8 * WAITMS_1S) / WAITMS_100MS; count > 0; count--)
-        {
-            m_cam.Sleep_ms(WAITMS_100MS);
-            if ((count % 4) == 0)
-            {
-                printf(".");
-                fflush(stdout);
-            }
-        }
-
-        printf("\n");
 
         msg = "Camera reconnect / Open_Cam /  wait up to 6s ";
         m_cam.mylog->writelog(INFO_M, "++++++ INFO: %s", msg);

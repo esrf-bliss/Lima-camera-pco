@@ -851,17 +851,21 @@ void Camera::_pco_CloseCamera(int &err)
 
     err = 0;
 
+#ifdef ME4
     if (grabber_me4)
     {
         delete grabber_me4;
         grabber_me4 = NULL;
     }
+#endif
 
+#ifdef CLHS
     if (grabber_clhs)
     {
         delete grabber_clhs;
         grabber_clhs = NULL;
     }
+#endif
 
     if (camera)
     {
@@ -1881,7 +1885,7 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 
     if (!_isInterfaceType(ifCameralinkAll))
     {
-        DEB_TRACE() << "PCO_SetTransferParameter (clTransferParam) NOT DONE!";
+        DEB_ALWAYS() << "PCO_SetTransferParameter (clTransferParam) NOT DONE!";
         return;
     }
 
@@ -1983,6 +1987,7 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         }
         doLut = true;
     }
+	DEB_ALWAYS() << "ClTransferParameterSettings " << DEB_VAR2(info, doLut) ;
 
     //---------------------------------------------------------------------------
 
@@ -2008,17 +2013,24 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     if (0)
     {
         actlut = lut;
+		DEB_ALWAYS() << "camera->PCO_SetLut() " << DEB_VAR1(actlut) ;
         error = camera->PCO_SetLut(actlut, 0);
         msg = "PCO_SetLut";
         PCO_CHECK_ERROR(error, msg);
     }
+    else
+    {
+		DEB_ALWAYS() << "camera->PCO_SetLut() BYPASSED!!!" ;
+	}
 
+	DEB_ALWAYS() << "camera->PCO_SetTransferParameter()" ;
     error = camera->PCO_SetTransferParameter(&clpar, sizeof(clpar));
     if (error != PCO_NOERROR)
     {
         DEB_ALWAYS() << "ERROR - PCO_SetTransferParameter " << DEB_VAR1(error);
     }
 
+	DEB_ALWAYS() << "camera->PCO_ArmCamera()" ;
     error = camera->PCO_ArmCamera();
     msg = "PCO_ArmCamera()";
     PCO_CHECK_ERROR(error, msg);
@@ -2027,16 +2039,25 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         DEB_ALWAYS() << "ERROR - PCO_ArmCamera() " << DEB_VAR1(error);
     }
 
-
-	if((grabber_me4 == NULL) && (grabber_clhs == NULL))
+#ifdef ME4
+	if((grabber_me4 == NULL))
 	{
         THROW_FATAL(Hardware, Error) << "any grabber is opened";
 	}
+#endif
+
+#ifdef CLHS
+	if((grabber_clhs == NULL))
+	{
+        THROW_FATAL(Hardware, Error) << "any grabber is opened";
+	}
+#endif
 
 
+#ifdef ME4
 	if(grabber_me4)
 	{	
-#ifdef ME4
+		DEB_ALWAYS() << "grabber_me4->Set_DataFormat() " << DEB_VAR1(clpar.DataFormat);
 		error = grabber_me4->Set_DataFormat(clpar.DataFormat);
         msg = "Set_DataFormat";
         PCO_CHECK_ERROR(error, msg);
@@ -2045,23 +2066,28 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
             DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
         }
 
+		DEB_ALWAYS() << "grabber_me4->Set_Grabber_Size() " << DEB_VAR2(width, height);
 		error = grabber_me4->Set_Grabber_Size(width, height);
     	msg = "Set_Grabber_Size";
         PCO_CHECK_ERROR(error, msg);
 
+		DEB_ALWAYS() << "grabber_me4->PostArm(1)" ;
 		error = grabber_me4->PostArm(1);
         msg = "grabber->PostArm(1)";
         PCO_CHECK_ERROR(error, msg);
 
+		DEB_ALWAYS() << "grabber_me4->Allocate_Framebuffer() " << DEB_VAR1(pcoBuffNr);
 		error = grabber_me4->Allocate_Framebuffer(pcoBuffNr);
 		msg = "Allocate_Framebuffer";
         PCO_CHECK_ERROR(error, msg);
         error = 0;
-#endif
 	}
-	else
-	{
+#endif
+
 #ifdef CLHS
+	if(grabber_clhs)
+	{
+		DEB_ALWAYS() << "grabber_clhs->Set_DataFormat() " << DEB_VAR1(clpar.DataFormat);
 		error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
         msg = "Set_DataFormat";
         PCO_CHECK_ERROR(error, msg);
@@ -2070,20 +2096,23 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
             DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
         }
 
+		DEB_ALWAYS() << "grabber_clhs->Set_Grabber_Size() " << DEB_VAR2(width, height);
 		error = grabber_clhs->Set_Grabber_Size(width, height);
         msg = "Set_Grabber_Size";
         PCO_CHECK_ERROR(error, msg);
 
+		DEB_ALWAYS() << "grabber_clhs->PostArm(1)" ;
 		error = grabber_clhs->PostArm(1);
         msg = "grabber->PostArm(1)";
         PCO_CHECK_ERROR(error, msg);
 
+		DEB_ALWAYS() << "grabber_clhs->Allocate_Framebuffer() " << DEB_VAR1(pcoBuffNr);
 		error = grabber_clhs->Allocate_Framebuffer(pcoBuffNr);
 		msg = "Allocate_Framebuffer";
         PCO_CHECK_ERROR(error, msg);
         error = 0;
-#endif
 	}
+#endif
 
 
     return;
