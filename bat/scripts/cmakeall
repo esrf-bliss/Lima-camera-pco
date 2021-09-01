@@ -1,16 +1,17 @@
 #!/bin/bash
 #====================================================================
 #====================================================================
+
+#set -e
+
 #====================================================================
 TIMESTAMP=`date "+%Y-%m-%d-%H%M%S" `
 
-#REMHOST=blissadm@lid193
 
 LIMA_TMP_DIR_COMMON="Lima_tmp"
 LIMA_TMP_DIR="${LIMA_TMP_DIR_COMMON}_${TIMESTAMP}"
 LIMA_TMP_DIR_FULL="${LIMA_TMP_DIR}_full"
 
-#LIMA_LIMA="/nobackup/lid00limace1/rhoms/Lima"
 LIMA_LIMA="$HOME/lima/lima"
 LIMA_PCO=${LIMA_LIMA}/camera/pco
 LIMA_INST=${LIMA_LIMA}/install-cmake
@@ -28,11 +29,10 @@ CONDA_ENV=limadev1
 
 echo "------------------------------- init"
 cd
-. .bashrc
-#. pcorc
-#. /opt/SiliconSoftware/Runtime5.2.2/setup-siso-env.sh
-#conda activate v18a
-#conda activate limadev 
+
+# needed to execute conda activate from bash script
+# https://github.com/conda/conda/issues/7980
+source ~/conda/miniconda/etc/profile.d/conda.sh
 
 conda deactivate
 conda deactivate
@@ -52,14 +52,18 @@ cd ${LIMA_LIMA}
 pwd
 
 rm -fr ${BUILD_DIR} ${LIMA_INST}
-find ./ -name "CMakeCache.txt" | xargs rm
+
+{
+find ./ -name "CMakeCache.txt" 
+find ./ -name "sip*.h"
+find ./ -name "sip*.cpp"
+} | xargs rm
 
 echo "------------------------------- cleaning cache PCO"
 cd ${LIMA_PCO}
 pwd
 
-rm -fr build/CMakeFiles/ build/sip build/pco
-rm -f build/*
+rm -fr build/*
 
 echo "------------------------------- CMAKE ALL"
 
@@ -82,124 +86,4 @@ exit
 #==================================================================
 #==================================================================
 
-
-
-#==================================================================
-#==================================================================
-# OLD CODE - FOR REFERENCE
-exit
-#==================================================================
-#==================================================================
-
-
-
-
-(conda activate slsdetector-devel; \
-  cd ${LIMA_DIR}; \
-  (PREFIX=${CONDA_PREFIX} \
-     SP_DIR=$(python -c "import sysconfig; print(sysconfig.get_paths().get('platlib'))") \
-     bash -c '(cd third-party/Processlib && bash -e conda/debug/build.sh) && \
-              (cd . && bash -e conda/debug/build.sh) && \
-              (cd applications/tango/python && \
-                 bash -e conda/build.sh && cp scripts/Lima* ${PREFIX}/bin) && \
-              (cd camera/slsdetector && \
-                 bash -e conda/camera/build.sh && bash -e conda/tango/build.sh)'))
-
-
-echo "--- cleaning cache ...."
-rm -fr ${BUILD_DIR} ${LIMA_INST}
-find ./ -name "CMakeCache.txt" | xargs rm
-
-echo "--- cmake"
-
-{
-#	./install.sh --install=yes --build-type debug --build-prefix build --install-prefix ${LIMA_INST} --install-python-prefix ${LIMA_INST}/python pco python 
-	./install.sh --install=yes                    --build-prefix build --install-prefix ${LIMA_INST} --install-python-prefix ${LIMA_INST}/python pco python 
-
-
-} || { echo "============================== ERROR ==============================" ; exit ; }
-
-
-
-
-
-echo "--- cleaning"
-find ${LIMA_INST}/ -type f -name "*.pyc" | xargs rm
-find ${LIMA_INST}/ -type f  -name "*.py.*" | xargs rm
-find ${LIMA_INST}/ -type f  -name "*_VERSION" | xargs rm
-find ${LIMA_INST}/python/Lima/Server/camera -type f  | grep -v Pco | grep -v __init__ |  xargs rm
-rm -fr ${LIMA_INST}/include
-tree ${LIMA_INST}/
-
-
-cd ${LIMA_PCO}
-./setId
-
-
-#====================================================================
-#====================================================================
-exit
-#====================================================================
-#====================================================================
-exit
-
-echo
-echo "============================= INSTALL"
-cd $HOME/git/Lima
-rm -fr $HOME/git/Lima/install/
-
-make install
-
-
-echo
-echo "============================= COPY"
-
-
-echo
-echo "============================= phython"
-scp -rp ${HOME}/git/Lima/applications/tango/python/ ${REMHOST}:applications/LimaCCDs_${TIMESTAMP}
-
-echo
-echo "============================= Lima"
-scp -rp ${HOME}/git/Lima/install/Lima/ ${REMHOST}:python/bliss_modules/Lima_${TIMESTAMP}
-
-
-#LIMA_SERV="Lima_serv_${TIMESTAMP}"
-LIMA_SERV="Lima_serv_X"
-
-echo
-echo "============================= ${REMHOST}"
-ssh -T ${REMHOST} <<EOF 
-cd python/bliss_modules/
-unlink Lima
-ln -s Lima_${TIMESTAMP} Lima
-ls -l Lima Lima_${TIMESTAMP}
-
-
-rm -fr ${LIMA_SERV}
-
-mkdir -p ${LIMA_SERV}/bin
-mkdir -p ${LIMA_SERV}/lib
-mkdir -p ${LIMA_SERV}/python/Lima/Core
-mkdir -p ${LIMA_SERV}/python/Lima/Pco
-mkdir -p ${LIMA_SERV}/python/Lima/Server/camera
-mkdir -p ${LIMA_SERV}/python/Lima/Server/plugins
-
-
-cd
-cd applications/
-unlink LimaCCDs
-ln -s LimaCCDs_${TIMESTAMP} LimaCCDs
-
-
-
-EOF
-
-cd $HOME/git/Lima/install/Lima/debian7/lib
-scp *so* ${REMHOST}:python/bliss_modules/${LIMA_SERV}/lib
-
-cd $HOME/git/Lima/applications/tango/python
-git checkout core-1.7-serv
-scp *.py ${REMHOST}:python/bliss_modules/${LIMA_SERV}/python/Lima/Server
-scp plugins/*.py ${REMHOST}:python/bliss_modules/${LIMA_SERV}/python/Lima/Server/plugins
 
