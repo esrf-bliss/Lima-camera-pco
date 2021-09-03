@@ -22,8 +22,8 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
 
-set(INTERFACE "ME4")
-#set(INTERFACE "CLHS")
+#set(INTERFACE "ME4")
+set(INTERFACE "CLHS")
 
 set(PCO_INCLUDE_DIRS)
 set(PCO_LIBRARIES)
