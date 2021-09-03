@@ -1,4 +1,101 @@
+#==========================================
+2021/09/03 - lbm05pco5
+#==========================================
+
+- pco linux / edge clhs / pc freezes for certain exposure times
+
+few first tests OK
+
+6.RHPCO> history
+    1  ccdmenu
+    2  limatake 0.15
+    3  limatake 0.001
+    4  limatake 1
+    5  limatake 2
+
+
+/segfs/bliss/source/cameraSDK/PCO/LIN/pcoSDK/2021-09-02-pco_clhs_x64_1_02_06-deb8-fix01
+
+--- driver
+
+b7eb1881fa162b83d2b66bc4b735d7a9  menable_linuxdrv_src_4.2.7_pco_deb8.tar.gz <-- new
+
+--- pco sdk
+
+3587a77f923363ed7d1521b059536932  pco_clhs_x64_1_02_06_deb8.tar.gz  <-- no change => the previus one
+
+the same of previus 2021-03-11
+3587a77f923363ed7d1521b059536932  ./2021-03-11-pco_clhs_x64_1_02_06_deb8/pco_clhs_x64_1_02_06_deb8.tar.gz
+3587a77f923363ed7d1521b059536932  ./2021-09-02-pco_clhs_x64_1_02_06-deb8-fix01/pco_clhs_x64_1_02_06_deb8.tar.gz
+
+only fixed the driver!
+
+
+#==========================================
+2021/09/02 - lbm05pco5
+#==========================================
+
+working libs -> ./pco_common/pco_lib/
+are the same of 
+./pco_clhs_x64_1_02_06_deb8
+the same received 2021/09/02
+
+lbm05pco5:camera/pco/sdkPcoLin % find ./ -name "*.a" | xargs md5sum | sort
+
+0b79d78ffa75bae231c0c68f22d3ddcd  ./pco_common/pco_lib/libpcodisp.a
+0b79d78ffa75bae231c0c68f22d3ddcd  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcodisp.a
+0b79d78ffa75bae231c0c68f22d3ddcd  ./2019-03-19-pco-linux-pack/pco_camera/pco_common/pco_lib/libpcodisp.a
+0b79d78ffa75bae231c0c68f22d3ddcd  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libpcodisp.a
+0b79d78ffa75bae231c0c68f22d3ddcd  ./pco_clhs_x64_1_02_07/pco_common/pco_lib/libpcodisp.a
+
+1f944144ed4178e3165d1e45120c53b9  ./pco_common/pco_lib/libpcocom_clhs.a
+1f944144ed4178e3165d1e45120c53b9  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocom_clhs.a
+1f944144ed4178e3165d1e45120c53b9  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libpcocom_clhs.a
+
+44935bb426e254484baf1c3e0c61858b  ./pco_common/pco_lib/libpcofile.a
+44935bb426e254484baf1c3e0c61858b  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcofile.a
+44935bb426e254484baf1c3e0c61858b  ./2019-03-19-pco-linux-pack/pco_camera/pco_common/pco_lib/libpcofile.a
+44935bb426e254484baf1c3e0c61858b  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libpcofile.a
+44935bb426e254484baf1c3e0c61858b  ./pco_clhs_x64_1_02_07/pco_common/pco_lib/libpcofile.a
+
+71701b4a779b23844283f2cc700ce7de  ./pco_common/pco_lib/libpcoclhs.a
+71701b4a779b23844283f2cc700ce7de  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcoclhs.a
+71701b4a779b23844283f2cc700ce7de  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libpcoclhs.a
+74ee2632644fc98a2b60922052d462c5  ./pco_clhs_x64_1_02_07/pco_common/pco_lib/libpcocom_clhs.a
+
+8d4f84907f8b91faf707465d99e57c03  ./pco_common/pco_lib/libpcocnv.a
+8d4f84907f8b91faf707465d99e57c03  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocnv.a
+8d4f84907f8b91faf707465d99e57c03  ./2019-03-19-pco-linux-pack/pco_camera/pco_common/pco_lib/libpcocnv.a
+8d4f84907f8b91faf707465d99e57c03  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libpcocnv.a
+8d4f84907f8b91faf707465d99e57c03  ./pco_clhs_x64_1_02_07/pco_common/pco_lib/libpcocnv.a
+
+a1c38ce119e8bf66b4ea041fcc291f57  ./pco_common/pco_lib/libreorderfunc.a
+a1c38ce119e8bf66b4ea041fcc291f57  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libreorderfunc.a
+a1c38ce119e8bf66b4ea041fcc291f57  ./2019-03-19-pco-linux-pack/pco_camera/pco_common/pco_lib/libreorderfunc.a
+a1c38ce119e8bf66b4ea041fcc291f57  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libreorderfunc.a
+a1c38ce119e8bf66b4ea041fcc291f57  ./pco_clhs_x64_1_02_07/pco_common/pco_lib/libreorderfunc.a
+
+e619696188b483159b340479d2534254  ./pco_common/pco_lib/libpcolog.a
+e619696188b483159b340479d2534254  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcolog.a
+e619696188b483159b340479d2534254  ./2019-03-19-pco-linux-pack/pco_camera/pco_common/pco_lib/libpcolog.a
+e619696188b483159b340479d2534254  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libpcolog.a
+e619696188b483159b340479d2534254  ./pco_clhs_x64_1_02_07/pco_common/pco_lib/libpcolog.a
+
+f32f13fb649373a0efb2fe429ba18ddc  ./pco_common/pco_lib/libpcocam_clhs.a
+f32f13fb649373a0efb2fe429ba18ddc  ./pco_clhs_x64_1_02_06_deb8/pco_common/pco_lib/libpcocam_clhs.a
+f32f13fb649373a0efb2fe429ba18ddc  ./pco_clhs_x64_1_02_06_deb8_org/pco_common/pco_lib/libpcocam_clhs.a
+
+98339ae978d07c19a0f350fd64ea6046  ./pco_common/pco_lib/libpcocom_me4.a
+
+c2ef753da56af76cf24820530aa0493a  ./pco_common/pco_lib/libpcocam_me4.a
+
+
+
+
+
+#==========================================
 2021/09/01 - lid193
+#==========================================
 
 dimax_lid193_CL.log:$Id:      PCO rev[2021-04-27 14:26:16 +0200] head[f570ac2][f570ac29e8852d5e603d5bc09dbd13fd72552a20] ref[ (HEAD, traceAcq-frelon-local-usBuff)] at [2021/05/19 15:00:08] $
 edge_lid193_CL.log:$Id:       PCO rev[2021-04-27 14:26:16 +0200] head[f570ac2][f570ac29e8852d5e603d5bc09dbd13fd72552a20] ref[ (HEAD, traceAcq-frelon-local-usBuff)] at [2021/05/19 15:00:08] $
@@ -15,4 +112,4 @@ edge_lid193_CL.log:$Id:       PCO rev[2021-09-01 13:39:13 +0200] head[a69f50c][a
 
 traceAcq-frelon-local-usBuff ->
 lin-bm05a
-=========
+#==========================================
