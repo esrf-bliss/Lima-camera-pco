@@ -71,11 +71,13 @@ echo "------------------------------- CMAKE ALL"
   cd ${LIMA_LIMA}; \
   (PREFIX=${CONDA_PREFIX} \
      SP_DIR=$(python -c "import sysconfig; print(sysconfig.get_paths().get('platlib'))") \
-     bash -c '(cd third-party/Processlib && bash -e conda/debug/build.sh) && \
-              (cd . && bash -e conda/debug/build.sh) && \
-              (cd applications/tango/python && \
-                 bash -e conda/build.sh && cp scripts/Lima* ${PREFIX}/bin) && \
-              (cd camera/pco && \
+     bash -c '(echo "==================" && cd third-party/Processlib && pwd && echo "==================" && \
+                  bash -e conda/debug/build.sh) && \
+              (echo "==================" && cd . && pwd && echo "==================" && \
+                  bash -e conda/debug/build.sh) && \
+              (echo "==================" && cd applications/tango/python && pwd && echo "==================" && \
+                  bash -e conda/build.sh && cp scripts/Lima* ${PREFIX}/bin) && \
+              (echo "==================" && cd camera/pco && pwd && echo "==================" && \
                  bash -e conda/camera/build.sh && bash -e conda/tango/build.sh)'))
 
 
