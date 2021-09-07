@@ -1,4 +1,74 @@
 #==========================================
+2021/09/06 - lid06pco1
+#==========================================
+
+#--- siso libs
+
+lid06pco1:lima/camera/pco % cat ~/admin/etc/profile_private 
+
+source /opt/SiliconSoftware/Runtime5.7.0/setup-siso-env.sh
+LD_LIBRARY_PATH=${LD_LIBRARY_PATH}/opt/SiliconSoftware/Runtime5.7.0/lib64/:
+export LD_LIBRARY_PATH
+
+
+
+#--- lima local repository (copy or clone)
+
+scp -rp blissadm@lbm05pco5:lima/ .
+cd lima/lima/
+git status
+git checkout v1.9.8
+git status
+git submodule update applications/tango/python
+git submodule update third-party/Processlib
+git status
+
+
+#--- disable tests
+
+lid06pco1:~/lima/lima % cat CMakeLists.txt 
+### Define options
+include(Options.cmake)
+set(LIMA_ENABLE_TESTS 0)   <--- add
+
+
+#--- copy compilation scripts
+
+cd camera/pco/bat/scripts/
+cp -p cmake* ~/bin
+
+
+#--- git hash
+
+cd ~/lima/lima
+git status; git rev-parse HEAD
+
+On branch v1.9.8
+926911bfda09f7fb015824faddb95b98b21900c9
+
+cd camera/pco
+git status; git rev-parse HEAD
+
+On branch id06
+f38f0f4b497f590440da77abceb885f3667e401b
+
+
+#--- create new conda env
+
+conda info --envs
+conda create -n limadev1 python=3.7
+conda activate limadev1
+conda install cmake gxx_linux-64
+conda install --channel esrf-bcu --channel tango-controls lima-camera-simulator-tango
+
+
+cmakeall
+  
+
+
+ 
+
+#==========================================
 2021/09/03 - lbm05pco5
 #==========================================
 
