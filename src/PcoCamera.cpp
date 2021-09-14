@@ -1284,6 +1284,7 @@ void Camera::prepareAcq()
 #endif
 
 
+#endif   // 0/1
 
 
     DWORD dwTime_s, dwTime_ns;
@@ -1299,7 +1300,6 @@ void Camera::prepareAcq()
     m_pcoData->frameRate = frameRate = (dwTime_ns | dwTime_s) ? 1.0 / runTime : 0.0;
 
     printf("... cocRunTime[%g] frameRate[%g]\n", runTime, frameRate); 
-#endif   // 0/1
 
  ::Sleep(100);
 
