@@ -78,39 +78,21 @@ find_package(Pco REQUIRED)
 
 file(GLOB_RECURSE PCO_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
-IF(WIN32)
-  add_library(pco SHARED
-    src/PcoBinCtrlObj.cpp
-    src/PcoBufferCtrlObj.cpp
-    src/PcoCamera.cpp
-    src/PcoCameraSdk.cpp
-    src/PcoCameraSdkWin.cpp
-    src/PcoCameraSip.cpp
-    src/PcoCameraUtils.cpp
-    src/PcoDetInfoCtrlObj.cpp
-    src/PcoHwEventCtrlObj.cpp
-    src/PcoInterface.cpp
-    src/PcoRoiCtrlObj.cpp
-    src/PcoSyncCtrlObj.cpp
-    ${PCO_INCS}
-  )
-else()
-  add_library(pco SHARED
-    src/PcoBinCtrlObj.cpp
-    src/PcoBufferCtrlObj.cpp
-    src/PcoCamera.cpp
-    src/PcoCameraSdk.cpp
-    src/PcoCameraSdkLin.cpp
-    src/PcoCameraSip.cpp
-    src/PcoCameraUtils.cpp
-    src/PcoDetInfoCtrlObj.cpp
-    src/PcoHwEventCtrlObj.cpp
-    src/PcoInterface.cpp
-    src/PcoRoiCtrlObj.cpp
-    src/PcoSyncCtrlObj.cpp
-    ${PCO_INCS}
-  )
-endif()
+add_library(pco SHARED
+  src/PcoBinCtrlObj.cpp
+  src/PcoBufferCtrlObj.cpp
+  src/PcoCamera.cpp
+  src/PcoCameraSdk.cpp
+  src/PcoCameraSdkWin.cpp
+  src/PcoCameraSip.cpp
+  src/PcoCameraUtils.cpp
+  src/PcoDetInfoCtrlObj.cpp
+  src/PcoHwEventCtrlObj.cpp
+  src/PcoInterface.cpp
+  src/PcoRoiCtrlObj.cpp
+  src/PcoSyncCtrlObj.cpp
+  ${PCO_INCS}
+)
 
 # Generate export macros
 generate_export_header(pco)
@@ -130,8 +112,6 @@ endif()
 if(NOT LIMA_ENABLE_DEBUG)
     target_compile_definitions(pco PUBLIC LIMA_NO_DEBUG)
 endif()
-
-
 
 # Set version and output name
 set_target_properties(pco PROPERTIES
