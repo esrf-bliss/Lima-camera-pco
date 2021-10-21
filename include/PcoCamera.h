@@ -312,7 +312,7 @@ struct stcLongLongStr
 
 //================================================================
 //================================================================
-typedef struct
+struct STC_traceAcq
 {
     DWORD nrImgRecorded;
     DWORD maxImgCount;
@@ -358,8 +358,7 @@ typedef struct
     int nrErrors;
 
     void traceMsg(char *s);
-
-} STC_traceAcq;
+};
 
 //================================================================
 //================================================================
