@@ -54,7 +54,6 @@
 #    include "SC2_SDKAddendum.h"
 
 #    define sprintf_s snprintf
-#    include "PCO_errt.h"
 
 #else
 #    include "processlib/Compatibility.h"
@@ -66,7 +65,6 @@
 #    include "SC2_CamExport.h"
 #    include "sc2_defs.h"
 #    include "SC2_SDKAddendum.h"
-#    include "PCO_errt.h"
 #endif
 
 #include <math.h>

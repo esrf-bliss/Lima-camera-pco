@@ -1218,7 +1218,7 @@ int Camera::PcoCheckError(int line, const char *file, int err, const char *fn,
         msg = m_pcoData->pcoErrorMsg;
 
         memset(msg, 0, ERR_SIZE);
-        PCO_GetErrorText(dwErr, msg, ERR_SIZE - 14);
+        PCO_GetErrorTextSDK(dwErr, msg, ERR_SIZE - 14);
 
         lg = strlen(msg);
         __sprintfSExt(msg + lg, ERR_SIZE - lg, " [%s][%d]", file, line);
@@ -1252,7 +1252,7 @@ char *Camera::_PcoCheckError(int line, const char *file, int err, int &error,
     {
         __sprintfSExt(tmpMsg, LEN_TMP_MSG, "ERROR %s (%d)", fn, line);
 
-        PCO_GetErrorText(err, lastErrorMsg, ERR_SIZE - 14);
+        PCO_GetErrorTextSDK(err, lastErrorMsg, ERR_SIZE - 14);
         // strncpy_s(msg, ERR_SIZE, lastErrorMsg, _TRUNCATE);
         strncpy_s(msg, ERR_SIZE, lastErrorMsg, ERR_SIZE - 1);
 

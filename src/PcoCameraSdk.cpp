@@ -2912,7 +2912,7 @@ void Camera::_pco_GetActiveRamSegment(WORD &wActSeg, int &err)
 
         if (err != PCO_NOERROR)
         {
-            PCO_GetErrorText(err, errstr, LEN_ERRSTR);
+            PCO_GetErrorTextSDK(err, errstr, LEN_ERRSTR);
             DEB_ALWAYS() << "ERROR: " << DEB_VAR2(err, errstr);
             wActSeg = 1;
         }
