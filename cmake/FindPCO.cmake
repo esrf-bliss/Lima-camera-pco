@@ -22,74 +22,40 @@
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
 
-set(PCO_INCLUDE_DIRS)
-set(PCO_LIBRARIES)
-set(PCO_DEFINITIONS)
+include(FindPackageHandleStandardArgs)
 
-if(WIN32)
+find_path(PCO_INCLUDE_DIRS
+  NAMES PCO_Structures.h
+  HINTS ${PCO_ROOT_DIR}
+  PATH_SUFFIXES include
+DOC "PCO include directory")
 
-    set(PCO_SDKWIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPco" CACHE PATH "location of PCO Windows SDK")
+find_library(PCO_LIBRARIES
+  NAMES SC2_Cam.lib
+  HINTS ${PCO_ROOT_DIR}
+DOC "PCO libraries")
 
-    find_path(PCO_INCLUDE_DIRS "PcoSdkVersion.h" ${PCO_SDKWIN_DIR})
-    list(APPEND PCO_INCLUDE_DIRS
-        ${PCO_INCLUDE_DIRS}/include
-    )
-    find_library(PCO_LIBRARIES NAMES SC2_Cam.lib HINTS ${PCO_SDKWIN_DIR}/lib64)
-
-else()
-
-    set(PCO_SDKLIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPcoLin" CACHE PATH "location of PCO Linux SDK")
-    set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
-
-    find_path(SISO_INCLUDE sisoboards.h)
-
-    list(APPEND PCO_INCLUDE_DIRS
-        ${SISO_INCLUDE}
-
-        ${PCO_SDKLIN_DIR}
-        ${PCO_SDKLIN_DIR}/include
-        ${PCO_SDKLIN_DIR}/pco_common/pco_include
-        ${PCO_SDKLIN_DIR}/pco_common/pco_classes
-        ${PCO_SDKLIN_DIR}/pco_me4/pco_classes
-
-        ${PCO_SDKWIN_DIR}/include
-    )
-
-    set(PCOLIB1)
-    set(PCOLIB2)
-    set(PCOLIB3)
-    set(PCOLIB4)
-    find_library(PCOLIB1 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
-    find_library(PCOLIB2 pcofile HINTS ${PCO_SDK_LIB_DIR})
-    find_library(PCOLIB3 pcolog HINTS ${PCO_SDK_LIB_DIR})
-    find_library(PCOLIB4 reorderfunc HINTS ${PCO_SDK_LIB_DIR})
-
-    set(SISOLIB1)
-    set(SISOLIB2)
-    set(SISOLIB3)
-    find_library(SISOLIB1 fglib5)
-    find_library(SISOLIB2 clsersis)
-    find_library(SISOLIB3 haprt)
-
-    list(APPEND PCO_LIBRARIES 
-        ${PCOLIB1} ${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
-        ${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
-    )
-
+if (PCO_LIBRARIES)
+    get_filename_component(PCO_LIBRARIES_DIR ${PCO_LIBRARIES} PATH)
 endif()
 
-message("==========================================================")
-message("PCO_INCLUDE_DIRS: [${PCO_INCLUDE_DIRS}]")
-message("PCO_LIBRARIES: [${PCO_LIBRARIES}]")
-message("PCO_DEFINITIONS: [${PCO_DEFINITIONS}]")
-message("==========================================================")
+mark_as_advanced(PCO_INCLUDE_DIRS PCO_LIBRARIES_DIR PCO_LIBRARIES)
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PCO DEFAULT_MSG
-  PCO_LIBRARIES
-  PCO_INCLUDE_DIRS
-)
+find_package_handle_standard_args(PCO REQUIRED_VARS PCO_INCLUDE_DIRS PCO_LIBRARIES)
+
+if(PCO_FOUND)
+    if(NOT TARGET PCO::PCO)
+        add_library(PCO::PCO SHARED IMPORTED)
+    endif()
+    if(PCO_INCLUDE_DIRS)
+        set_target_properties(PCO::PCO PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${PCO_INCLUDE_DIRS}")
+    endif()
+    if(EXISTS "${PCO_LIBRARIES}")
+        set_target_properties(PCO::PCO PROPERTIES
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+          IMPORTED_LOCATION "${PCO_LIBRARIES}")
+    endif()
+endif()
 
 list(APPEND PCO_DEFINITIONS WITH_GIT_VERSION)
-
-
