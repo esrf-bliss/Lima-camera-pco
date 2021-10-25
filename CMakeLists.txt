@@ -74,7 +74,8 @@ if (CAMERA_MASTER_PROJECT)
   endif()
 endif()
 
-find_package(Pco REQUIRED)
+find_package(PCO REQUIRED)
+find_package(SISO REQUIRED)
 
 file(GLOB_RECURSE PCO_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
@@ -105,15 +106,13 @@ target_include_directories(pco
 )
 
 if(WITH_GIT_VERSION)
-	target_compile_definitions(pco PUBLIC WITH_GIT_VERSION)
+    target_compile_definitions(pco PUBLIC WITH_GIT_VERSION)
 endif()
 
 # Set LIMA_NO_DEBUG if LIMA_ENABLE_DEBUG is set
 if(NOT LIMA_ENABLE_DEBUG)
     target_compile_definitions(pco PUBLIC LIMA_NO_DEBUG)
 endif()
-
-
 
 # Set version and output name
 set_target_properties(pco PROPERTIES
@@ -123,16 +122,7 @@ set_target_properties(pco PROPERTIES
 
 target_link_libraries(pco PUBLIC limacore)
 
-target_compile_definitions(pco PUBLIC ${PCO_DEFINITIONS})
-
-message("... PCO_INCLUDE_DIRS: ${PCO_INCLUDE_DIRS}")
-
-target_include_directories(pco
-	PUBLIC "$<BUILD_INTERFACE:${PCO_INCLUDE_DIRS}>"
-	PUBLIC "$<BUILD_INTERFACE:${PCO_INCLUDE_DIRS}/include>")
-
-target_link_libraries(pco PUBLIC ${PCO_LIBRARIES})
-
+target_link_libraries(pco PUBLIC PCO::PCO SISO::SISO)
 
 # Binding code for python
 if(LIMA_ENABLE_PYTHON)
@@ -173,16 +163,17 @@ install(
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(
-	PROGRAMS
-	  ${PCO_SDK_BIN_DIR}/pco_clhs_info
-	  ${PCO_SDK_BIN_DIR}/pco_clhs_mgr
-	  ${PCO_SDK_BIN_DIR}/pco_clhs_svc
-	DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+# install(
+# 	PROGRAMS
+# 	  ${PCO_SDK_BIN_DIR}/pco_clhs_info
+# 	  ${PCO_SDK_BIN_DIR}/pco_clhs_mgr
+# 	  ${PCO_SDK_BIN_DIR}/pco_clhs_svc
+# 	DESTINATION ${CMAKE_INSTALL_BINDIR}
+# )
 
-message("... LIMA_ENABLE_PYTHON: [${LIMA_ENABLE_PYTHON}]")
-message("... PYTHON_SITE_PACKAGES_DIR: [${PYTHON_SITE_PACKAGES_DIR}]")
+message(STATUS "LIMA_ENABLE_PYTHON: [${LIMA_ENABLE_PYTHON}]")
+message(STATUS "PYTHON_SITE_PACKAGES_DIR: [${PYTHON_SITE_PACKAGES_DIR}]")
+
 if(LIMA_ENABLE_PYTHON)
   install(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/

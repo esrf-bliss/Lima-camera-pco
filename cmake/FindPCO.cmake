@@ -3,155 +3,133 @@
 #
 #  Copyright (C) : 2009-2017
 #  European Synchrotron Radiation Facility
-#  CS40220 38043 Grenoble Cedex 9 
+#  CS40220 38043 Grenoble Cedex 9
 #  FRANCE
-# 
+#
 #  Contact: lima@esrf.fr
-# 
+#
 #  This is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 3 of the License, or
 #  (at your option) any later version.
-# 
+#
 #  This software is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  MERCHANTABILITY or FIMODESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
-# 
+#
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
 
-#set(INTERFACE "ME4")
-set(INTERFACE "CLHS")
-
-set(PCO_INCLUDE_DIRS)
-set(PCO_LIBRARIES)
-set(PCO_DEFINITIONS)
-
-
-
-set(SISODIR5 $ENV{SISODIR5} CACHE PATH "location of SISO Linux SDK ")
-set(PCO_SDKLIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sdkPcoLin" CACHE PATH "location of PCO Linux SDK")
-set(PCO_SDK_LIB_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_lib" CACHE PATH "location of PCO Linux SDK LIBS")
-set(PCO_SDK_BIN_DIR "${PCO_SDKLIN_DIR}/pco_common/pco_bin" CACHE PATH "location of PCO Linux SDK binary")
-
-find_path(SISO_INCLUDE NAMES sisoboards.h HINTS ${PCO_SDKLIN_DIR}/siso_include)
-#find_path(SISO_INCLUDE sisoboards.h)
-
-message("==========================================================")
-message("PCO_SDKLIN_DIR: [${PCO_SDKLIN_DIR}]")
-message("PCO_SDK_LIB_DIR: [${PCO_SDK_LIB_DIR}]")
-message("SISO_INCLUDE: [${SISO_INCLUDE}]")
-message("==========================================================")
-
-list(APPEND PCO_INCLUDE_DIRS
-	${SISO_INCLUDE}
-
-	${PCO_SDKLIN_DIR}
-	${PCO_SDKLIN_DIR}/pco_common/pco_include
-	${PCO_SDKLIN_DIR}/pco_common/pco_classes
-	#${PCO_SDKLIN_DIR}/include
-	${PCO_SDKLIN_DIR}/pco_me4/pco_classes
-	${PCO_SDKLIN_DIR}/pco_clhs/pco_classes
-	${PCO_SDKLIN_DIR}/pco_clhs/pco_clhs_common
-	
-
-)
-
-set(PCOLIB_ME4)
-set(PCOLIB_CLHS_1)
-set(PCOLIB_CLHS_2)
-set(PCOLIB2)
-set(PCOLIB3)
-set(PCOLIB4)
-set(PCOLIB7)
-
-if(INTERFACE  STREQUAL "ME4")
-	# ------ PCO ME4 libs
-	find_library(PCOLIB_ME4 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
-endif()
-
-if(INTERFACE  STREQUAL "CLHS")
-	# ------ PCO CLHS libs
-	find_library(PCOLIB_CLHS_1 pcocam_clhs HINTS ${PCO_SDK_LIB_DIR})
-	find_library(PCOLIB_CLHS_2 pcoclhs HINTS ${PCO_SDK_LIB_DIR})
-endif()
-
-find_library(PCOLIB2 pcofile HINTS ${PCO_SDK_LIB_DIR})
-find_library(PCOLIB3 pcolog HINTS ${PCO_SDK_LIB_DIR})
-find_library(PCOLIB4 reorderfunc HINTS ${PCO_SDK_LIB_DIR})
-
-#find_library(PCOLIB_CLHS_2 pcodisp HINTS ${PCO_SDK_LIB_DIR})
-
-#DISPLIB    = $(PCOLIBDIR)/libpcodisp.a
-#LOGLIB     = $(PCOLIBDIR)/libpcolog.a
-#FILELIB    = $(PCOLIBDIR)/libpcofile.a
-#REORDERLIB = $(PCOLIBDIR)/libreorderfunc.a
-#CAMLIB     = $(PCOLIBDIR)/libpcocam_clhs.a
-
-message("==========================================================")
-message("PCOLIB_ME4:    [${PCOLIB_ME4}]")
-message("PCOLIB_CLHS_1: [${PCOLIB_CLHS_1}]")
-message("PCOLIB_CLHS_2: [${PCOLIB_CLHS_2}]")
-message("PCOLIB2:       [${PCOLIB2}]")
-message("PCOLIB3:       [${PCOLIB3}]")
-message("PCOLIB4:       [${PCOLIB4}]")
-message("PCOLIB7:       [${PCOLIB7}]")
-message("==========================================================")
-
-
-set(SISOLIB1)
-set(SISOLIB2)
-set(SISOLIB3)
-
-find_library(SISOLIB1 NAMES fglib5 HINTS ${SISODIR5}/lib64)
-find_library(SISOLIB2 NAMES clsersis HINTS ${SISODIR5}/lib64)
-find_library(SISOLIB3 NAMES haprt HINTS ${SISODIR5}/lib64)
-
-
-message("==========================================================")
-message("SISODIR5: [${SISODIR5}]")
-message("SISOLIB1: [${SISOLIB1}]")
-message("SISOLIB2: [${SISOLIB2}]")
-message("SISOLIB3: [${SISOLIB3}]")
-message("==========================================================")
-
-if(INTERFACE  STREQUAL "ME4")
-	list(APPEND PCO_LIBRARIES 
-		${PCOLIB_ME4} 
-		${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
-		${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
-	)
-
-	list(APPEND PCO_DEFINITIONS ME4)
-
-endif()
-
-if(INTERFACE  STREQUAL "CLHS")
-	list(APPEND PCO_LIBRARIES 
-		${PCOLIB_CLHS_1} 
-		${PCOLIB_CLHS_2} 
-		${PCOLIB2} ${PCOLIB3} ${PCOLIB4}
-		${SISOLIB1} ${SISOLIB2} ${SISOLIB3}
-	)
-
-	list(APPEND PCO_DEFINITIONS CLHS)
-endif()
-    
-
-message("==========================================================")
-message("PCO_INCLUDE_DIRS: [${PCO_INCLUDE_DIRS}]")
-message("PCO_LIBRARIES: [${PCO_LIBRARIES}]")
-message("PCO_DEFINITIONS: [${PCO_DEFINITIONS}]")
-message("==========================================================")
+set(PCO_INTERFACE_OPTIONS ME4 CLHS 1394 USB3)
+set(PCO_INTERFACE ME4 CACHE STRING "Select the target PCO interface")
+set_property(CACHE PCO_INTERFACE PROPERTY STRINGS ${PCO_INTERFACE_OPTIONS})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PCO DEFAULT_MSG
-  PCO_LIBRARIES
-  PCO_INCLUDE_DIRS
-)
+
+set(PCO_ROOT_DIR CACHE PATH "location of PCO Linux SDK ")
+
+find_path(PCO_INCLUDE_DIR
+    NAMES VersionNo.h
+    HINTS ${PCO_ROOT_DIR}
+    PATH_SUFFIXES pco/common
+DOC "PCO include directory")
+
+list(APPEND PCO_INCLUDE_DIRS ${PCO_INCLUDE_DIR})
+
+# Common libraries
+find_library(PCO_LIB_CO_FILE pcofile HINTS ${PCO_SDK_LIB_DIR})
+find_library(PCO_LIB_CO_LOG pcolog HINTS ${PCO_SDK_LIB_DIR})
+find_library(PCO_LIB_CO_RFUNC reorderfunc HINTS ${PCO_SDK_LIB_DIR})
+
+message(STATUS "PCO_LIB_CO_FILE:   [${PCO_LIB_CO_FILE}]")
+message(STATUS "PCO_LIB_CO_LOG:    [${PCO_LIB_CO_LOG}]")
+message(STATUS "PCO_LIB_CO_RFUNC:  [${PCO_LIB_CO_RFUNC}]")
+
+if(PCO_INTERFACE STREQUAL "ME4")
+    find_path(PCO_INCLUDE_ME4_DIR
+        NAMES VersionNo.h
+        HINTS ${PCO_ROOT_DIR}
+        PATH_SUFFIXES pco/me4
+    DOC "PCO ME4 include directory")
+    
+    list(APPEND PCO_INCLUDE_DIRS ${PCO_INCLUDE_ME4_DIR})
+    
+    find_library(PCO_LIB_ME4 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
+
+    message(STATUS "PCO_LIB_ME4:   [${PCO_LIB_ME4}]")
+
+    find_package_handle_standard_args(PCO REQUIRED_VARS
+        PCO_INCLUDE_DIR
+        PCO_INCLUDE_ME4_DIR
+        PCO_LIB_ME4
+        PCO_LIB_CO_FILE PCO_LIB_CO_LOG PCO_LIB_CO_RFUNC)
+
+    set(PCO_LIBRARIES
+        ${PCO_LIB_ME4}
+        ${PCO_LIB_CO_FILE} ${PCO_LIB_CO_LOG} ${PCO_LIB_CO_RFUNC}
+    )
+
+    list(APPEND PCO_DEFINITIONS ME4)
+
+endif()
+
+if(PCO_INTERFACE STREQUAL "CLHS")
+    find_path(PCO_INCLUDE_CLHS_DIR
+        NAMES VersionNo.h
+        HINTS ${PCO_ROOT_DIR}
+        PATH_SUFFIXES pco/clhs
+    DOC "PCO ME4 include directory")
+    
+    list(APPEND PCO_INCLUDE_DIRS ${PCO_INCLUDE_CLHS_DIR})
+  
+    find_library(PCO_LIB_CLHS_1 pcocam_clhs HINTS ${PCO_SDK_LIB_DIR})
+    find_library(PCO_LIB_CLHS_2 pcoclhs HINTS ${PCO_SDK_LIB_DIR})
+
+    message(STATUS "PCO_LIB_CLHS_1: [${PCO_LIB_CLHS_1}]")
+    message(STATUS "PCO_LIB_CLHS_2: [${PCO_LIB_CLHS_2}]")
+
+    find_package_handle_standard_args(PCO REQUIRED_VARS
+        PCO_INCLUDE_DIR
+        PCO_INCLUDE_CLHS_DIR
+        PCO_LIB_CLHS_1 PCO_LIB_CLHS_2
+        PCO_LIB_CO_FILE PCO_LIB_CO_LOG PCO_LIB_CO_RFUNC)
+
+    set(PCO_LIBRARIES
+        ${PCO_LIB_CLHS_1} ${PCO_LIB_CLHS_2}
+        ${PCO_LIB_CO_FILE} ${PCO_LIB_CO_LOG} ${PCO_LIB_CO_RFUNC}
+    )
+
+    list(APPEND PCO_DEFINITIONS CLHS)
+endif()
+
+if (PCO_LIBRARIES)
+    get_filename_component(PCO_LIBRARIES_DIR ${PCO_LIB_CO_FILE} PATH)
+endif()
+
+mark_as_advanced(PCO_INCLUDE_DIRS PCO_LIBRARIES_DIR PCO_LIBRARIES)
+
+if(PCO_FOUND)
+    if(NOT TARGET PCO::PCO)
+        add_library(PCO::PCO INTERFACE IMPORTED)
+    endif()
+    if(PCO_INCLUDE_DIRS)
+        set_target_properties(PCO::PCO PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${PCO_INCLUDE_DIRS}")
+    endif()
+    if(PCO_DEFINITIONS)
+        set_target_properties(PCO::PCO PROPERTIES
+            INTERFACE_COMPILE_DEFINITIONS "${PCO_DEFINITIONS}")
+    endif()
+    foreach(LIB IN LISTS PCO_LIBRARIES)
+        get_filename_component(MOD ${LIB} NAME_WE)
+        add_library(PCO::${MOD} SHARED IMPORTED)
+        set_target_properties(PCO::${MOD} PROPERTIES
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+            IMPORTED_LOCATION "${LIB}")
+        target_link_libraries(PCO::PCO INTERFACE PCO::${MOD})
+    endforeach()
+endif()
 
 list(APPEND PCO_DEFINITIONS WITH_GIT_VERSION)
-
-
