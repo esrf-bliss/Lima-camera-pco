@@ -39,12 +39,16 @@
 #include "Cpco_com.h"
 //#include "Cpco_com_func.h"
 
+#ifdef ME4
 #include "Cpco_com_cl_me4.h"
 #include "Cpco_grab_cl_me4.h"
 #include "Cpco_grab_cl_me4_GL.h"
+#endif
 
+#ifdef CLHS
 #include "Cpco_com_clhs.h"
 #include "Cpco_grab_clhs.h"
+#endif
 
 #include "file12.h"
 #include "sc2_telegram.h"

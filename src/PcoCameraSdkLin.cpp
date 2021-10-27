@@ -247,7 +247,7 @@ void Camera::_pco_Open_Cam(int &err)
     DEB_ALWAYS() << "creating the camera";
     char *value;
     
-#pragma message "----------- CHECK DEFINED INTERFACE" 
+#pragma message "----------- CHECK DEFINED PCO_INTERFACE" 
 #ifdef ME4
 #pragma message "----------- DEFINED ME4"
 #endif
