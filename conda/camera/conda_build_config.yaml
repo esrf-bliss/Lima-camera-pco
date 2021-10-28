@@ -1,5 +1,13 @@
 python:
   - 3.7
-pco_sdk:
+sdk:
   - pco-sdk-me4
-  - pco-sdk-clhs
+  - pco-sdk-clhs 1.2.6
+  - pco-sdk-clhs 1.2.7
+iface:
+  - me4
+  - clhs
+  - clhs
+zip_keys:
+  - sdk
+  - iface

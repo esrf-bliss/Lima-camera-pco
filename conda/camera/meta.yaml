@@ -5,6 +5,8 @@
 {%   set version = "0.0.0" %}
 {% endif %}
 
+{% set build = environ.get('GIT_DESCRIBE_NUMBER', 0) %}
+
 package:
   name: lima-camera-pco
   version: {{ version }}
@@ -13,16 +15,17 @@ source:
   path: ../..
 
 build:
-  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  number: {{ build }}
+  string: {{ iface }}_h{{ PKG_HASH }}_{{ build }}
   script_env:
-    - SDK={{ pco_sdk[8:] | upper }}
+    - SDK={{ iface | upper }}
 
 requirements:
   host:
     - python {{ python }}
     - sip 4.19.8              # For compatibility with pyqt 5.9.2
     - lima-core
-    - {{ pco_sdk }}
+    - {{ sdk }}
     - siso-sdk # [linux]
   build:
     - cmake
@@ -32,17 +35,12 @@ requirements:
     - python {{ python }}
     - sip >=4.19.4, <=4.19.8  # For compatibility with pyqt 5.9.2
     - {{ pin_compatible('lima-core', max_pin='x.x') }}
-    - {{ pco_sdk }}
+    - {{ sdk }}
 
+# Disable the tests since the prebuilt libraries require GLIBC_2.14
 #test:
-  #requires:
-    #- cmake
-  #imports:
-    #- Lima.Pco
-  #commands:
-    #- cmake --version
-    #- ctest --version
-    #- cpack --version
+#  imports:
+#    - Lima.Pco
 
 about:
   home: https://github.com/esrf-bliss/Lima

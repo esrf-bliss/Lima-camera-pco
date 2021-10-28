@@ -5,6 +5,8 @@
 {%   set version = "0.0.0" %}
 {% endif %}
 
+{% set build = environ.get('GIT_DESCRIBE_NUMBER', 0) %}
+
 package:
   name: lima-camera-pco-tango
   version: {{ version }}
@@ -13,7 +15,8 @@ source:
   path: ../..
 
 build:
-  number: {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }}
+  number: {{ build }}
+  string: {{ iface }}_h{{ PKG_HASH }}_{{ build }}
   noarch: python
 
 requirements:
@@ -23,7 +26,7 @@ requirements:
     - lima-core
   run:
     - lima-tango-server
-    - lima-camera-pco
+    - lima-camera-pco=*={{ iface }}*
 
 about:
   home: https://github.com/esrf-bliss/Lima
