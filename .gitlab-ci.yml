@@ -14,7 +14,7 @@ stages:
 build-linux:
   <<: *build-conda
   script:
-    - conda build ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
+    - conda mambabuild ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
   rules:
     - if: '$CI_COMMIT_BRANCH == "master-lin" || $CI_COMMIT_TAG =~ /^lin_v[0-9]+\.[0-9]+\.[0-9]+$/'
   tags:
@@ -23,7 +23,7 @@ build-linux:
 build-win:
   <<: *build-conda
   script:
-    - conda build ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
+    - conda mambabuild ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
   rules:
     - if: '$CI_COMMIT_BRANCH == "master-win" || $CI_COMMIT_TAG =~ /^win_v[0-9]+\.[0-9]+\.[0-9]+$/'
   tags:
@@ -33,7 +33,7 @@ build-noarch:
   <<: *build-conda
   stage: build-noarch
   script:
-    - conda build ./conda/tango --output-folder=dist/ -c tango-controls --channel=http://bcu-ci.esrf.fr/stable
+    - conda mambabuild ./conda/tango --output-folder=dist/ -c tango-controls --channel=http://bcu-ci.esrf.fr/stable
   dependencies:
     - build-linux
     - build-win
