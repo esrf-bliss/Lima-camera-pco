@@ -1348,29 +1348,29 @@ void Camera::_get_ImageType(ImageType &image_type)
 
 void Camera::_get_PixelSize(double &x_size, double &y_size)
 {
-    // pixel size in micrometer
+    // pixel size in meter
 
     if (_isCameraType(Pco2k))
     {
-        x_size = y_size = 7.4; // um / BR_pco_2000_105.pdf
+        x_size = y_size = 7.4 * 1e-6; // um / BR_pco_2000_105.pdf
         return;
     }
 
     if (_isCameraType(Pco4k))
     {
-        x_size = y_size = 9.0; // um / BR_pco_4000_105.pdf
+        x_size = y_size = 9.0 * 1e-6; // um / BR_pco_4000_105.pdf
         return;
     }
 
     if (_isCameraType(Edge))
     {
-        x_size = y_size = 6.5; // um / pco.edge User Manual V1.01, page 34
+        x_size = y_size = 6.5 * 1e-6; // um / pco.edge User Manual V1.01, page 34
         return;
     }
 
     if (_isCameraType(Dimax))
     {
-        x_size = y_size = 11; // um / pco.dimax User's Manual V1.01
+        x_size = y_size = 11 * 1e-6; // um / pco.dimax User's Manual V1.01
         return;
     }
 
