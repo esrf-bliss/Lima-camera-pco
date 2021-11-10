@@ -1,6 +1,6 @@
 # Strip the 'lin_v / win_v' from the version tag
 {% if GIT_DESCRIBE_TAG is defined %}
-{%   set version = GIT_DESCRIBE_TAG[5:] %}
+{%   set version = GIT_DESCRIBE_TAG[1:] %}
 {% else %}
 {%   set version = "0.0.0" %}
 {% endif %}
