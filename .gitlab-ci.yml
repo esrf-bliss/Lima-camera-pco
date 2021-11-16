@@ -3,40 +3,27 @@ stages:
   - build-noarch
   - deploy
 
-.build-conda: &build-conda
+build-win:
   stage: build
+  script:
+    - conda build ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
   artifacts:
     paths:
       - dist/
   tags:
-    - conda
-
-build-linux:
-  <<: *build-conda
-  script:
-    - conda build ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master-lin" || $CI_COMMIT_TAG =~ /^lin_v[0-9]+\.[0-9]+\.[0-9]+$/'
-  tags:
-    - linux
-
-build-win:
-  <<: *build-conda
-  script:
-    - conda build ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master-win" || $CI_COMMIT_TAG =~ /^win_v[0-9]+\.[0-9]+\.[0-9]+$/'
-  tags:
     - win
 
 build-noarch:
-  <<: *build-conda
   stage: build-noarch
   script:
     - conda build ./conda/tango --output-folder=dist/ -c tango-controls --channel=http://bcu-ci.esrf.fr/stable
+  artifacts:
+    paths:
+      - dist/
   dependencies:
-    - build-linux
     - build-win
+  tags:
+    - linux
 
 deploy-devel:
   stage: deploy
@@ -44,14 +31,12 @@ deploy-devel:
     name: devel/$CI_COMMIT_REF_NAME
     url: http://bcu-ci.esrf.fr/devel
   dependencies:
-    - build-linux
     - build-win
     - build-noarch
   script:
     - cp -Rf dist/* /conda-devel/
     - conda index /conda-devel/
   tags:
-    - conda
     - linux
   only:
     - branches
@@ -65,14 +50,12 @@ deploy-stable:
     name: production
     url: http://bcu-ci.esrf.fr/stable
   dependencies:
-    - build-linux
     - build-win
     - build-noarch
   script:
     - cp -Rf dist/* /conda/
     - conda index /conda/
   tags:
-    - conda
     - linux
   only:
     - tags

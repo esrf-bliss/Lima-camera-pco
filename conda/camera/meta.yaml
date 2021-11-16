@@ -1,6 +1,6 @@
-# Strip the 'lin_v / win_w' from the version tag
+# Strip the 'v' from the version tag
 {% if GIT_DESCRIBE_TAG is defined %}
-{%   set version = GIT_DESCRIBE_TAG[5:] %}
+{%   set version = GIT_DESCRIBE_TAG[1:] %}
 {% else %}
 {%   set version = "0.0.0" %}
 {% endif %}
@@ -33,14 +33,8 @@ requirements:
     - pco-sdk
 
 #test:
-  #requires:
-    #- cmake
   #imports:
     #- Lima.Pco
-  #commands:
-    #- cmake --version
-    #- ctest --version
-    #- cpack --version
 
 about:
   home: https://github.com/esrf-bliss/Lima
