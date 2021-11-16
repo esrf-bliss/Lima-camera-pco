@@ -1301,8 +1301,7 @@ void Camera::prepareAcq()
 
     printf("... cocRunTime[%g] frameRate[%g]\n", runTime, frameRate); 
 
- ::Sleep(100);
-
+    Sleep_ms(100);
 }
 
 
