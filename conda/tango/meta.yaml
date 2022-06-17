@@ -23,7 +23,7 @@ requirements:
     - lima-core
   run:
     - lima-tango-server
-    - lima-camera-pco
+    - lima-camera-pco {{ version }}
 
 about:
   home: https://github.com/esrf-bliss/Lima
