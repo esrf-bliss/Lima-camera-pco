@@ -36,7 +36,11 @@ find_library(SISO_FGLIB5 NAMES fglib5 HINTS ${SISODIR5}/lib64)
 find_library(SISO_CLSERSIS NAMES clsersis HINTS ${SISODIR5}/lib64)
 find_library(SISO_HAPRT NAMES haprt HINTS ${SISODIR5}/lib64)
 
-set(SISO_LIBRARIES "${SISO_FGLIB5} ${SISO_CLSERSIS} ${SISO_HAPRT}") 
+message(STATUS "SISO_FGLIB5:       [${SISO_FGLIB5}]")
+message(STATUS "SISO_CLSERSIS:     [${SISO_CLSERSIS}]")
+message(STATUS "SISO_HAPRT:        [${SISO_HAPRT}]")
+
+set(SISO_LIBRARIES ${SISO_FGLIB5} ${SISO_CLSERSIS} ${SISO_HAPRT}) 
 
 if (SISO_LIBRARIES)
     get_filename_component(SISO_LIBRARIES_DIR ${SISO_FGLIB5} PATH)
@@ -48,29 +52,18 @@ find_package_handle_standard_args(SISO REQUIRED_VARS SISO_INCLUDE_DIRS SISO_FGLI
 
 if(SISO_FOUND)
     if(NOT TARGET SISO::SISO)
-        add_library(SISO::SISO SHARED IMPORTED)
+        add_library(SISO::SISO INTERFACE IMPORTED)
     endif()
     if(SISO_INCLUDE_DIRS)
         set_target_properties(SISO::SISO PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${SISO_INCLUDE_DIRS}")
     endif()
-  if(SISO_INCLUDE_DIRS)
-        set_target_properties(SISO::SISO PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${SISO_INCLUDE_DIRS}")
-    endif()
-    if(EXISTS "${SISO_FGLIB5}")
-        set_target_properties(SISO::SISO PROPERTIES
+    foreach(LIB IN LISTS SISO_LIBRARIES)
+        get_filename_component(MOD ${LIB} NAME_WE)
+        add_library(SISO::${MOD} SHARED IMPORTED)
+        set_target_properties(SISO::${MOD} PROPERTIES
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-            IMPORTED_LOCATION "${SISO_FGLIB5}")
-    endif()
-    if(EXISTS "${SISO_CLSERSIS}")
-        set_target_properties(SISO::SISO PROPERTIES
-            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-            IMPORTED_LOCATION "${SISO_CLSERSIS}")
-    endif()
-    if(EXISTS "${SISO_HAPRT}")
-        set_target_properties(SISO::SISO PROPERTIES
-            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-            IMPORTED_LOCATION "${SISO_HAPRT}")
-    endif()
+            IMPORTED_LOCATION "${LIB}")
+        target_link_libraries(SISO::SISO INTERFACE SISO::${MOD})
+    endforeach()
 endif()

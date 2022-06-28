@@ -58,7 +58,7 @@ if(PCO_INTERFACE STREQUAL "ME4")
     
     find_library(PCO_LIB_ME4 pcocam_me4 HINTS ${PCO_SDK_LIB_DIR})
 
-    message(STATUS "PCO_LIB_ME4:   [${PCO_LIB_ME4}]")
+    message(STATUS "PCO_LIB_ME4:       [${PCO_LIB_ME4}]")
 
     find_package_handle_standard_args(PCO REQUIRED_VARS
         PCO_INCLUDE_DIR
@@ -87,8 +87,8 @@ if(PCO_INTERFACE STREQUAL "CLHS")
     find_library(PCO_LIB_CLHS_1 pcocam_clhs HINTS ${PCO_SDK_LIB_DIR})
     find_library(PCO_LIB_CLHS_2 pcoclhs HINTS ${PCO_SDK_LIB_DIR})
 
-    message(STATUS "PCO_LIB_CLHS_1: [${PCO_LIB_CLHS_1}]")
-    message(STATUS "PCO_LIB_CLHS_2: [${PCO_LIB_CLHS_2}]")
+    message(STATUS "PCO_LIB_CLHS_1:    [${PCO_LIB_CLHS_1}]")
+    message(STATUS "PCO_LIB_CLHS_2:    [${PCO_LIB_CLHS_2}]")
 
     find_package_handle_standard_args(PCO REQUIRED_VARS
         PCO_INCLUDE_DIR
