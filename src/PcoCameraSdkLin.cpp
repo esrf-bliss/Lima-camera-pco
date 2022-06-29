@@ -370,55 +370,60 @@ void Camera::_pco_Open_Grab(int &err)
     const char *sInterfaceType = _getInterfaceTypeStr();
     WORD wInterfaceType = _getInterfaceType();
     camtype = _getCameraType();
-	const char *msg = "NONE";
+    const char *msg = "NONE";
 
-	int PicTimeOutMs = 10*1000;
-	
+    int PicTimeOutMs = 10*1000;
+  
 #ifdef ME4
     grabber_me4 = NULL;
 #endif
 #ifdef CLHS
-	grabber_clhs = NULL;
+  grabber_clhs = NULL;
 #endif
-	
+  
     DEB_ALWAYS() << "Open Grabber" << DEB_VAR2(wInterfaceType, camtype) << "=" << DEB_HEX(camtype)
-				<< ", " << DEB_VAR3(sCamType, sCamSubType, sInterfaceType);
-
+  << ", " << DEB_VAR3(sCamType, sCamSubType, sInterfaceType);
 
 
     if ((camtype == CAMERATYPE_PCO_EDGE_HS) && (wInterfaceType == INTERFACE_CAMERALINKHS))
     {
 #ifdef CLHS
-		grabber_clhs = new CPco_grab_clhs((CPco_com_clhs*)camera);
+        grabber_clhs = new CPco_grab_clhs((CPco_com_clhs*)camera);
 #endif
-		msg = "CLHS";
-		
-	}
+        msg = "CLHS";
+    }
     else if ((camtype == CAMERATYPE_PCO_EDGE) || (camtype == CAMERATYPE_PCO_EDGE_42))
     {
         DEB_ALWAYS() << "Grabber is CPco_grab_cl_me4_edge";
 
-		switch(wInterfaceType)
-		{
-			case INTERFACE_CAMERALINK:
+        switch(wInterfaceType)
+        {
+        case INTERFACE_CAMERALINK:
 #ifdef ME4
-				grabber_me4 = new CPco_grab_cl_me4_edge((CPco_com_cl_me4 *)camera);
+            grabber_me4 = new CPco_grab_cl_me4_edge((CPco_com_cl_me4 *)camera);
 #endif
-				msg = "ME4";
-				break;
-			case INTERFACE_CAMERALINKHS:
+            msg = "ME4";
+            break;
+        case INTERFACE_CAMERALINKHS:
 #ifdef CLHS
-				grabber_clhs = new CPco_grab_clhs((CPco_com_clhs*)camera);
+            grabber_clhs = new CPco_grab_clhs((CPco_com_clhs*)camera);
 #endif
-				msg = "CLHS";
-				break;
-			default:
-				THROW_FATAL(Hardware, Error) << "grabber NOT implemented!!! " << DEB_VAR2(camtype, wInterfaceType);
-		}
+            msg = "CLHS";
+            break;
+        default:
+            THROW_FATAL(Hardware, Error) << "grabber NOT implemented!!! " << DEB_VAR2(camtype, wInterfaceType);
+        }
+    }
+    else if (camtype == CAMERATYPE_PCO_EDGE_GL)
+    {
+        DEB_ALWAYS() << "Grabber is CPco_grab_cl_me4_edge_GL";
+#ifdef ME4
+        grabber_me4 = new CPco_grab_cl_me4_edge_GL((CPco_com_cl_me4*)camera);
+#endif
     }
     else if (_isCameraType(Dimax))
     {
-		msg = "ME4";
+        msg = "ME4";
 #ifdef ME4
         //grabber_me4 = new CPco_grab_cl_me4_camera((CPco_com_cl_me4 *)camera);
 #endif
@@ -440,64 +445,64 @@ void Camera::_pco_Open_Grab(int &err)
 
     DEB_ALWAYS() << "Grabber is " << msg;
 
-	{
-		bool found = FALSE;
-	
-#ifdef ME4
-		if ((grabber_me4) )
-			found = TRUE;
-#endif
-
-#ifdef CLHS
-		if ((grabber_clhs))
-			found = TRUE;
-#endif
-		if(!found)
-		{
-			camera->Close_Cam();
-			delete camera;
-			camera = NULL;
-
-			THROW_FATAL(Hardware, Error) << "can not create the grabber, grabbers are NULL";
-		}
-	}
-	
-	printf("\n+++++++++++++++++++=Logging set to 0x%x\n", mylog->get_logbits());
-	DEB_ALWAYS() << "Try to open Grabber";
-
-	bool found = FALSE;
-#ifdef CLHS
-	if(grabber_clhs)
     {
-		found = TRUE;
-		grabber_clhs->SetLog(mylog);
-		err = grabber_clhs->Open_Grabber(board);
-		if(!err)
-		{
-			err=grabber_clhs->Set_Grabber_Timeout(PicTimeOutMs);
-			_pco_GetTransferParameter(err);
-		}
-	}
+        bool found = FALSE;
+    
+#ifdef ME4
+        if ((grabber_me4) )
+            found = TRUE;
+#endif
+
+#ifdef CLHS
+        if ((grabber_clhs))
+            found = TRUE;
+#endif
+        if(!found)
+        {
+            camera->Close_Cam();
+            delete camera;
+            camera = NULL;
+
+            THROW_FATAL(Hardware, Error) << "can not create the grabber, grabbers are NULL";
+        }
+    }
+  
+    printf("\n+++++++++++++++++++=Logging set to 0x%x\n", mylog->get_logbits());
+    DEB_ALWAYS() << "Try to open Grabber";
+
+    bool found = FALSE;
+#ifdef CLHS
+    if(grabber_clhs)
+    {
+        found = TRUE;
+        grabber_clhs->SetLog(mylog);
+        err = grabber_clhs->Open_Grabber(board);
+        if(!err)
+        {
+            err=grabber_clhs->Set_Grabber_Timeout(PicTimeOutMs);
+            _pco_GetTransferParameter(err);
+        }
+    }
 #endif
 
 #ifdef ME4
-	if(grabber_me4)
-	{
-		found = TRUE;
-		grabber_me4->SetLog(mylog);
-		err = grabber_me4->Open_Grabber(board);
-	}
+    if(grabber_me4)
+    {
+        found = TRUE;
+        grabber_me4->SetLog(mylog);
+        err = grabber_me4->Open_Grabber(board);
+    }
 #endif
 
-	if(!found)
-	{
-        THROW_FATAL(Hardware, Error) << "any grabber is opened";
-	}
-	
+    if(!found)
+    {
+          THROW_FATAL(Hardware, Error) << "any grabber is opened";
+    }
+  
     
     if (err)
     {
-		PCO_CHECK_ERROR(err, "grabber creation");
+  PCO_CHECK_ERROR(err, "grabber creation");
 #ifdef ME4
         delete grabber_me4;
         grabber_me4 = NULL;
