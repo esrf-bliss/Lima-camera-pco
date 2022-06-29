@@ -16,7 +16,7 @@ source:
 
 build:
   number: {{ build }}
-  string: {{ iface }}_h{{ PKG_HASH }}_{{ build }}
+  string: {{ iface }}_py{{ py }}h{{ PKG_HASH }}_{{ build }}
   script_env:
     - SDK={{ iface | upper }}
 
@@ -32,7 +32,7 @@ requirements:
     - ninja
     - {{ compiler('cxx') }}
   run:
-    - python {{ python }}
+    - python
     - {{ pin_compatible('sip', min_pin='x.x.x', max_pin='x') }}
     - {{ pin_compatible('lima-core', max_pin='x.x') }}
     - {{ sdk }}
