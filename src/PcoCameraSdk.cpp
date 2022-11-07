@@ -2008,9 +2008,8 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     // mylog->writelog(INFO_M, "%s", bla);
     mylog->writelog(INFO_M, mybla);
 
-    //if (doLut)
-    // to precise the cases (edge cl)
-    if (0)
+    // See http://wikiserv.esrf.fr/bliss/index.php/PCO_-_NOTES_on_PCO_EDGE_-_lookup_table_LUT_1612_/_square_root_LUT_SQRT_compression
+    if (doLut)
     {
         actlut = lut;
 		DEB_ALWAYS() << "camera->PCO_SetLut() " << DEB_VAR1(actlut) ;
