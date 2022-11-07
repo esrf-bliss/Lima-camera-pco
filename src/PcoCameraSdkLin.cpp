@@ -425,7 +425,7 @@ void Camera::_pco_Open_Grab(int &err)
     {
         msg = "ME4";
 #ifdef ME4
-        //grabber_me4 = new CPco_grab_cl_me4_camera((CPco_com_cl_me4 *)camera);
+        grabber_me4 = new CPco_grab_cl_me4_camera((CPco_com_cl_me4 *)camera);
 #endif
     }
     else
