@@ -1925,8 +1925,6 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     m_pcoData->clTransferParam.DataFormat = clpar.DataFormat;
     m_pcoData->clTransferParam.Transmit = clpar.Transmit;
 
-
-
     //---------------------------------------------------------------------------
     // set of parameters
     //---------------------------------------------------------------------------
@@ -1987,11 +1985,10 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         }
         doLut = true;
     }
-	DEB_ALWAYS() << "ClTransferParameterSettings " << DEB_VAR2(info, doLut) ;
+    DEB_ALWAYS() << "ClTransferParameterSettings " << DEB_VAR2(info, doLut) ;
 
     //---------------------------------------------------------------------------
-
-// linux pcoSet
+    // linux pcoSet
 
 
     // m_pcoData->clTransferParam.baudrate = PCO_CL_BAUDRATE_115K2;
@@ -2008,29 +2005,26 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     // mylog->writelog(INFO_M, "%s", bla);
     mylog->writelog(INFO_M, mybla);
 
-    //if (doLut)
-    // to precise the cases (edge cl)
-    if (0)
+    // See http://wikiserv.esrf.fr/bliss/index.php/PCO_-_NOTES_on_PCO_EDGE_-_lookup_table_LUT_1612_/_square_root_LUT_SQRT_compression
+    if (doLut)
     {
         actlut = lut;
-		DEB_ALWAYS() << "camera->PCO_SetLut() " << DEB_VAR1(actlut) ;
+        DEB_ALWAYS() << "camera->PCO_SetLut() " << DEB_VAR1(actlut) ;
         error = camera->PCO_SetLut(actlut, 0);
         msg = "PCO_SetLut";
         PCO_CHECK_ERROR(error, msg);
     }
     else
-    {
-		DEB_ALWAYS() << "camera->PCO_SetLut() BYPASSED!!!" ;
-	}
+        DEB_ALWAYS() << "camera->PCO_SetLut() BYPASSED!!!" ;
 
-	DEB_ALWAYS() << "camera->PCO_SetTransferParameter()" ;
+    DEB_ALWAYS() << "camera->PCO_SetTransferParameter()" ;
     error = camera->PCO_SetTransferParameter(&clpar, sizeof(clpar));
     if (error != PCO_NOERROR)
     {
         DEB_ALWAYS() << "ERROR - PCO_SetTransferParameter " << DEB_VAR1(error);
     }
 
-	DEB_ALWAYS() << "camera->PCO_ArmCamera()" ;
+    DEB_ALWAYS() << "camera->PCO_ArmCamera()" ;
     error = camera->PCO_ArmCamera();
     msg = "PCO_ArmCamera()";
     PCO_CHECK_ERROR(error, msg);
@@ -2040,17 +2034,13 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     }
 
 #ifdef ME4
-	if((grabber_me4 == NULL))
-	{
+    if((grabber_me4 == NULL))
         THROW_FATAL(Hardware, Error) << "any grabber is opened";
-	}
 #endif
 
 #ifdef CLHS
-	if((grabber_clhs == NULL))
-	{
+    if((grabber_clhs == NULL))
         THROW_FATAL(Hardware, Error) << "any grabber is opened";
-	}
 #endif
 
 
