@@ -69,7 +69,7 @@ VERSION_ATT ="tango/Pco.py: 2020/04/25"
 
 RESET_CLOSE_INTERFACE	= 100
 
-class Pco(PyTango.Device_4Impl):
+class Pco(PyTango.LatestDeviceImpl):
 
     Core.DEB_CLASS(Core.DebModApplication, 'LimaCCDs')
 
