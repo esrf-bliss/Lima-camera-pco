@@ -66,7 +66,7 @@ VERSION_ATT ="tango/Pco.py: 2019/04/25"
 
 RESET_CLOSE_INTERFACE	= 100
 
-class Pco(PyTango.Device_4Impl):
+class Pco(PyTango.LatestDeviceImpl):
 
     Core.DEB_CLASS(Core.DebModApplication, 'LimaCCDs')
 
@@ -74,7 +74,7 @@ class Pco(PyTango.Device_4Impl):
 #    Device constructor
 #------------------------------------------------------------------
     def __init__(self,*args) :
-        PyTango.Device_4Impl.__init__(self,*args)
+        PyTango.LatestDeviceImpl.__init__(self,*args)
 
         #self._Pco__Rollingshutter = { "only for EDGE": "-1", "GLOBAL": "0", "ROLLING":"1" }    
 
