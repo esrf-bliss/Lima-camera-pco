@@ -32,9 +32,9 @@ find_path(SISO_INCLUDE_DIRS
   PATH_SUFFIXES include
 DOC "SISO include directory")
 
-find_library(SISO_FGLIB5 NAMES fglib5 HINTS ${SISODIR5}/lib64)
-find_library(SISO_CLSERSIS NAMES clsersis HINTS ${SISODIR5}/lib64)
-find_library(SISO_HAPRT NAMES haprt HINTS ${SISODIR5}/lib64)
+find_library(SISO_FGLIB5 NAMES fglib5 HINTS ${SISO_ROOT_DIR}/lib64)
+find_library(SISO_CLSERSIS NAMES clsersis HINTS ${SISO_ROOT_DIR}/lib64)
+find_library(SISO_HAPRT NAMES haprt HINTS ${SISO_ROOT_DIR}/lib64)
 
 message(STATUS "SISO_FGLIB5:       [${SISO_FGLIB5}]")
 message(STATUS "SISO_CLSERSIS:     [${SISO_CLSERSIS}]")
