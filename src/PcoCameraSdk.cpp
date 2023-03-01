@@ -2033,75 +2033,79 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
         DEB_ALWAYS() << "ERROR - PCO_ArmCamera() " << DEB_VAR1(error);
     }
 
+    // Update sizes after PCO_ArmCamera
+    _pco_GetSizes(&width, &height, &wXResMax, &wYResMax, error);
+
 #ifdef ME4
-    if((grabber_me4 == NULL))
-        THROW_FATAL(Hardware, Error) << "any grabber is opened";
+  if(grabber_me4)
+  {
+    // Free the frame buffers in case they were allocated with a previous prepareAcq() call
+    DEB_ALWAYS() << "grabber_me4->Free_Framebuffer() ";
+    error = grabber_me4->Free_Framebuffer();
+    msg = "Free_Framebuffer";
+    PCO_CHECK_ERROR(error, msg);
+
+    DEB_ALWAYS() << "grabber_me4->Set_DataFormat() " << DEB_VAR1(clpar.DataFormat);
+    error = grabber_me4->Set_DataFormat(clpar.DataFormat);
+    msg = "Set_DataFormat";
+    PCO_CHECK_ERROR(error, msg);
+    if (error != PCO_NOERROR)
+      DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
+
+    DEB_ALWAYS() << "grabber_me4->Set_Grabber_Size() " << DEB_VAR2(width, height);
+    error = grabber_me4->Set_Grabber_Size(width, height);
+    msg = "Set_Grabber_Size";
+    PCO_CHECK_ERROR(error, msg);
+
+    DEB_ALWAYS() << "grabber_me4->PostArm(1)" ;
+    error = grabber_me4->PostArm(1);
+    msg = "grabber->PostArm(1)";
+    PCO_CHECK_ERROR(error, msg);
+
+    DEB_ALWAYS() << "grabber_me4->Allocate_Framebuffer() " << DEB_VAR1(pcoBuffNr);
+    error = grabber_me4->Allocate_Framebuffer(pcoBuffNr);
+    msg = "Allocate_Framebuffer";
+    PCO_CHECK_ERROR(error, msg);
+    error = 0;
+  }
+  else
+    THROW_FATAL(Hardware, Error) << "Frame grabber is NOT opened";
 #endif
 
 #ifdef CLHS
-    if((grabber_clhs == NULL))
-        THROW_FATAL(Hardware, Error) << "any grabber is opened";
-#endif
+  if(grabber_clhs)
+  {
+    // Free the frame buffers in case they were allocated with a previous prepareAcq() call
+    DEB_ALWAYS() << "grabber_clhs->Free_Framebuffer() ";
+    error = grabber_clhs->Free_Framebuffer();
+    msg = "Free_Framebuffer";
+    PCO_CHECK_ERROR(error, msg);
+    
+    DEB_ALWAYS() << "grabber_clhs->Set_DataFormat() " << DEB_VAR1(clpar.DataFormat);
+    error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
+    msg = "Set_DataFormat";
+    PCO_CHECK_ERROR(error, msg);
+    if (error != PCO_NOERROR)
+      DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
 
+    DEB_ALWAYS() << "grabber_clhs->Set_Grabber_Size() " << DEB_VAR2(width, height);
+    error = grabber_clhs->Set_Grabber_Size(width, height);
+    msg = "Set_Grabber_Size";
+    PCO_CHECK_ERROR(error, msg);
 
-#ifdef ME4
-	if(grabber_me4)
-	{	
-		DEB_ALWAYS() << "grabber_me4->Set_DataFormat() " << DEB_VAR1(clpar.DataFormat);
-		error = grabber_me4->Set_DataFormat(clpar.DataFormat);
-        msg = "Set_DataFormat";
-        PCO_CHECK_ERROR(error, msg);
-        if (error != PCO_NOERROR)
-        {
-            DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
-        }
+    DEB_ALWAYS() << "grabber_clhs->PostArm(1)" ;
+    error = grabber_clhs->PostArm(1);
+    msg = "grabber->PostArm(1)";
+    PCO_CHECK_ERROR(error, msg);
 
-		DEB_ALWAYS() << "grabber_me4->Set_Grabber_Size() " << DEB_VAR2(width, height);
-		error = grabber_me4->Set_Grabber_Size(width, height);
-    	msg = "Set_Grabber_Size";
-        PCO_CHECK_ERROR(error, msg);
-
-		DEB_ALWAYS() << "grabber_me4->PostArm(1)" ;
-		error = grabber_me4->PostArm(1);
-        msg = "grabber->PostArm(1)";
-        PCO_CHECK_ERROR(error, msg);
-
-		DEB_ALWAYS() << "grabber_me4->Allocate_Framebuffer() " << DEB_VAR1(pcoBuffNr);
-		error = grabber_me4->Allocate_Framebuffer(pcoBuffNr);
-		msg = "Allocate_Framebuffer";
-        PCO_CHECK_ERROR(error, msg);
-        error = 0;
-	}
-#endif
-
-#ifdef CLHS
-	if(grabber_clhs)
-	{
-		DEB_ALWAYS() << "grabber_clhs->Set_DataFormat() " << DEB_VAR1(clpar.DataFormat);
-		error = grabber_clhs->Set_DataFormat(clpar.DataFormat);
-        msg = "Set_DataFormat";
-        PCO_CHECK_ERROR(error, msg);
-        if (error != PCO_NOERROR)
-        {
-            DEB_ALWAYS() << "ERROR - Set_DataFormat " << DEB_VAR1(error);
-        }
-
-		DEB_ALWAYS() << "grabber_clhs->Set_Grabber_Size() " << DEB_VAR2(width, height);
-		error = grabber_clhs->Set_Grabber_Size(width, height);
-        msg = "Set_Grabber_Size";
-        PCO_CHECK_ERROR(error, msg);
-
-		DEB_ALWAYS() << "grabber_clhs->PostArm(1)" ;
-		error = grabber_clhs->PostArm(1);
-        msg = "grabber->PostArm(1)";
-        PCO_CHECK_ERROR(error, msg);
-
-		DEB_ALWAYS() << "grabber_clhs->Allocate_Framebuffer() " << DEB_VAR1(pcoBuffNr);
-		error = grabber_clhs->Allocate_Framebuffer(pcoBuffNr);
-		msg = "Allocate_Framebuffer";
-        PCO_CHECK_ERROR(error, msg);
-        error = 0;
-	}
+    DEB_ALWAYS() << "grabber_clhs->Allocate_Framebuffer() " << DEB_VAR1(pcoBuffNr);
+    error = grabber_clhs->Allocate_Framebuffer(pcoBuffNr);
+    msg = "Allocate_Framebuffer";
+    PCO_CHECK_ERROR(error, msg);
+    error = 0;
+  }
+  else
+    THROW_FATAL(Hardware, Error) << "Frame grabber is NOT opened";
 #endif
 
 
