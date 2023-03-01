@@ -77,7 +77,7 @@ class Pco(PyTango.LatestDeviceImpl):
 #    Device constructor
 #------------------------------------------------------------------
     def __init__(self,*args) :
-        PyTango.Device_4Impl.__init__(self,*args)
+        PyTango.LatestDeviceImpl.__init__(self,*args)
 
         #self._Pco__Rollingshutter = { "only for EDGE": "-1", "GLOBAL": "0", "ROLLING":"1" }    
 
