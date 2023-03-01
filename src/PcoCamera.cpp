@@ -1127,7 +1127,7 @@ void Camera::prepareAcq()
 
 
     m_sync->getExpTime(lima_exp_time);
-    m_sync->setLatTime(lima_del_time);
+    m_sync->getLatTime(lima_del_time);
     _pco_time2dwbase(lima_exp_time,  pco_exp_time, pco_exp_timebase);
     _pco_time2dwbase(lima_del_time,  pco_del_time, pco_del_timebase);
 
