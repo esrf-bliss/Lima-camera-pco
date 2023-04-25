@@ -1776,52 +1776,34 @@ void Camera::_pco_SetTriggerMode_SetAcquireMode(int &error)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
-    char buff[MSG4K + 1];
-
-	const char *cmsg;
     const char *msg;
-    const char *sLimaTriggerMode, *sPcoTriggerMode, *sPcoAcqMode; 
 
-    WORD wPcoTriggerMode, wPcoAcqMode;
+    WORD trigmode, acqmode;
 
     lima::TrigMode limaTrigMode;
     m_sync->getTrigMode(limaTrigMode);
-    m_sync->xlatLimaTrigMode2Pco(limaTrigMode, wPcoTriggerMode, wPcoAcqMode,
-                                &sLimaTriggerMode, &sPcoTriggerMode, &sPcoAcqMode,
-                                m_pcoData->bExtTrigEnabled, error);
+    m_sync->xlatLimaTrigMode2Pco(limaTrigMode, trigmode, acqmode,
+                                 m_pcoData->bExtTrigEnabled, error);
 
-
-    cmsg = "_pco_SetTriggerMode_SetAcquireMode";
-    __sprintfSExt(buff, sizeof(buff), "%s err[0x%08x]\n"
-		"  limaTrigMode[%d][%s]\n"
-        "   pcoTrigMode[%d][%s]\n"
-        "    pcoAcqMode[%d][%s]\n",
-		cmsg, error, 
-        limaTrigMode, sLimaTriggerMode,
-        wPcoTriggerMode, sPcoTriggerMode,
-        wPcoAcqMode, sPcoAcqMode);
-	m_log.append(buff);
-
-    
     //------------------------------------------------- triggering mode
-    error = camera->PCO_SetTriggerMode(wPcoTriggerMode);
+    error = camera->PCO_SetTriggerMode(trigmode);
     msg = "PCO_SetTriggerMode";
     PCO_CHECK_ERROR(error, msg);
     if (error)
     {
-        DEB_ALWAYS() << "ERROR PCO_SetTriggerMode" << DEB_VAR1(wPcoTriggerMode);
+        DEB_ALWAYS() << "ERROR PCO_SetTriggerMode" << DEB_VAR1(trigmode);
         return;
     }
 
     //------------------------------------- acquire mode : ignore or not
     // ext. signal
 
-    error = camera->PCO_SetAcquireMode(wPcoAcqMode);
+    error = camera->PCO_SetAcquireMode(acqmode);
     msg = "PCO_SetAcquireMode";
     PCO_CHECK_ERROR(error, msg);
     if (error)
     {
-        DEB_ALWAYS() << "ERROR PCO_SetAcquireMode" << DEB_VAR1(wPcoAcqMode);
+        DEB_ALWAYS() << "ERROR PCO_SetAcquireMode" << DEB_VAR1(acqmode);
         return;
     }
 

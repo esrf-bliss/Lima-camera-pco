@@ -1060,7 +1060,6 @@ void Camera::prepareAcq()
     // signal
 
     WORD wPcoTrigMode, wPcoAcqMode;
-    const char *sLimaTriggerMode, *sPcoTriggerMode, *sPcoAcqMode;
     bool extTrig;
                                        
     TrigMode lima_trig_mode;
@@ -1068,7 +1067,6 @@ void Camera::prepareAcq()
     
     m_sync->xlatLimaTrigMode2Pco(lima_trig_mode,
         wPcoTrigMode, wPcoAcqMode,
-        &sLimaTriggerMode, &sPcoTriggerMode, &sPcoAcqMode, 
         extTrig, err);
 
     msg = "camera->PCO_SetTriggerMode()";

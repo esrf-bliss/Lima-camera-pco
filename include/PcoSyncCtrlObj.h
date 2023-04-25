@@ -77,7 +77,6 @@ namespace lima
 
             void xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
                                       WORD &pcoTrigMode, WORD &pcoAcqMode,
-                                      const char **sLimaTriggerMode, const char **sPcoTriggerMode, const char **sPcoAcqMode, 
                                       bool &extTrig, int &err);
 
           private:

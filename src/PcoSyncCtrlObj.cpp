@@ -138,18 +138,17 @@ enum TrigMode {
 
 void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
                                        WORD &pcoTrigMode, WORD &pcoAcqMode,
-                                       const char **sLimaTriggerMode, const char **sPcoTriggerMode, const char **sPcoAcqMode, 
                                        bool &extTrig, int &err)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    *sLimaTriggerMode = "invalid";
+    char const *sLimaTriggerMode = "invalid";
 
-    *sPcoTriggerMode = "invalid";
+    char const *sPcoTriggerMode = "invalid";
     WORD _pcoTrigMode = 0;
 
-    *sPcoAcqMode = "invalid";
+    char const *sPcoAcqMode = "invalid";
     WORD _pcoAcqMode = 0;
     bool ext_trig;
     err = -1;
@@ -159,7 +158,7 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
         throw LIMA_HW_EXC(NotSupported, "Trigger type not supported");
     }
 
-    // · acquire mode to be selected:
+    // acquire mode to be selected:
     // - 0x0000 = [auto] - all images taken are stored
 
     // - 0x0001 = [external] - the external control input <acq enbl> is a static
@@ -186,13 +185,13 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             // trig>) are irrelevant.
 
         case IntTrig: // 0 SOFT (spec)
-            *sLimaTriggerMode = "IntTrig";
+            sLimaTriggerMode = "IntTrig";
 
-            *sPcoTriggerMode = "auto";
+            sPcoTriggerMode = "auto";
             ext_trig = false;
             _pcoTrigMode = 0x0000; // 0 = SOFT (spec)
 
-            *sPcoAcqMode = "acqEnbl_Ignored";
+            sPcoAcqMode = "acqEnbl_Ignored";
             _pcoAcqMode = 0x0000;
             break;
 
@@ -204,13 +203,13 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             //   Triggermode 0 - auto
             //   Acquiremode 0 - auto / ignored
 
-            *sLimaTriggerMode = "ExtTrigSingle";
+            sLimaTriggerMode = "ExtTrigSingle";
 
-            *sPcoTriggerMode = "auto";
+            sPcoTriggerMode = "auto";
             ext_trig = true;
             _pcoTrigMode = 0x0000;
 
-            *sPcoAcqMode = "acqEnbl_Ignored";
+            sPcoAcqMode = "acqEnbl_Ignored";
             _pcoAcqMode = 0x0000;
             break;
 
@@ -220,13 +219,13 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             // (<exp trig>).
         // case IntTrigMult: return 0x0002;   // 1 = START (spec)
         case ExtTrigMult:
-            *sLimaTriggerMode = "ExtTrigMult";
+            sLimaTriggerMode = "ExtTrigMult";
 
-            *sPcoTriggerMode = "startExposure";
+            sPcoTriggerMode = "startExposure";
             ext_trig = true;
             _pcoTrigMode = 0x0002; // 1 = START (spec)
 
-            *sPcoAcqMode = "acqEnbl_Ignored";
+            sPcoAcqMode = "acqEnbl_Ignored";
             _pcoAcqMode = 0x0000;
             break;
 
@@ -238,20 +237,20 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
             // mode; exposure time of the second image is given by the readout
             // time of the first image.)
         case ExtGate: // 2 GATE (spec)
-            *sLimaTriggerMode = "ExtGate";
+            sLimaTriggerMode = "ExtGate";
 
-            *sPcoTriggerMode = "extGate";
+            sPcoTriggerMode = "extGate";
             ext_trig = true;
             _pcoTrigMode = 0x0003; // 2 = GATE (spec)
 
             // case IntTrigMult: // 1 START (spec)
 
 #ifdef DISABLE_ACQ_ENBL_SIGNAL
-            *sPcoAcqMode = "acqEnbl_Ignored";
+            sPcoAcqMode = "acqEnbl_Ignored";
             _pcoAcqMode = 0x0000;
 #else
             _pcoAcqMode = 0x0001;
-            *sPcoAcqMode = "acqEnbl_TrigAccepted";
+            sPcoAcqMode = "acqEnbl_TrigAccepted";
 #endif
             break;
 
@@ -268,15 +267,14 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
     pcoAcqMode = _pcoAcqMode;
     extTrig = ext_trig;
 
-    m_pcoData->traceAcq.sLimaTriggerMode = *sLimaTriggerMode;
+    m_pcoData->traceAcq.sLimaTriggerMode = sLimaTriggerMode;
     m_pcoData->traceAcq.bExtTrig = extTrig;
 
-    m_pcoData->traceAcq.sPcoTriggerMode = *sPcoTriggerMode;
+    m_pcoData->traceAcq.sPcoTriggerMode = sPcoTriggerMode;
     m_pcoData->traceAcq.iPcoTriggerMode = pcoTrigMode;
 
-    m_pcoData->traceAcq.sPcoAcqMode = *sPcoAcqMode;
+    m_pcoData->traceAcq.sPcoAcqMode = sPcoAcqMode;
     m_pcoData->traceAcq.iPcoAcqMode = pcoAcqMode;
-
 
     DEB_ALWAYS() << "\n ... " << DEB_VAR2(*sLimaTriggerMode, extTrig) << "\n ... "
                  << DEB_VAR2(*sPcoTriggerMode, pcoTrigMode) << "\n ... "
@@ -436,8 +434,3 @@ void SyncCtrlObj::getValidRanges(ValidRangesType &valid_ranges)
     valid_ranges.max_lat_time = m_pcoData->max_lat_time_err =
         m_pcoData->max_lat_time + m_pcoData->step_lat_time;
 }
-
-
-
-
-
