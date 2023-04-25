@@ -1775,14 +1775,14 @@ void Camera::_waitForRecording(int nrFrames, DWORD &_dwValidImageCnt,
             break;
         }
 
+        DEB_TRACE() << DEB_VAR2(timeout, msNowRecordLoop);
+
         if ((timeout < msNowRecordLoop) && !m_pcoData->bExtTrigEnabled)
         {
-            setExposing(pcoAcqStop);
-            DEB_ALWAYS() << "ERROR TIMEOUT!!!: "
-                         << DEB_VAR5(timeout, timeout0, msNowRecordLoop,
+            //setExposing(pcoAcqStop);
+            DEB_WARNING() << "TIMEOUT: "
+                          << DEB_VAR5(timeout, timeout0, msNowRecordLoop,
                                      _dwValidImageCnt, nb_frames);
-            error = -1;
-            break;
         }
 
         if ((requestStop = getRequestStop(_nrStop)))
