@@ -2657,10 +2657,13 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     _pco_GetTransferParameter(error);
     PCO_THROW_OR_TRACE(error, "_pco_GetTransferParameter(");
 
-    memcpy(&clTransferParam, &m_pcoData->clTransferParam,
-           sizeof(PCO_SC2_CL_TRANSFER_PARAM));
+    if (!_isCameraType(EdgeHS))
+    {
+        memcpy(&clTransferParam, &m_pcoData->clTransferParam,
+               sizeof(PCO_SC2_CL_TRANSFER_PARAM));
 
-    m_pcoData->clTransferParam.baudrate = PCO_CL_BAUDRATE_115K2;
+        m_pcoData->clTransferParam.baudrate = PCO_CL_BAUDRATE_115K2;
+    }
 
 #else // linux prep
 
@@ -2721,9 +2724,8 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
     }
     else if (_isCameraType(EdgeHS))
     {
-        m_pcoData->clTransferParam.Transmit = 1;
-        m_pcoData->clTransferParam.DataFormat =
-            PCO_CL_DATAFORMAT_5x16 | SCCMOS_FORMAT_TOP_CENTER_BOTTOM_CENTER;
+        // No need to set transfer parameters for CLHS
+
         m_pcoData->wLUT_Identifier = PCO_EDGE_LUT_NONE; // Switch LUT->off
         doLut = true;
         info = "EDGE HS / 5x16 topCenter bottomCenter / LUT off";
@@ -2762,19 +2764,24 @@ void Camera::_pco_SetTransferParameter_SetActiveLookupTable(int &error)
 
 #ifndef __linux__ // linux pcoSet
 
-    DEB_TRACE() << "PCO_SetTransferParameter (clTransferParam) " << info;
-    PCO_FN3(error, pcoFn, PCO_SetTransferParameter, m_handle,
-            &m_pcoData->clTransferParam, sizeof(m_pcoData->clTransferParam));
-    if (error)
+    if (!_isInterfaceType(ifCameralinkHS))
     {
-        __sprintfSExt(
-            msg, ERRMSG_SIZE,
-            "PCO_SetTransferParameter - baudrate[%d][%d] "
-            "dataFormat[x%08x][x%08x] trasmit[%d][%d]",
-            clTransferParam.baudrate, m_pcoData->clTransferParam.baudrate,
-            clTransferParam.DataFormat, m_pcoData->clTransferParam.DataFormat,
-            clTransferParam.Transmit, m_pcoData->clTransferParam.Transmit);
-        throw LIMA_HW_EXC(Error, msg);
+        DEB_TRACE() << "PCO_SetTransferParameter (clTransferParam) " << info;
+        PCO_FN3(error, pcoFn, PCO_SetTransferParameter, m_handle,
+                &m_pcoData->clTransferParam,
+                sizeof(m_pcoData->clTransferParam));
+        if (error)
+        {
+            __sprintfSExt(
+                msg, ERRMSG_SIZE,
+                "PCO_SetTransferParameter - baudrate[%d][%d] "
+                "dataFormat[x%08x][x%08x] transmit[%d][%d]",
+                clTransferParam.baudrate, m_pcoData->clTransferParam.baudrate,
+                clTransferParam.DataFormat,
+                m_pcoData->clTransferParam.DataFormat, clTransferParam.Transmit,
+                m_pcoData->clTransferParam.Transmit);
+            throw LIMA_HW_EXC(Error, msg);
+        }
     }
 
     _armRequired(true);
@@ -4218,9 +4225,14 @@ void Camera::_pco_GetTransferParameter(int &err)
 
 #else
 
-    err = PCO_GetTransferParameter(m_handle, &m_pcoData->clTransferParam,
-                                   sizeof(PCO_SC2_CL_TRANSFER_PARAM));
-    PCO_CHECK_ERROR(err, "PCO_GetTransferParameter");
+    if (!_isCameraType(EdgeHS))
+    {
+        memset(&m_pcoData->clTransferParam, 0,
+               sizeof(PCO_SC2_CL_TRANSFER_PARAM));
+        err = PCO_GetTransferParameter(m_handle, &m_pcoData->clTransferParam,
+                                       sizeof(PCO_SC2_CL_TRANSFER_PARAM));
+        PCO_CHECK_ERROR(err, "PCO_GetTransferParameter");
+    }
 
 #endif
 
@@ -4370,7 +4382,7 @@ void Camera::_pco_OpenCameraSn(DWORD snRequested, int &err)
         ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _getCameraIdn());
     }
 
-    DEB_ALWAYS() << "\n* CAMERA SEARCH:\n" << ptr0;
+    DEB_ALWAYS() << "\n* CAMERA SEARCH:\n" << ptr0; 
 
     HANDLE handleOK = NULL;
 

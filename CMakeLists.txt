@@ -74,7 +74,7 @@ if (CAMERA_MASTER_PROJECT)
   endif()
 endif()
 
-find_package(Pco REQUIRED)
+find_package(PCO REQUIRED)
 
 file(GLOB_RECURSE PCO_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
@@ -121,15 +121,7 @@ set_target_properties(pco PROPERTIES
 
 target_link_libraries(pco PUBLIC limacore)
 
-target_compile_definitions(pco PUBLIC ${PCO_DEFINITIONS})
-
-message("... PCO_INCLUDE_DIRS: ${PCO_INCLUDE_DIRS}")
-
-target_include_directories(pco
-	PUBLIC "$<BUILD_INTERFACE:${PCO_INCLUDE_DIRS}>"
-	PUBLIC "$<BUILD_INTERFACE:${PCO_INCLUDE_DIRS}/include>")
-
-target_link_libraries(pco PUBLIC ${PCO_LIBRARIES})
+target_link_libraries(pco PUBLIC PCO::PCO)
 
 if(WIN32)
   target_compile_definitions(pco

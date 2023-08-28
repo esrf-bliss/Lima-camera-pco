@@ -25,7 +25,7 @@
 include(FindPackageHandleStandardArgs)
 
 find_path(PCO_INCLUDE_DIRS
-  NAMES PCO_Structures.h
+  NAMES pco_err.h
   HINTS ${PCO_ROOT_DIR}
   PATH_SUFFIXES include
 DOC "PCO include directory")
@@ -54,7 +54,7 @@ if(PCO_FOUND)
     if(EXISTS "${PCO_LIBRARIES}")
         set_target_properties(PCO::PCO PROPERTIES
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-          IMPORTED_LOCATION "${PCO_LIBRARIES}")
+            IMPORTED_IMPLIB "${PCO_LIBRARIES}")
     endif()
 endif()
 

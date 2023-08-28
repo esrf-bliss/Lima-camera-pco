@@ -57,14 +57,14 @@
 
 #else
 #    include "processlib/Compatibility.h"
-#    include "PCO_Structures.h"
-#    include "Pco_ConvStructures.h"
-#    include "Pco_ConvDlgExport.h"
-#    include "sc2_SDKStructures.h" // TODO
+#    include "pco_color_corr_coeff.h"
+#    include "pco_convstructures.h"
+#    include "pco_convdlgexport.h"
+#    include "sc2_sdkstructures.h" // todo
 #    include "sc2_common.h"
-#    include "SC2_CamExport.h"
+#    include "sc2_camexport.h"
 #    include "sc2_defs.h"
-#    include "SC2_SDKAddendum.h"
+#    include "sc2_sdkaddendum.h"
 #endif
 
 #include <math.h>
