@@ -43,29 +43,27 @@
 //===============================================================
 // INCLUDES
 //===============================================================
+#include "processlib/Compatibility.h"
+
 #ifdef __linux__
-#    include <defs.h>
-#    include <stdint.h>
-#    include <linux/limits.h>
+#include "linux/limits.h" // For PATH_MAX
 
-#    include "processlib/Compatibility.h"
-#    include "sc2_common.h"
-#    include "sc2_defs.h"
-#    include "SC2_SDKAddendum.h"
-
-#    define sprintf_s snprintf
-
-#else
-#    include "processlib/Compatibility.h"
-#    include "pco_color_corr_coeff.h"
-#    include "pco_convstructures.h"
-#    include "pco_convdlgexport.h"
-#    include "sc2_sdkstructures.h" // todo
-#    include "sc2_common.h"
-#    include "sc2_camexport.h"
-#    include "sc2_defs.h"
-#    include "sc2_sdkaddendum.h"
+#include "pco_linux_defs.h"
+#include "pco_device.h"
 #endif
+
+#include "pco_color_corr_coeff.h"
+#include "pco_convstructures.h"
+#include "pco_convexport.h"
+//#include "pco_convdlgexport.h"
+
+#include "sc2_sdkaddendum.h"
+#include "sc2_sdkstructures.h"
+//#include "sc2_common.h"
+#include "sc2_camexport.h"
+#include "sc2_defs.h"
+
+#include "pco_camexport.h"
 
 #include <math.h>
 
@@ -104,44 +102,44 @@
 typedef DWORD tPvUint32;
 typedef int tPvErr;
 
-//-------------------- linux
-#ifdef __linux__
-typedef uint32_t DWORD;
-// typedef unsigned long       DWORD;
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef bool BOOL;
-
-#    ifndef HANDLE
-typedef int HANDLE;
-#    endif
-
-typedef short SHORT;
-// typedef long LONG;
-
-typedef uint64_t UINT64;
-
+////-------------------- linux
+//#ifdef __linux__
+//typedef uint32_t DWORD;
+//// typedef unsigned long       DWORD;
+//typedef unsigned char BYTE;
+//typedef unsigned short WORD;
+//typedef bool BOOL;
+//
+//#    ifndef HANDLE
+//typedef int HANDLE;
+//#    endif
+//
+//typedef short SHORT;
+//// typedef long LONG;
+//
+//typedef uint64_t UINT64;
+//
 #    ifndef ULLONG_MAX
 #        define LONG_MAX 2147483647L
 #        define ULONG_MAX 0xffffffffUL
 #        define ULLONG_MAX                                                     \
             0xffffffffffffffffULL /* maximum unsigned long long int value */
 #    endif
-
-#    define far
-
-#    define DECLARE_HANDLE(n)                                                  \
-        typedef struct n##__                                                   \
-        {                                                                      \
-            int i;                                                             \
-        } * n
-
-DECLARE_HANDLE(HWND);
-
-#    ifndef __TIMESTAMP__
-#        define __TIMESTAMP__
-#    endif
-#endif
+//
+//#    define far
+//
+//#    define DECLARE_HANDLE(n)                                                  \
+//        typedef struct n##__                                                   \
+//        {                                                                      \
+//            int i;                                                             \
+//        } *n
+//
+//DECLARE_HANDLE(HWND);
+//
+//#    ifndef __TIMESTAMP__
+//#        define __TIMESTAMP__
+//#    endif
+//#endif
 
 //-------------------- win
 #ifndef __linux__
@@ -257,6 +255,5 @@ DWORD WaitForMultipleObjects(DWORD, void **, bool, DWORD);
 #    define WAIT_TIMEOUT 5
 
 #endif
-
 
 #endif

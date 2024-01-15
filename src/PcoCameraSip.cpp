@@ -561,11 +561,11 @@ void Camera::getSdkRelease(std::string &o_sn)
     char *ptrMax = buff + sizeof(buff);
     const char *release;
 
-#ifdef __linux__
-    release = PCO_SDK_LIN_RELEASE;
-#else
-    release = PCO_SDK_WIN_RELEASE;
-#endif
+//#ifdef __linux__
+    release = PCO_SDK_RELEASE;
+//#else
+//    release = PCO_SDK_WIN_RELEASE;
+//#endif
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr, release);
 
@@ -1071,11 +1071,11 @@ void Camera::getGeneralCAPS1(std::string &o_sn)
     DWORD dwGeneralCaps1;
     DWORD dwVal;
 
-#ifndef __linux__
+//#ifndef __linux__
     dwGeneralCaps1 = m_pcoData->stcPcoDescription.dwGeneralCapsDESC1;
-#else
-    dwGeneralCaps1 = m_pcoData->stcPcoDescription.dwGeneralCaps1;
-#endif
+//#else
+//    dwGeneralCaps1 = m_pcoData->stcPcoDescription.dwGeneralCaps1;
+//#endif
 
     int nib[8];
     int i, j;

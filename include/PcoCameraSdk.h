@@ -24,7 +24,7 @@
 #ifndef PCOCAMERASDK_H
 #define PCOCAMERASDK_H
 
-#ifndef __linux
+//#ifndef __linux
 
 #    define PCO_FN0(er, mg, fn)                                                \
         {                                                                      \
@@ -65,6 +65,6 @@
                                fn((x1), (x2), (x3), (x4), (x5), (x6)), #fn);   \
         }
 
-#endif
+//#endif
 
 #endif

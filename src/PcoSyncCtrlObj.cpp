@@ -21,9 +21,14 @@
  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ###########################################################################
 **************************************************************************/
+
 #include <sstream>
+
 #include "lima/Exceptions.h"
+
 #include "Pco.h"
+
+
 #include "PcoCamera.h"
 #include "PcoSyncCtrlObj.h"
 #include "PcoBufferCtrlObj.h"
@@ -43,7 +48,7 @@ const char *_timestamp_pcosyncctrlobj()
 SyncCtrlObj::SyncCtrlObj(Camera *cam, BufferCtrlObj *buffer)
     : m_exp_time(0.), m_lat_time(0.),
 
-      m_cam(cam), m_handle(cam->getHandle()), m_trig_mode(IntTrig),
+      m_cam(cam), m_trig_mode(IntTrig),
       m_buffer(buffer), m_nb_frames(1), m_nb_acq_frames(0), m_started(false),
       m_exposing(pcoAcqIdle), m_pcoData(cam->_getPcoData())
 {

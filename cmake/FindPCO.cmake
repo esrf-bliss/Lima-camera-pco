@@ -28,12 +28,14 @@ find_path(PCO_INCLUDE_DIRS
   NAMES pco_err.h
   HINTS ${PCO_ROOT_DIR}
   PATH_SUFFIXES include
-DOC "PCO include directory")
+  DOC "PCO include directory"
+)
 
 find_library(PCO_LIBRARIES
-  NAMES SC2_Cam.lib
+  NAMES sc2_cam pco_sc2cam
   HINTS ${PCO_ROOT_DIR}
-DOC "PCO libraries")
+  DOC "PCO libraries"
+)
 
 if (PCO_LIBRARIES)
     get_filename_component(PCO_LIBRARIES_DIR ${PCO_LIBRARIES} PATH)
@@ -55,6 +57,13 @@ if(PCO_FOUND)
         set_target_properties(PCO::PCO PROPERTIES
             IMPORTED_LINK_INTERFACE_LANGUAGES "C"
             IMPORTED_IMPLIB "${PCO_LIBRARIES}")
+        if (WIN32)
+            set_target_properties(PCO::PCO PROPERTIES
+                 IMPORTED_IMPLIB "${PCO_LIBRARIES}")
+        else (WIN32)
+            set_target_properties(PCO::PCO PROPERTIES
+                 IMPORTED_LOCATION "${PCO_LIBRARIES}")
+        endif (WIN32)
     endif()
 endif()
 

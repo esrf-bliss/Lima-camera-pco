@@ -30,6 +30,7 @@
 
 //#define BUFF_INFO_SIZE 5000
 
+#include <csignal>
 #include <cstdlib>
 
 #ifndef __linux__
@@ -145,11 +146,11 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
         {CAMERATYPE_PCO_DIMAX_AUTOMOTIVE, "PCO DIMAX AUTOMOTIVE"},
         {CAMERATYPE_PCO_EDGE, "PCO EDGE 5.5 RS"},
         {CAMERATYPE_PCO_EDGE_42, "PCO EDGE 4.2 RS"},
-        {CAMERATYPE_PCO_EDGE_GL, "PCO EDGE 5.5 GL"},
         {CAMERATYPE_PCO_EDGE_USB3, "PCO EDGE USB3"},
-        {CAMERATYPE_PCO_EDGE_HS, "PCO EDGE hs"},
-        {CAMERATYPE_PCO_EDGE, "PCO EDGE"},
-        {CAMERATYPE_PCO_EDGE_GL, "PCO EDGE GL"},
+        {CAMERATYPE_PCO_EDGE_HS, "PCO EDGE HS"},
+        {CAMERATYPE_PCO_EDGE_MT, "PCO EDGE MT"},
+        {CAMERATYPE_PCO_EDGE_GL, "PCO EDGE 5.5 GL"},
+        {CAMERATYPE_PCO_FAMILY_EDGE, "PCO EDGE"},
         {0, "NO_modelType"},
         {0, NULL}};
 
@@ -174,6 +175,7 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
         {CAMERASUBTYPE_PCO_EDGE_DUAL_CLOCK, "DUAL_CLOCK"},
         {CAMERASUBTYPE_PCO_EDGE_DICAM, "DICAM"},
         {CAMERASUBTYPE_PCO_EDGE_42_LT, "EDGE_42_LT"},
+        {CAMERASUBTYPE_PCO_EDGE_260_CLHS, "EDGE_26_CLHS"},
         {0, "NO_subType"},
         {0, NULL}};
 
@@ -500,78 +502,88 @@ void Camera::_init()
 
     int error = 0;
 
-#ifdef __linux__
-    // ----- linux [begin]
+    // Tango signal management workaround
+    sigset_t signals;
+    sigfillset(&signals);
+    sigprocmask(SIG_UNBLOCK, &signals, NULL);
 
-    UNUSED const char *pcoFn;
+    uint32_t err = PCO_NOERROR;
+    err = PCO_InitializeLib();
+    if (err)
+        PCO_THROW_OR_TRACE(err, "_init(): PCO_InitializeLib - init pco sdk");
 
-    //-------------------- linux
-
-    board = 0;
-    int iErr;
-
-    // int bufnum=20;
-
-    DEB_ALWAYS() << "setting the log";
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Cam";
-    _pco_Open_Cam(iErr);
-    if (iErr)
-    {
-        camera->Close_Cam();
-        delete camera;
-        camera = NULL;
-        DEB_ALWAYS() << "FATAL - _pco_Open_Cam " << DEB_VAR1(iErr);
-        THROW_HW_ERROR(Error);
-    }
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraType";
-    _pco_GetCameraType(iErr);
-    if (iErr)
-    {
-        DEB_ALWAYS() << "WARNING - _pco_GetCameraType " << DEB_VAR1(iErr);
-    }
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Grab";
-    _pco_Open_Grab(iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraInfo";
-    _pco_GetCameraInfo(iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_ResetSettingsToDefault";
-    _pco_ResetSettingsToDefault(iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_SetCameraToCurrentTime";
-    _pco_SetCameraToCurrentTime(iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetTransferParameter";
-    _pco_GetTransferParameter(iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetTemperatureInfo";
-    _pco_GetTemperatureInfo(iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ pco_GetPixelRate";
-    DWORD pixRateActual, pixRateNext;
-    _pco_GetPixelRate(pixRateActual, pixRateNext, iErr);
-    DEB_ALWAYS() << DEB_VAR2(pixRateActual, pixRateNext);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_GetLut";
-    _pco_GetLut(iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_SetRecordingState";
-    _pco_SetRecordingState(0, iErr);
-
-    //_pco_SetTimestampMode(2, iErr);
-
-    DEB_ALWAYS() << "++++++++++++++ _pco_initHWIOSignal";
-    // 0x01: "Low level active"
-    // 0x02: "High Level active"
-    // 0x04: "Rising edge active"
-    // 0x08: "Falling edge active"
-    _pco_initHWIOSignal(0, 0x04, iErr);
-
-    // ----- linux [end]
-#else
+//#ifdef __linux__
+//    // ----- linux [begin]
+//
+//    UNUSED const char *pcoFn;
+//
+//    //-------------------- linux
+//
+//    board = 0;
+//    int iErr;
+//
+//    // int bufnum=20;
+//
+//    DEB_ALWAYS() << "setting the log";
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Cam";
+//    _pco_Open_Cam(iErr);
+//    if (iErr)
+//    {
+//        camera->Close_Cam();
+//        delete camera;
+//        camera = NULL;
+//        DEB_ALWAYS() << "FATAL - _pco_Open_Cam " << DEB_VAR1(iErr);
+//        THROW_HW_ERROR(Error);
+//    }
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraType";
+//    _pco_GetCameraType(iErr);
+//    if (iErr)
+//    {
+//        DEB_ALWAYS() << "WARNING - _pco_GetCameraType " << DEB_VAR1(iErr);
+//    }
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Grab";
+//    _pco_Open_Grab(iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraInfo";
+//    _pco_GetCameraInfo(iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_ResetSettingsToDefault";
+//    _pco_ResetSettingsToDefault(iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_SetCameraToCurrentTime";
+//    _pco_SetCameraToCurrentTime(iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_GetTransferParameter";
+//    _pco_GetTransferParameter(iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_GetTemperatureInfo";
+//    _pco_GetTemperatureInfo(iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ pco_GetPixelRate";
+//    DWORD pixRateActual, pixRateNext;
+//    _pco_GetPixelRate(pixRateActual, pixRateNext, iErr);
+//    DEB_ALWAYS() << DEB_VAR2(pixRateActual, pixRateNext);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_GetLut";
+//    _pco_GetLut(iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_SetRecordingState";
+//    _pco_SetRecordingState(0, iErr);
+//
+//    //_pco_SetTimestampMode(2, iErr);
+//
+//    DEB_ALWAYS() << "++++++++++++++ _pco_initHWIOSignal";
+//    // 0x01: "Low level active"
+//    // 0x02: "High Level active"
+//    // 0x04: "Rising edge active"
+//    // 0x08: "Falling edge active"
+//    _pco_initHWIOSignal(0, 0x04, iErr);
+//
+//    // ----- linux [end]
+//#else
     // ----- windows [begin]
 
     char msg[MSG4K + 1];
@@ -582,7 +594,7 @@ void Camera::_init()
     __sprintfSExt(msg, sizeof(msg), "*** Pco log %s\n", getTimestamp(Iso));
     m_log.append(msg);
 
-    DEB_TRACE() << _getDllPath(FILE_PCO_DLL, msg, sizeof(msg));
+    //DEB_TRACE() << _getDllPath(FILE_PCO_DLL, msg, sizeof(msg));
 
     const char *key = "sn";
     char *value;
@@ -719,7 +731,7 @@ void Camera::_init()
     _pco_initHWIOSignal(0, 0x4, error);
 
     // ----- windows [end]
-#endif
+//#endif
 
     _pco_SetCameraToCurrentTime(error);
 
@@ -749,7 +761,7 @@ void Camera::_init_dimax()
         WORD bitsPerPix;
         getBitsPerPixel(bitsPerPix);
 
-        _pco_GetCameraRamSize(ramSize, pageSize, error);
+        error = _pco_GetCameraRamSize(ramSize, pageSize);
         PCO_THROW_OR_TRACE(error, "_pco_GetCameraRamSize");
 
         m_pcoData->dwRamSize = ramSize;    // nr of pages of the ram
@@ -978,12 +990,11 @@ void Camera::prepareAcq()
     //-------------------------------------------------
 
     //------------------------------------------------- check recording state
-    WORD state;
-
-    state = _pco_GetRecordingState(error);
+    WORD wRecState;
+    error = _pco_GetRecordingState(wRecState);
     PCO_THROW_OR_TRACE(error, "_pco_GetRecordingState");
 
-    if (state > 0)
+    if (wRecState > 0)
     {
         DEB_TRACE() << "Force recording state to 0x0000";
 
@@ -1039,7 +1050,7 @@ void Camera::prepareAcq()
     PCO_THROW_OR_TRACE(error, "_pco_SetTransferParameter_SetActiveLookupTable");
     //-------------------------------------------------
 
-#ifndef __linux__
+//#ifndef __linux__
     //--------------------------- PREPARE / ARM
     DEB_TRACE() << "\n   ARM the camera / PCO_ArmCamera (1)";
     _pco_ArmCamera(error);
@@ -1048,21 +1059,17 @@ void Camera::prepareAcq()
     //-------------------------------------------------
 
     //--------------------------- PREPARE / getSizes (valid after ARM) alloc
-    // buffer
-
-    //_pco_GetSizes(&m_pcoData->wXResActual, &m_pcoData->wYResActual,
-    //&m_pcoData->wXResMax, &m_pcoData->wYResMax, error);
-    // PCO_THROW_OR_TRACE(error, "_pco_GetSizes") ;
 
     m_buffer->_pcoAllocBuffers(false);
+
     //-------------------------------------------------
 
     //--------------------------- PREPARE / img parameters
-    _pco_SetImageParameters(error);
+    error = _pco_SetImageParameters();
     PCO_THROW_OR_TRACE(error, "_pco_SetImageParameters");
     //-------------------------------------------------
 
-#endif
+//#endif
 
     //--------------------------- PREPARE / cocruntime (valid after
     // PCO_SetDelayExposureTime and ARM)
@@ -1275,14 +1282,13 @@ int Camera::dumpRecordedImages(int &nrImages, int &error)
     _pco_GetActiveRamSegment(wSegment, error);
     DWORD _dwValidImageCnt, _dwMaxImageCnt;
 
-    WORD wRecState_actual;
-
     nrImages = -1;
 
     if (!_isCameraType(Dimax))
         return -2;
 
-    wRecState_actual = _pco_GetRecordingState(error);
+    WORD wRecState_actual;
+    error = _pco_GetRecordingState(wRecState_actual);
     PCO_PRINT_ERR(error, "_pco_GetRecordingState");
 
     if (error)
@@ -1462,6 +1468,7 @@ bool Camera::_isCameraType(unsigned long long tp)
             return !!(tp & (EdgeUSB | EdgeRolling | Edge));
 
         case CAMERATYPE_PCO_EDGE_HS:
+        case CAMERATYPE_PCO_FAMILY_EDGE:
             return !!(tp & (EdgeHS | EdgeRolling | Edge));
 
         case CAMERATYPE_PCO_EDGE_42:
@@ -1729,7 +1736,7 @@ void Camera::_pco_set_shutter_rolling_edge(int &error)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
-    char *msg="none";
+    char *msg;
     const char *cmsg;
     char msgBuff[MSG_SIZE + 1];
 
@@ -1818,7 +1825,7 @@ void Camera::_pco_set_shutter_rolling_edge(int &error)
 
     cmsg = "[PCO_RebootCamera]";
     DEB_TRACE() << fnId << " " << cmsg;
-    _pco_RebootCamera(error);
+    error = _pco_RebootCamera();
     PCO_PRINT_ERR(error, cmsg);
     if (error)
         return;
@@ -1867,8 +1874,5 @@ bool Camera::_isValid_rollingShutter(DWORD dwRolling)
 //================================= ROLLING SHUTTER / end
 //========================================
 //================================================================================================
-#ifdef __linux__
-#    include "PcoCameraLin.cpp"
-#else
-#    include "PcoCameraWin.cpp"
-#endif
+
+#include "PcoCameraWin.cpp"

@@ -83,7 +83,6 @@ add_library(pco SHARED
   src/PcoBufferCtrlObj.cpp
   src/PcoCamera.cpp
   src/PcoCameraSdk.cpp
-  src/PcoCameraSdkWin.cpp
   src/PcoCameraSip.cpp
   src/PcoCameraUtils.cpp
   src/PcoDetInfoCtrlObj.cpp
@@ -93,6 +92,16 @@ add_library(pco SHARED
   src/PcoSyncCtrlObj.cpp
   ${PCO_INCS}
 )
+
+#if (WIN32)
+#target_sources(pco
+#  PRIVATE src/PcoCameraWin.cpp
+#)
+#else()
+#target_sources(pco
+#  PRIVATE src/PcoCameraLin.cpp
+#)
+#endif(WIN32)
 
 # Generate export macros
 generate_export_header(pco)
@@ -107,6 +116,8 @@ target_include_directories(pco
 if(WITH_GIT_VERSION)
 	target_compile_definitions(pco PUBLIC WITH_GIT_VERSION)
 endif()
+
+target_compile_definitions(pco PUBLIC PCO_LINUX)
 
 # Set LIMA_NO_DEBUG if LIMA_ENABLE_DEBUG is set
 if(NOT LIMA_ENABLE_DEBUG)
@@ -184,5 +195,7 @@ endif()
 ## Tests
 if(CAMERA_ENABLE_TESTS)
     enable_testing()
-    #add_subdirectory(test)
+    add_subdirectory(test)
 endif()
+
+

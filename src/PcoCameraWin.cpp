@@ -22,8 +22,38 @@
 ###########################################################################
 **************************************************************************/
 
+
 //=========================================================================================================
 //=========================================================================================================
+
+//class Camera::_AcqThread : public Thread
+//{
+//    DEB_CLASS_NAMESPC(DebModCamera, "Camera", "_AcqThread");
+//
+//  public:
+//    _AcqThread(Camera &aCam);
+//    virtual ~_AcqThread();
+//
+//  protected:
+//    virtual void threadFunction()
+//    {
+//        m_cam.threadFunction();
+//    }
+//
+//  private:
+//    Camera& m_cam;
+//};
+
+Camera::_AcqThread::_AcqThread(Camera &aCam) : m_cam(aCam)
+{
+    DEB_CONSTRUCTOR();
+    pthread_attr_setscope(&m_thread_attr, PTHREAD_SCOPE_PROCESS);
+}
+
+void Camera::_AcqThread::threadFunction()
+{
+    m_cam.threadFunction();
+}
 
 void _pco_acq_thread_dimax(void *argin);
 void _pco_acq_thread_dimax_trig_single(void *argin);
@@ -41,7 +71,9 @@ Camera::Camera(const std::string &camPar)
     : m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL),
       m_handle(NULL), m_Roi_lastFixed_time(0),
       m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
-      m_bRecorderForcedFifo(false)
+      m_bRecorderForcedFifo(false),
+      m_acq_thread(*this),
+      m_status(Camera::Status::Ready)
 {
     DEF_FNID;
     DEB_CONSTRUCTOR();
@@ -81,7 +113,8 @@ Camera::Camera(const std::string &camPar)
     ret = paramsGet(key, value);
     if (ret)
     {
-        m_pcoData->testCmdMode = _atoi64(value);
+        //m_pcoData->testCmdMode = _atoi64(value);
+        m_pcoData->testCmdMode = atoll(value);
     }
 
     key = "acqTimeoutRetry";
@@ -101,10 +134,22 @@ Camera::Camera(const std::string &camPar)
                  << _checkLogFiles(true);
 
     // m_bin.changed = Invalid;
-
-    _init();
-    m_config = false;
-    _setActionTimestamp(tsConstructor);
+    try
+    {
+        _init();
+        m_config = false;
+        _setActionTimestamp(tsConstructor);
+    }
+    catch (lima::Exception& ex)
+    {
+        uint32_t err = PCO_NOERROR;
+        err = PCO_CleanupLib();
+        if (err)
+            DEB_ERROR() << "*** "
+                        << "~Camera(): PCO_CleanupLib - cleanup pco sdk - "
+                        << err;
+        throw ex;
+    }
 }
 
 //=========================================================================================================
@@ -112,11 +157,15 @@ Camera::Camera(const std::string &camPar)
 Camera::~Camera()
 {
     DEB_DESTRUCTOR();
-    DEB_TRACE() << "DESTRUCTOR ....................";
 
     m_cam_connected = false;
 
     reset(RESET_CLOSE_INTERFACE);
+
+    uint32_t err = PCO_NOERROR;
+    err = PCO_CleanupLib();
+    if (err)
+        DEB_ERROR() << "*** " << "~Camera(): PCO_CleanupLib - cleanup pco sdk - " << err;
 }
 
 //==========================================================================================================
@@ -413,8 +462,6 @@ void _pco_acq_thread_dimax(void *argin)
     }
 
 #endif
-
-    _endthread();
 }
 
 //==========================================================================================================
@@ -518,8 +565,8 @@ void _pco_acq_thread_dimax_trig_single(void *argin)
         m_pcoData->msAcqTnow = msNowRecordLoop = msElapsedTime(tStart);
         m_pcoData->traceAcq.msRecordLoop = msNowRecordLoop;
 
-        wRecState_actual = m_cam->_pco_GetRecordingState(error);
-        if (error)
+        error = m_cam->_pco_GetRecordingState(wRecState_actual);
+        if (error != PCO_NOERROR)
         {
             printf("=== %s [%d]> ERROR %s\n", fnId, __LINE__,
                    "_pco_GetRecordingState");
@@ -643,8 +690,6 @@ void _pco_acq_thread_dimax_trig_single(void *argin)
     }
 
 #endif
-
-    _endthread();
 }
 
 //=====================================================================
@@ -656,7 +701,6 @@ void _pco_acq_thread_edge(void *argin)
 
     Camera *m_cam = (Camera *)argin;
     SyncCtrlObj *m_sync = m_cam->_getSyncCtrlObj();
-    // BufferCtrlObj* m_buffer = m_sync->_getBufferCtrlObj();
     BufferCtrlObj *m_buffer = m_cam->_getBufferCtrlObj();
 
     char _msg[LEN_MSG + 1];
@@ -711,7 +755,7 @@ void _pco_acq_thread_edge(void *argin)
 
     m_sync->setStarted(false); // updated
 
-    char *errMsg = NULL;
+    const char *errMsg = NULL;
     switch (status)
     {
         case pcoAcqRecordTimeout:
@@ -737,12 +781,10 @@ void _pco_acq_thread_edge(void *argin)
     {
         Event *ev = new Event(Hardware, Event::Error, Event::Camera,
                               Event::CamFault, errMsg);
-        //m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
+        m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
     }
 
     printf("=== %s [%d]> TRACE %s\n", fnId, __LINE__, "exit thread");
-
-    _endthread();
 }
 
 //=====================================================================
@@ -754,7 +796,6 @@ void _pco_acq_thread_dimax_live(void *argin)
 
     Camera *m_cam = (Camera *)argin;
     SyncCtrlObj *m_sync = m_cam->_getSyncCtrlObj();
-    // BufferCtrlObj* m_buffer = m_sync->_getBufferCtrlObj();
     BufferCtrlObj *m_buffer = m_cam->_getBufferCtrlObj();
 
     char _msg[LEN_MSG + 1];
@@ -813,8 +854,6 @@ void _pco_acq_thread_dimax_live(void *argin)
     m_cam->_traceMsg(_msg);
 
     m_sync->setStarted(false); // to test
-
-    _endthread();
 }
 
 //=====================================================================
@@ -921,8 +960,6 @@ void _pco_acq_thread_ringBuffer(void *argin)
     m_pcoData->traceAcq.usTicks[5].value = usElapsedTime(usStart);
 
     m_sync->setStarted(false); // to test
-
-    _endthread();
 }
 
 //=====================================================================
@@ -949,7 +986,8 @@ void Camera::_set_shutter_rolling_edge(DWORD dwRolling, int &error)
 
     DEB_TRACE() << "requested Rolling Shutter OK " << DEB_VAR1(dwRolling);
 
-    _beginthread(_pco_shutter_thread_edge, 0, (void *)this);
+    // ************************ TODO
+    //_beginthread(_pco_shutter_thread_edge, 0, (void *)this);
 
     return;
 }
@@ -975,8 +1013,6 @@ void _pco_shutter_thread_edge(void *argin)
     m_cam->_traceMsg(_msg);
 
     // m_sync->setStarted(false); // to test
-
-    _endthread();
 } //=================================================================================================
 //=================================================================================================
 
@@ -1084,40 +1120,35 @@ void Camera::startAcq()
         _pco_SetRecordingState(1, error);
     }
 
+    m_acq_thread.start();
+
+    //// Start acquisition thread
+    //AutoMutex aLock(m_cond_thread.mutex());
+    //m_wait_flag = false;
+    //m_cond_thread.broadcast();
+    //DEB_TRACE() << "[... starting after mutex] [EXIT]";
+
+    m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
+
+    return;
+}
+
+
+void Camera::threadFunction()
+{
+    DEB_MEMBER_FUNCT();
+
     if (_isCameraType(Edge))
     {
-        _beginthread(_pco_acq_thread_edge, 0, (void *)this);
+        DEB_TRACE() << "Running _pco_acq_thread_edge";
+        _pco_acq_thread_edge(this);
 
-#if 0
-        AutoMutex lock(m_cond.mutex());
-
-        bool resWait;
-        int retry = 3;
-        int val, val0; val0 = pcoAcqRecordStart;
-
-        while (((val = m_sync->getExposing()) != val0) && retry--)
-        {
-            DEB_TRACE() << "+++ getExposing / pcoAcqRecordStart - WAIT - " << DEB_VAR3(val, val0, retry);
-            resWait = m_cond.wait(2.);
-        }
-        DEB_TRACE() << "+++ getExposing / pcoAcqRecordStart - EXIT - " << DEB_VAR3(val, val0, retry);
-        lock.unlock();
-#endif
-
-        m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
         return;
     }
-
-#if 0
-    if (_isCameraType(Pco2k | Pco4k)) {
-        _beginthread(_pco_acq_thread_ringBuffer, 0, (void*)this);
-        m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
-        return;
-    }
-#endif
 
     if (_isCameraType(Dimax | Pco2k | Pco4k))
     {
+        int error = 0;
         int iRequestedFrames;
         m_sync->getNbFrames(iRequestedFrames);
 
@@ -1132,23 +1163,19 @@ void Camera::startAcq()
         {
             if ((trig_mode == ExtTrigSingle))
             {
-                _beginthread(_pco_acq_thread_dimax_trig_single, 0,
-                             (void *)this);
+                DEB_TRACE() << "Running _pco_acq_thread_dimax_trig_single";
+                _pco_acq_thread_dimax_trig_single(this);
             }
             else
             {
-                _beginthread(_pco_acq_thread_dimax, 0,
-                             (void *)this); // normal mode
+                DEB_TRACE() << "Running _pco_acq_thread_dimax";
+                _pco_acq_thread_dimax(this); // normal mode
             }
         }
         else
         {
-            _beginthread(_pco_acq_thread_dimax_live, 0, (void *)this);
+            DEB_TRACE() << "Running _pco_acq_thread_dimax_live";
+            _pco_acq_thread_dimax_live(this);
         }
-        m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
-        return;
     }
-
-    throw LIMA_HW_EXC(Error, "unkown camera type");
-    return;
 }

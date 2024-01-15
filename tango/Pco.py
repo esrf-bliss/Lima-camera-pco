@@ -747,9 +747,8 @@ def get_control(debug_control = "0",
 
     Core.DebParams.setFormatFlags(debFormat)
 
-
     if _PcoCam is None:
-        _PcoCam = PcoAcq.Camera(bParamsIn)
+        _PcoCam = PcoAcq.Camera(paramsIn)
         _PcoInterface = PcoAcq.Interface(_PcoCam)
         _PcoControl = Core.CtControl(_PcoInterface)
         memFactor0 = _PcoControl.buffer().getMaxMemory()

@@ -61,7 +61,6 @@ struct stcAllocBuff
     DWORD dwStatus[8]; // PCO_AddBufferEx status/error return
 
     // HANDLE bufferAllocEvent[PCO_MAX_NR_ALLOCATED_BUFFERS];
-    void *bufferAllocEvent[PCO_MAX_NR_ALLOCATED_BUFFERS];
 
     DWORD bufferAssignedFrameFirst[PCO_MAX_NR_ALLOCATED_BUFFERS];
     DWORD bufferAssignedFrameLast[PCO_MAX_NR_ALLOCATED_BUFFERS];
@@ -106,10 +105,8 @@ namespace lima
             void startAcq();
             // void getStatus(int &err,bool& exposing) {err = m_status,exposing
             // = m_exposing;}
-            void getStatus(int &err)
-            {
-                err = m_cam->pcoGetError();
-            }
+            void getStatus(int &err);
+
             // void setStatus(int status) {m_status = status;}
 
             void _setNewFrameReady(int iLimaFrame);
@@ -117,7 +114,7 @@ namespace lima
             int _xferImagDoubleImage();
             int _xferImag();
 
-            int _xferImag_buff2lima(DWORD &dwFrameIdx, int &bufIdx);
+            int _xferImag_buff2lima(DWORD const& dwFrameIdx, int &bufIdx);
 
             int _xferImag_getImage();
             int _xferImag_getImage_edge();

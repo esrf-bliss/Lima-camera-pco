@@ -24,6 +24,7 @@
 
 #ifdef __linux__
 #    include <sys/utsname.h>
+#    include <sys/time.h> // for gettimeofday
 #endif
 
 #ifndef __linux__
@@ -364,7 +365,7 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
 
     char cMsg[MSG1K];
     std::string stdMsg = cMsg;
-    
+
     char cmdBuff[BUFF_INFO_SIZE + 1];
     char cmdBuffAux[BUFF_INFO_SIZE + 1];
     const char *keys[NRCMDS];
@@ -372,7 +373,7 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
     const char *cmd;
     int ikey = 0;
     const char *tok[NRTOK];
-    int tokNr=0;
+    int tokNr = 0;
     char *ptr, *ptrMax;
     // int segmentPco = m_pcoData->wActiveRamSegment;
     // int segmentArr = segmentPco -1;
@@ -576,8 +577,7 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
         unsigned int bytesPerPix;
         getBytesPerPixel(bytesPerPix);
         WORD _wArmWidth, _wArmHeight, _wMaxWidth, _wMaxHeight;
-        _pco_GetSizes(&_wArmWidth, &_wArmHeight, &_wMaxWidth, &_wMaxHeight,
-                      error);
+        error = _pco_GetSizes(&_wArmWidth, &_wArmHeight, &_wMaxWidth, &_wMaxHeight);
 
         int sizeBytes = _wArmWidth * _wArmHeight * bytesPerPix;
         ptr += __sprintfSExt(ptr, ptrMax - ptr,
@@ -669,7 +669,7 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
                                  "* ERROR - only for DIMAX / 2K");
             return output;
         }
-        
+
         getTraceAcq(stdMsg);
         ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s", stdMsg.c_str());
 
@@ -1448,13 +1448,13 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
             ptr += __sprintfSExt(ptr, ptrMax - ptr, "* Signal Names:\n");
             for (int iSel = 0; iSel < 4; iSel++)
             {
-#ifdef __linux__
-                char *ptrName =
-                    m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[iSel];
-#else
+//#ifdef __linux__
+//                char *ptrName =
+//                    m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[iSel];
+//#else
                 char *ptrName =
                     m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[iSel];
-#endif
+//#endif
                 if (*ptrName)
                     ptr +=
                         __sprintfSExt(ptr, ptrMax - ptr,
@@ -1580,13 +1580,13 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
                                          "* STATUS of the HWIO signal for "
                                          "descriptor[%d] selected[%d] [%s]\n",
                                          i, (int)wSelected,
-#ifndef __linux__
+//#ifndef __linux__
                                          m_pcoData->stcPcoHWIOSignalDesc[i]
                                              .strSignalName[wSelected]
-#else
-                                         m_pcoData->stcPcoHWIOSignalDesc[i]
-                                             .szSignalName[wSelected]
-#endif
+//#else
+//                                         m_pcoData->stcPcoHWIOSignalDesc[i]
+//                                             .szSignalName[wSelected]
+//#endif
 
                     );
 
@@ -1719,17 +1719,17 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
                 "-sig:    enab[0x%x] type[0x%x] pol[0x%x] filt[0x%x] "
                 "sel[0x%x]\n\n",
 
-#ifndef __linux__
+//#ifndef __linux__
                 m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[0],
                 m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[1],
                 m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[2],
                 m_pcoData->stcPcoHWIOSignalDesc[i].strSignalName[3],
-#else
-                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[0],
-                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[1],
-                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[2],
-                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[3],
-#endif
+//#else
+//                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[0],
+//                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[1],
+//                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[2],
+//                m_pcoData->stcPcoHWIOSignalDesc[i].szSignalName[3],
+//#endif
 
                 i, (int)m_pcoData->stcPcoHWIOSignal[i].wSignalNum,
 
@@ -1868,13 +1868,13 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
         {
             char cName;
 
-#ifndef __linux__
+//#ifndef __linux__
             cName = *m_pcoData->stcPcoHWIOSignalDesc[iSignalNum]
                          .strSignalName[iSelected];
-#else
-            cName = *m_pcoData->stcPcoHWIOSignalDesc[iSignalNum]
-                         .szSignalName[iSelected];
-#endif
+//#else
+//            cName = *m_pcoData->stcPcoHWIOSignalDesc[iSignalNum]
+//                         .szSignalName[iSelected];
+//#endif
 
             if ((iSelected > 3) || (cName == 0))
             {
@@ -2008,11 +2008,11 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
     {
         const char *release;
 
-#ifdef __linux__
-        release = PCO_SDK_LIN_RELEASE;
-#else
-        release = PCO_SDK_WIN_RELEASE;
-#endif
+//#ifdef __linux__
+        release = PCO_SDK_RELEASE;
+//#else
+//        release = PCO_SDK_WIN_RELEASE;
+//#endif
 
         ptr += __sprintfSExt(ptr, ptrMax - ptr, release);
 
@@ -2482,8 +2482,8 @@ const char *Camera::_checkLogFiles(bool firstCall)
     return m_pcoData->pcoLogActive ? logOn : logOff;
 };
 
-    //====================================================================
-    //====================================================================
+//====================================================================
+//====================================================================
 
 #define INFO_BUFFER_SIZE 1024
 // void printError( TCHAR* msg );
@@ -2665,7 +2665,7 @@ char *_getPcoSdkVersion(char *infoBuff, int strLen, char *lib)
                            imi, imb);
     }
 #else
-    __sprintfSExt(ptr, strLen, PCO_SDK_LIN_RELEASE);
+    __sprintfSExt(ptr, strLen, PCO_SDK_RELEASE);
 
 #endif
     return infoBuff;
@@ -2821,13 +2821,12 @@ char *Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
     //--------------------- size, roi, ...
     if (flag & CAMINFO_ROI)
     {
-        int err;
         ptr += __sprintfSExt(ptr, ptrMax - ptr, "* size, roi, ... \n");
         unsigned int maxWidth, maxHeight, Xstep, Ystep, xMinSize, yMinSize;
         getXYdescription(Xstep, Ystep, maxWidth, maxHeight, xMinSize, yMinSize);
         WORD _wArmWidth, _wArmHeight, _wMaxWidth, _wMaxHeight;
-        _pco_GetSizes(&_wArmWidth, &_wArmHeight, &_wMaxWidth, &_wMaxHeight,
-                      err);
+        int err = _pco_GetSizes(&_wArmWidth, &_wArmHeight, &_wMaxWidth, &_wMaxHeight);
+                      
 
         ptr += __sprintfSExt(ptr, ptrMax - ptr,
                              "* ... maxWidth=[%d] maxHeight=[%d] \n", maxWidth,

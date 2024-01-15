@@ -113,7 +113,6 @@ namespace lima
             double m_lat_time; /* lattency - delay? */
 
             Camera *m_cam;
-            HANDLE &m_handle;
             TrigMode m_trig_mode;
             BufferCtrlObj *m_buffer;
             int m_nb_frames;
