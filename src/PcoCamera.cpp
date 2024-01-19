@@ -150,7 +150,7 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
         {CAMERATYPE_PCO_EDGE_HS, "PCO EDGE HS"},
         {CAMERATYPE_PCO_EDGE_MT, "PCO EDGE MT"},
         {CAMERATYPE_PCO_EDGE_GL, "PCO EDGE 5.5 GL"},
-        {CAMERATYPE_PCO_FAMILY_EDGE, "PCO EDGE"},
+        {CAMERATYPE_PCO_FAMILY_EDGE, "PCO EDGE FAMILY"},
         {0, "NO_modelType"},
         {0, NULL}};
 
@@ -175,7 +175,8 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
         {CAMERASUBTYPE_PCO_EDGE_DUAL_CLOCK, "DUAL_CLOCK"},
         {CAMERASUBTYPE_PCO_EDGE_DICAM, "DICAM"},
         {CAMERASUBTYPE_PCO_EDGE_42_LT, "EDGE_42_LT"},
-        {CAMERASUBTYPE_PCO_EDGE_260_CLHS, "EDGE_26_CLHS"},
+        {CAMERASUBTYPE_PCO_EDGE_42_BI, "EDGE_42_BI"},
+        {CAMERASUBTYPE_PCO_EDGE_260_CLHS, "EDGE_26_CLHS"},        
         {0, "NO_subType"},
         {0, NULL}};
 
@@ -186,6 +187,7 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
         {INTERFACE_ETHERNET, "ETHERNET"},
         {INTERFACE_SERIAL, "SERIAL"},
         {INTERFACE_USB3, "USB3"},
+        {INTERFACE_USB31_GEN1, "USB31"},        
         {INTERFACE_CAMERALINKHS, "CAMERALINK_HS"},
         {INTERFACE_COAXPRESS, "COAXPRESS"},
         {0, "NO_interfaceType"},
@@ -1465,6 +1467,7 @@ bool Camera::_isCameraType(unsigned long long tp)
             return !!(tp & (EdgeGL | Edge));
 
         case CAMERATYPE_PCO_EDGE_USB3:
+        case CAMERATYPE_PCO_FAMILY_EDGE: //TODO
             return !!(tp & (EdgeUSB | EdgeRolling | Edge));
 
         case CAMERATYPE_PCO_EDGE_HS:
