@@ -6,24 +6,35 @@ stages:
 build-win:
   stage: build
   script:
-    - conda mambabuild ./conda/camera --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
+    - conda mambabuild ./conda/camera --output-folder=dist --channel=esrf-bcu
   artifacts:
     paths:
       - dist/
   tags:
     - win
 
+build-lin:
+  stage: build
+  script:
+    - conda mambabuild ./conda/camera --output-folder=dist --channel=esrf-bcu
+  artifacts:
+    paths:
+      - dist/
+  tags:
+    - linux
+
 build-noarch:
   stage: build-noarch
   script:
-    - conda mambabuild ./conda/tango --output-folder=dist/ --channel=http://bcu-ci.esrf.fr/stable
+    - conda mambabuild ./conda/tango --output-folder=dist/ --channel=esrf-bcu --channel=http://bcu-ci.esrf.fr/stable
   artifacts:
     paths:
       - dist/
   dependencies:
+    - build-lin
     - build-win
   tags:
-    - win
+    - linux
 
 deploy-devel:
   stage: deploy
@@ -31,6 +42,7 @@ deploy-devel:
     name: devel/$CI_COMMIT_REF_NAME
     url: http://bcu-ci.esrf.fr/devel
   dependencies:
+    - build-lin
     - build-win
     - build-noarch
   script:
@@ -50,7 +62,7 @@ deploy-stable:
     name: production
     url: http://bcu-ci.esrf.fr/stable
   dependencies:
-    - build-win
+    - build-lin
     - build-noarch
   script:
     - cp -Rf dist/* /conda/
