@@ -28,7 +28,7 @@
 #define TOUT_MIN_DIMAX 500
 #define ERROR_MSG_LINE 128
 
-//#define BUFF_INFO_SIZE 5000
+// #define BUFF_INFO_SIZE 5000
 
 #include <csignal>
 #include <cstdlib>
@@ -130,68 +130,64 @@ const char *Camera::xlatCode2Str(int code, struct stcXlatCode2Str *stc)
 //=========================================================================================================
 //=========================================================================================================
 
-const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
-                                     int &err)
+const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &err)
 {
     DEB_CONSTRUCTOR();
-    struct stcXlatCode2Str modelType[] = {
-        {CAMERATYPE_PCO1200HS, "PCO 1200 HS"},
-        {CAMERATYPE_PCO1300, "PCO 1300"},
-        {CAMERATYPE_PCO1400, "PCO 1400"},
-        {CAMERATYPE_PCO1600, "PCO 1600"},
-        {CAMERATYPE_PCO2000, "PCO 2000"},
-        {CAMERATYPE_PCO4000, "PCO 4000"},
-        {CAMERATYPE_PCO_DIMAX_STD, "PCO DIMAX STD"},
-        {CAMERATYPE_PCO_DIMAX_TV, "PCO DIMAX TV"},
-        {CAMERATYPE_PCO_DIMAX_AUTOMOTIVE, "PCO DIMAX AUTOMOTIVE"},
-        {CAMERATYPE_PCO_EDGE, "PCO EDGE 5.5 RS"},
-        {CAMERATYPE_PCO_EDGE_42, "PCO EDGE 4.2 RS"},
-        {CAMERATYPE_PCO_EDGE_USB3, "PCO EDGE USB3"},
-        {CAMERATYPE_PCO_EDGE_HS, "PCO EDGE HS"},
-        {CAMERATYPE_PCO_EDGE_MT, "PCO EDGE MT"},
-        {CAMERATYPE_PCO_EDGE_GL, "PCO EDGE 5.5 GL"},
-        {CAMERATYPE_PCO_FAMILY_EDGE, "PCO EDGE FAMILY"},
-        {0, "NO_modelType"},
-        {0, NULL}};
+    struct stcXlatCode2Str modelType[] = {{CAMERATYPE_PCO1200HS, "PCO 1200 HS"},
+                                          {CAMERATYPE_PCO1300, "PCO 1300"},
+                                          {CAMERATYPE_PCO1400, "PCO 1400"},
+                                          {CAMERATYPE_PCO1600, "PCO 1600"},
+                                          {CAMERATYPE_PCO2000, "PCO 2000"},
+                                          {CAMERATYPE_PCO4000, "PCO 4000"},
+                                          {CAMERATYPE_PCO_DIMAX_STD, "PCO DIMAX STD"},
+                                          {CAMERATYPE_PCO_DIMAX_TV, "PCO DIMAX TV"},
+                                          {CAMERATYPE_PCO_DIMAX_AUTOMOTIVE, "PCO DIMAX AUTOMOTIVE"},
+                                          {CAMERATYPE_PCO_EDGE, "PCO EDGE 5.5 RS"},
+                                          {CAMERATYPE_PCO_EDGE_42, "PCO EDGE 4.2 RS"},
+                                          {CAMERATYPE_PCO_EDGE_USB3, "PCO EDGE USB3"},
+                                          {CAMERATYPE_PCO_EDGE_HS, "PCO EDGE HS"},
+                                          {CAMERATYPE_PCO_EDGE_MT, "PCO EDGE MT"},
+                                          {CAMERATYPE_PCO_EDGE_GL, "PCO EDGE 5.5 GL"},
+                                          {CAMERATYPE_PCO_FAMILY_EDGE, "PCO EDGE FAMILY"},
+                                          {0, "NO_modelType"},
+                                          {0, NULL}};
 
-    struct stcXlatCode2Str modelSubType[] = {
-        {CAMERATYPE_PCO1200HS, "PCO 1200 HS"},
-        {CAMERASUBTYPE_PCO_DIMAX_Weisscam, "DIMAX_Weisscam"},
-        {CAMERASUBTYPE_PCO_DIMAX_HD, "DIMAX_HD"},
-        {CAMERASUBTYPE_PCO_DIMAX_HD_plus, "DIMAX_HD_plus"},
-        {CAMERASUBTYPE_PCO_DIMAX_X35, "DIMAX_X35"},
-        {CAMERASUBTYPE_PCO_DIMAX_HS1, "DIMAX_HS1"},
-        {CAMERASUBTYPE_PCO_DIMAX_HS2, "DIMAX_HS2"},
-        {CAMERASUBTYPE_PCO_DIMAX_HS4, "DIMAX_HS4"},
+    struct stcXlatCode2Str modelSubType[] = {{CAMERATYPE_PCO1200HS, "PCO 1200 HS"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_Weisscam, "DIMAX_Weisscam"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_HD, "DIMAX_HD"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_HD_plus, "DIMAX_HD_plus"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_X35, "DIMAX_X35"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_HS1, "DIMAX_HS1"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_HS2, "DIMAX_HS2"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_HS4, "DIMAX_HS4"},
 
-        {CAMERASUBTYPE_PCO_EDGE_SPRINGFIELD, "EDGE_SPRINGFIELD"},
-        {CAMERASUBTYPE_PCO_EDGE_31, "EDGE_31"},
-        {CAMERASUBTYPE_PCO_EDGE_42, "EDGE_42"},
-        {CAMERASUBTYPE_PCO_EDGE_55, "EDGE_55"},
-        {CAMERASUBTYPE_PCO_EDGE_DEVELOPMENT, "EDGE_DEVELOPMENT"},
-        {CAMERASUBTYPE_PCO_EDGE_X2, "EDGE_X2"},
-        {CAMERASUBTYPE_PCO_EDGE_RESOLFT, "EDGE_RESOLFT"},
-        {CAMERASUBTYPE_PCO_EDGE_GOLD, "EDGE_GOLD"},
-        {CAMERASUBTYPE_PCO_EDGE_DUAL_CLOCK, "DUAL_CLOCK"},
-        {CAMERASUBTYPE_PCO_EDGE_DICAM, "DICAM"},
-        {CAMERASUBTYPE_PCO_EDGE_42_LT, "EDGE_42_LT"},
-        {CAMERASUBTYPE_PCO_EDGE_42_BI, "EDGE_42_BI"},
-        {CAMERASUBTYPE_PCO_EDGE_260_CLHS, "EDGE_26_CLHS"},        
-        {0, "NO_subType"},
-        {0, NULL}};
+                                             {CAMERASUBTYPE_PCO_EDGE_SPRINGFIELD, "EDGE_SPRINGFIELD"},
+                                             {CAMERASUBTYPE_PCO_EDGE_31, "EDGE_31"},
+                                             {CAMERASUBTYPE_PCO_EDGE_42, "EDGE_42"},
+                                             {CAMERASUBTYPE_PCO_EDGE_55, "EDGE_55"},
+                                             {CAMERASUBTYPE_PCO_EDGE_DEVELOPMENT, "EDGE_DEVELOPMENT"},
+                                             {CAMERASUBTYPE_PCO_EDGE_X2, "EDGE_X2"},
+                                             {CAMERASUBTYPE_PCO_EDGE_RESOLFT, "EDGE_RESOLFT"},
+                                             {CAMERASUBTYPE_PCO_EDGE_GOLD, "EDGE_GOLD"},
+                                             {CAMERASUBTYPE_PCO_EDGE_DUAL_CLOCK, "DUAL_CLOCK"},
+                                             {CAMERASUBTYPE_PCO_EDGE_DICAM, "DICAM"},
+                                             {CAMERASUBTYPE_PCO_EDGE_42_LT, "EDGE_42_LT"},
+                                             {CAMERASUBTYPE_PCO_EDGE_42_BI, "EDGE_42_BI"},
+                                             {CAMERASUBTYPE_PCO_EDGE_260_CLHS, "EDGE_26_CLHS"},
+                                             {0, "NO_subType"},
+                                             {0, NULL}};
 
-    struct stcXlatCode2Str interfaceType[] = {
-        {INTERFACE_FIREWIRE, "FIREWIRE"},
-        {INTERFACE_CAMERALINK, "CAMERALINK"},
-        {INTERFACE_USB, "USB"},
-        {INTERFACE_ETHERNET, "ETHERNET"},
-        {INTERFACE_SERIAL, "SERIAL"},
-        {INTERFACE_USB3, "USB3"},
-        {INTERFACE_USB31_GEN1, "USB31"},        
-        {INTERFACE_CAMERALINKHS, "CAMERALINK_HS"},
-        {INTERFACE_COAXPRESS, "COAXPRESS"},
-        {0, "NO_interfaceType"},
-        {0, NULL}};
+    struct stcXlatCode2Str interfaceType[] = {{INTERFACE_FIREWIRE, "FIREWIRE"},
+                                              {INTERFACE_CAMERALINK, "CAMERALINK"},
+                                              {INTERFACE_USB, "USB"},
+                                              {INTERFACE_ETHERNET, "ETHERNET"},
+                                              {INTERFACE_SERIAL, "SERIAL"},
+                                              {INTERFACE_USB3, "USB3"},
+                                              {INTERFACE_USB31_GEN1, "USB31"},
+                                              {INTERFACE_CAMERALINKHS, "CAMERALINK_HS"},
+                                              {INTERFACE_COAXPRESS, "COAXPRESS"},
+                                              {0, "NO_interfaceType"},
+                                              {0, NULL}};
 
     struct stcXlatCode2Str *stc;
     const char *ptr;
@@ -214,8 +210,7 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
             break;
 
         default:
-            __sprintfSExt(buff, BUFF_XLAT_SIZE, "UNKNOWN XLAT TABLE [%d]",
-                          table);
+            __sprintfSExt(buff, BUFF_XLAT_SIZE, "UNKNOWN XLAT TABLE [%d]", table);
             err = 1;
             return buff;
     }
@@ -272,20 +267,18 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table,
                     default:
                         ptr = NULL;
                 } // switch(camtype.wCamSubType / 0x100) ...
-        }         // switch(camtype.wCamSubType) ...
+        } // switch(camtype.wCamSubType) ...
 
         if (ptr)
         {
-            __sprintfSExt(buff, BUFF_XLAT_SIZE,
-                          "subType DIMAX %s code [0x%04x]", ptr, code);
+            __sprintfSExt(buff, BUFF_XLAT_SIZE, "subType DIMAX %s code [0x%04x]", ptr, code);
             err = 0;
             return buff;
         }
     }
 
     {
-        __sprintfSExt(buff, BUFF_XLAT_SIZE, "UNKNOWN %s code [0x%04x]",
-                      errTable, code);
+        __sprintfSExt(buff, BUFF_XLAT_SIZE, "UNKNOWN %s code [0x%04x]", errTable, code);
         err = 1;
         return buff;
     }
@@ -315,54 +308,36 @@ stcPcoData::stcPcoData()
     ptrMax = ptr + BUFFVERSION_LEN - 1;
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "\n");
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _split_date(_timestamp_pcocamera()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _split_date(_timestamp_pcosyncctrlobj()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _split_date(_timestamp_pcointerface()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _split_date(_timestamp_pcobufferctrlobj()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _split_date(_timestamp_pcodetinfoctrlobj()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _split_date(_timestamp_pcocamerautils()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _split_date(_timestamp_pcoroictrlobj()));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcocamera()));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcosyncctrlobj()));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcointerface()));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcobufferctrlobj()));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcodetinfoctrlobj()));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcocamerautils()));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcoroictrlobj()));
 
 #ifdef WITH_GIT_VERSION
     char buffVersion[BUFFVERSION_LEN + 1];
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n",
-                         _timestamp_gitversion(buffVersion, BUFFVERSION_LEN));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _timestamp_gitversion(buffVersion, BUFFVERSION_LEN));
 #endif
 
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "       timestamp: %s\n",
-                         getTimestamp(Iso));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "   computer name: %s\n",
-                         _getComputerName(buff, BUFFER_LEN));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "       timestamp: %s\n", getTimestamp(Iso));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "   computer name: %s\n", _getComputerName(buff, BUFFER_LEN));
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "              OS: %s\n", _getOs());
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "       user name: %s\n",
-                         _getUserName(buff, BUFFER_LEN));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "   configuration: %s\n",
-                         _getVSconfiguration(buff, BUFFER_LEN));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "        SISO dir: %s\n",
-                         _getEnviroment("SISODIR5"));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "       user name: %s\n", _getUserName(buff, BUFFER_LEN));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "   configuration: %s\n", _getVSconfiguration(buff, BUFFER_LEN));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "        SISO dir: %s\n", _getEnviroment("SISODIR5"));
 
 #ifndef __linux__
-    ptr += __sprintfSExt(
-        ptr, ptrMax - ptr, " PCO SDK version: %s\n",
-        _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_cam.dll"));
-    ptr += __sprintfSExt(
-        ptr, ptrMax - ptr, "                  %s\n",
-        _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_cl_me4.dll"));
-    ptr += __sprintfSExt(
-        ptr, ptrMax - ptr, "                  %s\n",
-        _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_clhs.dll"));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "    lima pco dll: %s\n",
-                         _getDllPath(FILE_PCO_DLL, buff, BUFFER_LEN));
-#else
     ptr += __sprintfSExt(ptr, ptrMax - ptr, " PCO SDK version: %s\n",
-                         _getPcoSdkVersion(buff, BUFFER_LEN, NULL));
+                         _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_cam.dll"));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "                  %s\n",
+                         _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_cl_me4.dll"));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "                  %s\n",
+                         _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_clhs.dll"));
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, "    lima pco dll: %s\n", _getDllPath(FILE_PCO_DLL, buff, BUFFER_LEN));
+#else
+    ptr += __sprintfSExt(ptr, ptrMax - ptr, " PCO SDK version: %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, NULL));
 #endif
 
     stcPcoGeneral.wSize = sizeof(stcPcoGeneral);
@@ -438,8 +413,7 @@ void Camera::paramsInit(const char *str)
 
     for (nr = i = 0; i < PARAMS_NR; i++)
     {
-        if ((m_pcoData->params.ptrKey[i] = strtok_s(ptr, ";", &tokNext)) ==
-            NULL)
+        if ((m_pcoData->params.ptrKey[i] = strtok_s(ptr, ";", &tokNext)) == NULL)
             break;
         ptr = NULL;
         nr = i + 1;
@@ -465,8 +439,7 @@ void Camera::paramsInit(const char *str)
         found = false;
         for (int j = 0; j < nrList; j++)
         {
-            if (_stricmp(m_pcoData->params.ptrKey[j],
-                         m_pcoData->params.ptrKey[i]) == 0)
+            if (_stricmp(m_pcoData->params.ptrKey[j], m_pcoData->params.ptrKey[i]) == 0)
             {
                 m_pcoData->params.ptrValue[j] = m_pcoData->params.ptrValue[i];
                 found = true;
@@ -475,10 +448,8 @@ void Camera::paramsInit(const char *str)
         }
         if (!found)
         {
-            key = m_pcoData->params.ptrKey[nrList] =
-                m_pcoData->params.ptrKey[i];
-            value = m_pcoData->params.ptrValue[nrList] =
-                m_pcoData->params.ptrValue[i];
+            key = m_pcoData->params.ptrKey[nrList] = m_pcoData->params.ptrKey[i];
+            value = m_pcoData->params.ptrValue[nrList] = m_pcoData->params.ptrValue[i];
             nrList++;
         }
     }
@@ -514,79 +485,79 @@ void Camera::_init()
     if (err)
         PCO_THROW_OR_TRACE(err, "_init(): PCO_InitializeLib - init pco sdk");
 
-//#ifdef __linux__
-//    // ----- linux [begin]
-//
-//    UNUSED const char *pcoFn;
-//
-//    //-------------------- linux
-//
-//    board = 0;
-//    int iErr;
-//
-//    // int bufnum=20;
-//
-//    DEB_ALWAYS() << "setting the log";
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Cam";
-//    _pco_Open_Cam(iErr);
-//    if (iErr)
-//    {
-//        camera->Close_Cam();
-//        delete camera;
-//        camera = NULL;
-//        DEB_ALWAYS() << "FATAL - _pco_Open_Cam " << DEB_VAR1(iErr);
-//        THROW_HW_ERROR(Error);
-//    }
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraType";
-//    _pco_GetCameraType(iErr);
-//    if (iErr)
-//    {
-//        DEB_ALWAYS() << "WARNING - _pco_GetCameraType " << DEB_VAR1(iErr);
-//    }
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_Open_Grab";
-//    _pco_Open_Grab(iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraInfo";
-//    _pco_GetCameraInfo(iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_ResetSettingsToDefault";
-//    _pco_ResetSettingsToDefault(iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_SetCameraToCurrentTime";
-//    _pco_SetCameraToCurrentTime(iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_GetTransferParameter";
-//    _pco_GetTransferParameter(iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_GetTemperatureInfo";
-//    _pco_GetTemperatureInfo(iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ pco_GetPixelRate";
-//    DWORD pixRateActual, pixRateNext;
-//    _pco_GetPixelRate(pixRateActual, pixRateNext, iErr);
-//    DEB_ALWAYS() << DEB_VAR2(pixRateActual, pixRateNext);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_GetLut";
-//    _pco_GetLut(iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_SetRecordingState";
-//    _pco_SetRecordingState(0, iErr);
-//
-//    //_pco_SetTimestampMode(2, iErr);
-//
-//    DEB_ALWAYS() << "++++++++++++++ _pco_initHWIOSignal";
-//    // 0x01: "Low level active"
-//    // 0x02: "High Level active"
-//    // 0x04: "Rising edge active"
-//    // 0x08: "Falling edge active"
-//    _pco_initHWIOSignal(0, 0x04, iErr);
-//
-//    // ----- linux [end]
-//#else
-    // ----- windows [begin]
+    // #ifdef __linux__
+    //     // ----- linux [begin]
+    //
+    //     UNUSED const char *pcoFn;
+    //
+    //     //-------------------- linux
+    //
+    //     board = 0;
+    //     int iErr;
+    //
+    //     // int bufnum=20;
+    //
+    //     DEB_ALWAYS() << "setting the log";
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_Open_Cam";
+    //     _pco_Open_Cam(iErr);
+    //     if (iErr)
+    //     {
+    //         camera->Close_Cam();
+    //         delete camera;
+    //         camera = NULL;
+    //         DEB_ALWAYS() << "FATAL - _pco_Open_Cam " << DEB_VAR1(iErr);
+    //         THROW_HW_ERROR(Error);
+    //     }
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraType";
+    //     _pco_GetCameraType(iErr);
+    //     if (iErr)
+    //     {
+    //         DEB_ALWAYS() << "WARNING - _pco_GetCameraType " << DEB_VAR1(iErr);
+    //     }
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_Open_Grab";
+    //     _pco_Open_Grab(iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_GetCameraInfo";
+    //     _pco_GetCameraInfo(iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_ResetSettingsToDefault";
+    //     _pco_ResetSettingsToDefault(iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_SetCameraToCurrentTime";
+    //     _pco_SetCameraToCurrentTime(iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_GetTransferParameter";
+    //     _pco_GetTransferParameter(iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_GetTemperatureInfo";
+    //     _pco_GetTemperatureInfo(iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ pco_GetPixelRate";
+    //     DWORD pixRateActual, pixRateNext;
+    //     _pco_GetPixelRate(pixRateActual, pixRateNext, iErr);
+    //     DEB_ALWAYS() << DEB_VAR2(pixRateActual, pixRateNext);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_GetLut";
+    //     _pco_GetLut(iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_SetRecordingState";
+    //     _pco_SetRecordingState(0, iErr);
+    //
+    //     //_pco_SetTimestampMode(2, iErr);
+    //
+    //     DEB_ALWAYS() << "++++++++++++++ _pco_initHWIOSignal";
+    //     // 0x01: "Low level active"
+    //     // 0x02: "High Level active"
+    //     // 0x04: "Rising edge active"
+    //     // 0x08: "Falling edge active"
+    //     _pco_initHWIOSignal(0, 0x04, iErr);
+    //
+    //     // ----- linux [end]
+    // #else
+    //  ----- windows [begin]
 
     char msg[MSG4K + 1];
 
@@ -596,7 +567,7 @@ void Camera::_init()
     __sprintfSExt(msg, sizeof(msg), "*** Pco log %s\n", getTimestamp(Iso));
     m_log.append(msg);
 
-    //DEB_TRACE() << _getDllPath(FILE_PCO_DLL, msg, sizeof(msg));
+    // DEB_TRACE() << _getDllPath(FILE_PCO_DLL, msg, sizeof(msg));
 
     const char *key = "sn";
     char *value;
@@ -608,8 +579,7 @@ void Camera::_init()
     {
         DEB_TRACE() << fnId << " [closing opened camera]";
         _pco_CloseCamera(error);
-        PCO_THROW_OR_TRACE(error,
-                           "_init(): PCO_CloseCamera - closing opened cam");
+        PCO_THROW_OR_TRACE(error, "_init(): PCO_CloseCamera - closing opened cam");
         m_handle = 0;
     }
 
@@ -624,8 +594,7 @@ void Camera::_init()
         {
             if (retry-- <= 0)
                 break;
-            DEB_ALWAYS() << "\n... ERROR - PCO_OpenCamera / retry ... "
-                         << DEB_VAR2(retry, retrySleep);
+            DEB_ALWAYS() << "\n... ERROR - PCO_OpenCamera / retry ... " << DEB_VAR2(retry, retrySleep);
             ::Sleep(retrySleep * 1000);
         }
         else
@@ -645,12 +614,10 @@ void Camera::_init()
     _pco_GetCameraType(error);
     PCO_THROW_OR_TRACE(error, "_pco_GetCameraType");
 
-    DEB_ALWAYS()
-        << "\n"
-        << "\n====================== CAMERA FOUND ======================"
-        << "\n* " << _getCameraIdn()
-        << "\n=========================================================="
-        << "\n";
+    DEB_ALWAYS() << "\n"
+                 << "\n====================== CAMERA FOUND ======================"
+                 << "\n* " << _getCameraIdn() << "\n=========================================================="
+                 << "\n";
 
     DEB_TRACE() << fnId << " [camera opened] " << DEB_VAR1(m_handle);
 
@@ -691,13 +658,11 @@ void Camera::_init()
     WORD bitsPerPix;
     getBitsPerPixel(bitsPerPix);
 
-    __sprintfSExt(msg, MSG_SIZE, "* CCD Size = X[%d] * Y[%d] (%d bits)\n",
-                  maxWidth, maxHeight, bitsPerPix);
+    __sprintfSExt(msg, MSG_SIZE, "* CCD Size = X[%d] * Y[%d] (%d bits)\n", maxWidth, maxHeight, bitsPerPix);
     DEB_TRACE() << msg;
     m_log.append(msg);
 
-    __sprintfSExt(msg, MSG_SIZE, "* ROI Steps = x:%d, y:%d\n", maxwidth_step,
-                  maxheight_step);
+    __sprintfSExt(msg, MSG_SIZE, "* ROI Steps = x:%d, y:%d\n", maxwidth_step, maxheight_step);
     DEB_TRACE() << msg;
     m_log.append(msg);
 
@@ -717,8 +682,7 @@ void Camera::_init()
     else
     {
         char msg[MSG_SIZE + 1];
-        __sprintfSExt(msg, MSG_SIZE, "Camera type not supported! [x%04x]",
-                      _getCameraType());
+        __sprintfSExt(msg, MSG_SIZE, "Camera type not supported! [x%04x]", _getCameraType());
         DEB_ALWAYS() << msg;
 
         throw LIMA_HW_EXC(Error, msg);
@@ -733,7 +697,7 @@ void Camera::_init()
     _pco_initHWIOSignal(0, 0x4, error);
 
     // ----- windows [end]
-//#endif
+    // #endif
 
     _pco_SetCameraToCurrentTime(error);
 
@@ -769,18 +733,15 @@ void Camera::_init_dimax()
         m_pcoData->dwRamSize = ramSize;    // nr of pages of the ram
         m_pcoData->wPixPerPage = pageSize; // nr of pixels of the page
 
-        __sprintfSExt(msg, MSG_SIZE,
-                      "* ramPages[%d] pixPerPage[%d] bitsPerPix[%d]\n",
-                      m_pcoData->dwRamSize, m_pcoData->wPixPerPage, bitsPerPix);
+        __sprintfSExt(msg, MSG_SIZE, "* ramPages[%d] pixPerPage[%d] bitsPerPix[%d]\n", m_pcoData->dwRamSize,
+                      m_pcoData->wPixPerPage, bitsPerPix);
         DEB_TRACE() << msg;
         m_log.append(msg);
 
-        double nrBytes = (double)m_pcoData->dwRamSize *
-                         (double)m_pcoData->wPixPerPage * (double)bitsPerPix /
+        double nrBytes = (double)m_pcoData->dwRamSize * (double)m_pcoData->wPixPerPage * (double)bitsPerPix /
                          9.; // 8 bits data + 1 bit CRC -> 9
 
-        __sprintfSExt(msg, MSG_SIZE, "* camMemorySize [%lld B] [%g GB]\n",
-                      (long long int)nrBytes, nrBytes / GIGABYTE);
+        __sprintfSExt(msg, MSG_SIZE, "* camMemorySize [%lld B] [%g GB]\n", (long long int)nrBytes, nrBytes / GIGABYTE);
         DEB_TRACE() << msg;
         m_log.append(msg);
 
@@ -797,8 +758,8 @@ void Camera::_init_dimax()
             segmentPco = segmentArr + 1; // PCO segment (1 ... 4)
             m_pcoData->dwSegmentSize[segmentArr] = segSize[segmentArr];
 
-            __sprintfSExt(msg, MSG_SIZE, "* segment[%d] number of pages[%d]\n",
-                          segmentPco, m_pcoData->dwSegmentSize[segmentArr]);
+            __sprintfSExt(msg, MSG_SIZE, "* segment[%d] number of pages[%d]\n", segmentPco,
+                          m_pcoData->dwSegmentSize[segmentArr]);
             DEB_TRACE() << msg;
             m_log.append(msg);
         }
@@ -808,16 +769,14 @@ void Camera::_init_dimax()
         {
             segmentPco = segmentArr + 1;
 
-            _pco_GetNumberOfImagesInSegment(segmentPco, _dwValidImageCnt,
-                                            _dwMaxImageCnt, error);
+            _pco_GetNumberOfImagesInSegment(segmentPco, _dwValidImageCnt, _dwMaxImageCnt, error);
             PCO_THROW_OR_TRACE(error, pcoFn);
 
             m_pcoData->dwValidImageCnt[segmentArr] = _dwValidImageCnt;
             m_pcoData->dwMaxImageCnt[segmentArr] = _dwMaxImageCnt;
 
-            __sprintfSExt(msg, MSG_SIZE,
-                          "* segment[%d] nr images [%d]  max imag [%d]\n",
-                          segmentPco, _dwValidImageCnt, _dwMaxImageCnt);
+            __sprintfSExt(msg, MSG_SIZE, "* segment[%d] nr images [%d]  max imag [%d]\n", segmentPco, _dwValidImageCnt,
+                          _dwMaxImageCnt);
             DEB_TRACE() << msg;
             m_log.append(msg);
 
@@ -833,10 +792,8 @@ void Camera::_init_dimax()
             m_pcoData->dwSegmentSize[0] += m_pcoData->dwSegmentSize[segmentArr];
             m_pcoData->dwSegmentSize[segmentArr] = 0;
         }
-        __sprintfSExt(
-            msg, MSG_SIZE,
-            "* m_pcoData->dwSegmentSize0 [%d]  m_pcoData->dwRamSize [%d]\n",
-            m_pcoData->dwSegmentSize[0], m_pcoData->dwRamSize);
+        __sprintfSExt(msg, MSG_SIZE, "* m_pcoData->dwSegmentSize0 [%d]  m_pcoData->dwRamSize [%d]\n",
+                      m_pcoData->dwSegmentSize[0], m_pcoData->dwRamSize);
         DEB_TRACE() << msg;
         m_log.append(msg);
 
@@ -860,8 +817,7 @@ void Camera::_init_dimax()
         {
             if (m_pcoData->dwMaxImageCnt[segmentArr] == 0)
             {
-                m_pcoData->dwMaxImageCnt[segmentArr] =
-                    m_pcoData->dwSegmentSize[segmentArr] / pages_per_image;
+                m_pcoData->dwMaxImageCnt[segmentArr] = m_pcoData->dwSegmentSize[segmentArr] / pages_per_image;
                 if (m_pcoData->dwMaxImageCnt[segmentArr] > 4)
                     m_pcoData->dwMaxImageCnt[segmentArr] -= 2;
             }
@@ -873,8 +829,7 @@ void Camera::_init_dimax()
     WORD wActSeg;
     _pco_GetActiveRamSegment(wActSeg, error);
 
-    _pco_GetNumberOfImagesInSegment(m_pcoData->wActiveRamSegment,
-                                    _dwValidImageCnt, _dwMaxImageCnt, error);
+    _pco_GetNumberOfImagesInSegment(m_pcoData->wActiveRamSegment, _dwValidImageCnt, _dwMaxImageCnt, error);
     PCO_THROW_OR_TRACE(error, pcoFn);
 
     DEB_TRACE() << "original DONE";
@@ -978,8 +933,7 @@ void Camera::prepareAcq()
             mode = RecSeq;
         }
 
-        DEB_TRACE() << "\n>>> set storage/recorder mode - DIMAX 2K 4K: "
-                    << DEB_VAR1(mode);
+        DEB_TRACE() << "\n>>> set storage/recorder mode - DIMAX 2K 4K: " << DEB_VAR1(mode);
 
         _pco_SetStorageMode_SetRecorderSubmode(mode, error);
         PCO_THROW_OR_TRACE(error, "_pco_SetStorageMode_SetRecorderSubmode");
@@ -1015,12 +969,10 @@ void Camera::prepareAcq()
 
         if ((trig_mode == ExtTrigSingle) && (iRequestedFrames > 0))
         {
-            wRecordStopEventMode =
-                0x0002; // record stop by edge at the <acq. enbl.>
+            wRecordStopEventMode = 0x0002; // record stop by edge at the <acq. enbl.>
             dwRecordStopDelayImages = iRequestedFrames;
             DEB_TRACE() << "..... PCO_SetRecordStopEvent";
-            _pco_SetRecordStopEvent(wRecordStopEventMode,
-                                    dwRecordStopDelayImages, error);
+            _pco_SetRecordStopEvent(wRecordStopEventMode, dwRecordStopDelayImages, error);
             PCO_THROW_OR_TRACE(error, "PCO_SetRecordStopEvent");
         }
     }
@@ -1052,7 +1004,7 @@ void Camera::prepareAcq()
     PCO_THROW_OR_TRACE(error, "_pco_SetTransferParameter_SetActiveLookupTable");
     //-------------------------------------------------
 
-//#ifndef __linux__
+    // #ifndef __linux__
     //--------------------------- PREPARE / ARM
     DEB_TRACE() << "\n   ARM the camera / PCO_ArmCamera (1)";
     _pco_ArmCamera(error);
@@ -1071,7 +1023,7 @@ void Camera::prepareAcq()
     PCO_THROW_OR_TRACE(error, "_pco_SetImageParameters");
     //-------------------------------------------------
 
-//#endif
+    // #endif
 
     //--------------------------- PREPARE / cocruntime (valid after
     // PCO_SetDelayExposureTime and ARM)
@@ -1149,21 +1101,9 @@ void Camera::prepareAcq()
 //==========================================================================================================
 
 const char *sPcoAcqStatus[] = {
-    "pcoAcqOK",
-    "pcoAcqIdle",
-    "pcoAcqStart",
-    "pcoAcqRecordStart",
-    "pcoAcqRecordEnd",
-    "pcoAcqRecordStop",
-    "pcoAcqRecordTimeout",
-    "pcoAcqTransferStart",
-    "pcoAcqTransferEnd",
-    "pcoAcqStop",
-    "pcoAcqTransferStop",
-    "pcoAcqWaitTimeout",
-    "pcoAcqWaitError",
-    "pcoAcqError",
-    "pcoAcqPcoError",
+    "pcoAcqOK",           "pcoAcqIdle",          "pcoAcqStart",         "pcoAcqRecordStart", "pcoAcqRecordEnd",
+    "pcoAcqRecordStop",   "pcoAcqRecordTimeout", "pcoAcqTransferStart", "pcoAcqTransferEnd", "pcoAcqStop",
+    "pcoAcqTransferStop", "pcoAcqWaitTimeout",   "pcoAcqWaitError",     "pcoAcqError",       "pcoAcqPcoError",
 };
 
 //=====================================================================
@@ -1179,8 +1119,7 @@ void Camera::reset(int reset_level)
     switch (reset_level)
     {
         case RESET_CLOSE_INTERFACE:
-            DEB_TRACE() << "\n... RESET - freeBuff, closeCam, resetLib  "
-                        << DEB_VAR1(reset_level);
+            DEB_TRACE() << "\n... RESET - freeBuff, closeCam, resetLib  " << DEB_VAR1(reset_level);
 
 #ifndef __linux__
             if (m_buffer)
@@ -1204,8 +1143,7 @@ void Camera::reset(int reset_level)
 //=========================================================================================================
 //=========================================================================================================
 #define LEN_TMP_MSG 256
-int Camera::PcoCheckError(int line, const char *file, int err, const char *fn,
-                          const char *comments)
+int Camera::PcoCheckError(int line, const char *file, int err, const char *fn, const char *comments)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
@@ -1215,8 +1153,7 @@ int Camera::PcoCheckError(int line, const char *file, int err, const char *fn,
     char *msg;
     size_t lg;
 
-    __sprintfSExt(tmpMsg, LEN_TMP_MSG, "PCOfn[%s] file[%s] line[%d]", fn, file,
-                  line);
+    __sprintfSExt(tmpMsg, LEN_TMP_MSG, "PCOfn[%s] file[%s] line[%d]", fn, file, line);
     if (err != 0)
     {
         __sprintfSExt(tmpMsg1, LEN_TMP_MSG, "ERROR - PCOfn[%s]", fn);
@@ -1234,8 +1171,7 @@ int Camera::PcoCheckError(int line, const char *file, int err, const char *fn,
 
         if (err & PCO_ERROR_IS_WARNING)
         {
-            DEB_WARNING() << fnId << ": --- WARNING - IGNORED --- "
-                          << DEB_VAR1(m_pcoData->pcoErrorMsg);
+            DEB_WARNING() << fnId << ": --- WARNING - IGNORED --- " << DEB_VAR1(m_pcoData->pcoErrorMsg);
             return 0;
         }
         DEB_ERROR() << fnId << ":\n... " << msg << "\n... " << tmpMsg;
@@ -1246,8 +1182,7 @@ int Camera::PcoCheckError(int line, const char *file, int err, const char *fn,
 
 //=========================================================================================================
 //=========================================================================================================
-char *Camera::_PcoCheckError(int line, const char *file, int err, int &error,
-                             const char *fn)
+char *Camera::_PcoCheckError(int line, const char *file, int err, int &error, const char *fn)
 {
     static char lastErrorMsg[ERR_SIZE];
     static char tmpMsg[LEN_TMP_MSG + 1];
@@ -1298,12 +1233,10 @@ int Camera::dumpRecordedImages(int &nrImages, int &error)
     if (wRecState_actual != 0)
         return -1;
 
-    _pco_GetNumberOfImagesInSegment(wSegment, _dwValidImageCnt, _dwMaxImageCnt,
-                                    error);
+    _pco_GetNumberOfImagesInSegment(wSegment, _dwValidImageCnt, _dwMaxImageCnt, error);
     if (error)
     {
-        printf("=== %s [%d]> ERROR %s\n", fnId, __LINE__,
-               "_pco_GetNumberOfImagesInSegment");
+        printf("=== %s [%d]> ERROR %s\n", fnId, __LINE__, "_pco_GetNumberOfImagesInSegment");
         throw LIMA_HW_EXC(Error, "PCO_GetNumberOfImagesInSegment");
     }
 
@@ -1467,15 +1400,14 @@ bool Camera::_isCameraType(unsigned long long tp)
             return !!(tp & (EdgeGL | Edge));
 
         case CAMERATYPE_PCO_EDGE_USB3:
-        case CAMERATYPE_PCO_FAMILY_EDGE: //TODO
             return !!(tp & (EdgeUSB | EdgeRolling | Edge));
 
         case CAMERATYPE_PCO_EDGE_HS:
-        case CAMERATYPE_PCO_FAMILY_EDGE:
             return !!(tp & (EdgeHS | EdgeRolling | Edge));
 
         case CAMERATYPE_PCO_EDGE_42:
         case CAMERATYPE_PCO_EDGE:
+        case CAMERATYPE_PCO_FAMILY_EDGE:
             return !!(tp & (EdgeRolling | Edge));
 
         case CAMERATYPE_PCO2000:
@@ -1794,8 +1726,7 @@ void Camera::_pco_set_shutter_rolling_edge(int &error)
 
     if (m_dwSetup[0] == dwRollingShRequested)
     {
-        DEB_TRACE() << "exit NO Change in ROLLING SHUTTER "
-                    << DEB_VAR2(dwRollingShNow, dwRollingShRequested);
+        DEB_TRACE() << "exit NO Change in ROLLING SHUTTER " << DEB_VAR2(dwRollingShNow, dwRollingShRequested);
         m_config = false;
         return;
     }
@@ -1805,8 +1736,7 @@ void Camera::_pco_set_shutter_rolling_edge(int &error)
                   m_dwSetup[0] == PCO_EDGE_SETUP_ROLLING_SHUTTER,
                   dwRollingShRequested == PCO_EDGE_SETUP_ROLLING_SHUTTER);
 
-    DEB_TRACE() << "Change in ROLLING SHUTTER "
-                << DEB_VAR2(dwRollingShNow, dwRollingShRequested);
+    DEB_TRACE() << "Change in ROLLING SHUTTER " << DEB_VAR2(dwRollingShNow, dwRollingShRequested);
 
     m_dwSetup[0] = dwRollingShRequested;
 
