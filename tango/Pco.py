@@ -41,7 +41,7 @@
 #
 #=============================================================================
 # 2016/06/02 - property params
-#    split between 1 param (str) and more params (class 'PyTango._PyTango.StdStringVector')
+#    split between 1 param (str) and more params (class 'tango._tango.StdStringVector')
 # 2019/04/08 
 #    property params / convert str -> bytes (python3)
 #    talk cmd & calls / convert str -> bytes (python3)
@@ -51,8 +51,8 @@
 #=============================================================================
 
 
-import PyTango
-import pdb
+import tango
+
 from Lima import Core
 from Lima import Pco as PcoAcq
 from Lima.Server import AttrHelper
@@ -66,7 +66,7 @@ VERSION_ATT ="tango/Pco.py: 2019/04/25"
 
 RESET_CLOSE_INTERFACE	= 100
 
-class Pco(PyTango.LatestDeviceImpl):
+class Pco(tango.LatestDeviceImpl):
 
     Core.DEB_CLASS(Core.DebModApplication, 'LimaCCDs')
 
@@ -74,7 +74,7 @@ class Pco(PyTango.LatestDeviceImpl):
 #    Device constructor
 #------------------------------------------------------------------
     def __init__(self,*args) :
-        PyTango.LatestDeviceImpl.__init__(self,*args)
+        tango.LatestDeviceImpl.__init__(self,*args)
 
         #self._Pco__Rollingshutter = { "only for EDGE": "-1", "GLOBAL": "0", "ROLLING":"1" }    
 
@@ -141,7 +141,7 @@ class Pco(PyTango.LatestDeviceImpl):
 #------------------------------------------------------------------
     @Core.DEB_MEMBER_FUNCT
     def init_device(self):
-        self.set_state(PyTango.DevState.ON)
+        self.set_state(tango.DevState.ON)
         self.get_device_properties(self.get_device_class())
         
 
@@ -175,7 +175,7 @@ class Pco(PyTango.LatestDeviceImpl):
 #    PcoClass class definition
 #
 #==================================================================
-class PcoClass(PyTango.DeviceClass):
+class PcoClass(tango.DeviceClass):
 
     #    Class Properties
     class_property_list = {}
@@ -184,22 +184,22 @@ class PcoClass(PyTango.DeviceClass):
 
     device_property_list = {
         'params':
-        [PyTango.DevString,
+        [tango.DevString,
            "general parameters",[]],
         'dummy':
-        [PyTango.DevString,
+        [tango.DevString,
            "dummy string",[]],
         'debug_control':
-        [PyTango.DevString,
+        [tango.DevString,
            "general debug",[]],
         'debug_module':
-        [PyTango.DevString,
+        [tango.DevString,
            "debug module flags",[]],
         'debug_format':
-        [PyTango.DevString,
+        [tango.DevString,
            "debug format flags",[]],
         'debug_type':
-        [PyTango.DevString,
+        [tango.DevString,
            "debug flags flags",[]]
         }
 
@@ -207,19 +207,19 @@ class PcoClass(PyTango.DeviceClass):
     #    Command definitions
     cmd_list = {
         'getAttrStringValueList':
-        [[PyTango.DevString, "Attribute name"],
-         [PyTango.DevVarStringArray, "Authorized String value list"]],
+        [[tango.DevString, "Attribute name"],
+         [tango.DevVarStringArray, "Authorized String value list"]],
         'talk':
-        [[PyTango.DevString, "str argin"],
-         [PyTango.DevString, "str argout"]],
+        [[tango.DevString, "str argin"],
+         [tango.DevString, "str argout"]],
         }
 
     #    Attribute definitions
     attr_list = {
          'acqTimeoutRetry':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE],
            {
              'unit': 'number',
              'format': '%d',
@@ -227,9 +227,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'adc':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE],
            {
              'unit': 'number',
              'format': '%d',
@@ -237,9 +237,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'adcMax':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'number',
              'format': '%d',
@@ -247,9 +247,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'binInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -257,9 +257,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'bitAlignment':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ_WRITE],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -267,9 +267,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'bytesPerPixel':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'byte',
              'format': '%d',
@@ -277,9 +277,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'camInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -287,9 +287,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'camName':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -297,9 +297,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'camNameBase':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -307,9 +307,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'camNameEx':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -317,9 +317,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'camType':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -327,9 +327,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'cdiMode':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE], 
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE], 
            {
              'unit': 'N/A',
              'format': '%d',
@@ -337,9 +337,9 @@ class PcoClass(PyTango.DeviceClass):
 			}],
 
          'doubleImageMode':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE], 
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE], 
            {
              'unit': 'N/A',
              'format': '%d',
@@ -347,9 +347,9 @@ class PcoClass(PyTango.DeviceClass):
 			}],
 
          'clXferPar':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -357,9 +357,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'cocRunTime':	  
-         [[PyTango.DevDouble,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevDouble,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 's',
              'format': '%g',
@@ -368,9 +368,9 @@ class PcoClass(PyTango.DeviceClass):
 
 
          'coolingTemperature':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE], 
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE], 
            {
              'unit': 'degrees',
              'format': '%d',
@@ -378,9 +378,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'firmwareInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -388,9 +388,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'frameRate':	  
-         [[PyTango.DevDouble,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevDouble,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'frames/s',
              'format': '%g',
@@ -398,9 +398,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'info':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -408,9 +408,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'lastError':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -418,9 +418,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'lastImgAcquired':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%ld',
@@ -428,9 +428,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'lastImgRecorded':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%ld',
@@ -438,9 +438,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'logMsg':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -448,9 +448,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'logPcoEnabled':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%d',
@@ -458,9 +458,9 @@ class PcoClass(PyTango.DeviceClass):
            }],
 
          'maxNbImages':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%ld',
@@ -468,9 +468,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'pixelRate':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE],
            {
              'unit': 'Hz',
              'format': '%ld',
@@ -478,9 +478,9 @@ class PcoClass(PyTango.DeviceClass):
            }],
 
          'pixelRateInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -488,9 +488,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'pixelRateValidValues':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'Hz',
              'format': '%s',
@@ -498,9 +498,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'recorderForcedFifo':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE],
            {
              'unit': 'N/A',
              'format': '%ld',
@@ -508,9 +508,9 @@ class PcoClass(PyTango.DeviceClass):
            }],
 
          'roiInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -518,9 +518,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'roiLastFixed':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -528,9 +528,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'rollingShutter':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE],
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE],
            {
              'unit': 'N/A',
              'format': '%d',
@@ -539,9 +539,9 @@ class PcoClass(PyTango.DeviceClass):
 
 
          'rollingShutterInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -549,9 +549,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'temperatureInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -559,9 +559,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'traceAcq':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -569,9 +569,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'version':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -579,9 +579,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'versionAtt':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -589,9 +589,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'versionSdk':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -599,9 +599,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'camerasFound':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -609,9 +609,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'test':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE], 
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ_WRITE], 
            {
              'unit': 'N/A',
              'format': '%s',
@@ -619,9 +619,9 @@ class PcoClass(PyTango.DeviceClass):
 			}],
 
          'debugInt':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE], 
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ_WRITE], 
            {
              'unit': 'N/A',
              'format': '%s',
@@ -629,9 +629,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'debugIntTypes':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ], 
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ], 
            {
              'unit': 'N/A',
              'format': '%s',
@@ -639,9 +639,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'timestampMode':	  
-         [[PyTango.DevLong,
-           PyTango.SCALAR,
-           PyTango.READ_WRITE], 
+         [[tango.DevLong,
+           tango.SCALAR,
+           tango.READ_WRITE], 
            {
              'unit': 'N/A',
              'format': '%d',
@@ -649,9 +649,9 @@ class PcoClass(PyTango.DeviceClass):
 			}],
 
          'generalCAPS1':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -659,9 +659,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'rollingShutterStr':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.WRITE],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.WRITE],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -669,9 +669,9 @@ class PcoClass(PyTango.DeviceClass):
              }],
 
          'paramsInfo':	  
-         [[PyTango.DevString,
-           PyTango.SCALAR,
-           PyTango.READ],
+         [[tango.DevString,
+           tango.SCALAR,
+           tango.READ],
            {
              'unit': 'N/A',
              'format': '%s',
@@ -687,7 +687,7 @@ class PcoClass(PyTango.DeviceClass):
 #    PcoClass Constructor
 #------------------------------------------------------------------
     def __init__(self,name) :
-        PyTango.DeviceClass.__init__(self,name)
+        tango.DeviceClass.__init__(self,name)
         self.set_type(name)
 
 #----------------------------------------------------------------------------
@@ -719,7 +719,7 @@ def get_control(debug_control = "0",
 		# <type 'str'>
         paramsIn = params
     else:
-        # <class 'PyTango._PyTango.StdStringVector'>
+        # <class 'tango._tango.StdStringVector'>
         paramsIn = "".join("%s;" % (x,) for x in params)
 
     bParamsIn = paramsIn.encode()
