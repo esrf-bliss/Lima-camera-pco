@@ -79,6 +79,8 @@ find_package(PCO REQUIRED)
 file(GLOB_RECURSE PCO_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 add_library(pco SHARED
+  src/PcoAcqThreadDimax.cpp
+  src/PcoAcqThreadEdge.cpp
   src/PcoBinCtrlObj.cpp
   src/PcoBufferCtrlObj.cpp
   src/PcoCamera.cpp
@@ -92,16 +94,6 @@ add_library(pco SHARED
   src/PcoSyncCtrlObj.cpp
   ${PCO_INCS}
 )
-
-#if (WIN32)
-#target_sources(pco
-#  PRIVATE src/PcoCameraWin.cpp
-#)
-#else()
-#target_sources(pco
-#  PRIVATE src/PcoCameraLin.cpp
-#)
-#endif(WIN32)
 
 # Generate export macros
 generate_export_header(pco)

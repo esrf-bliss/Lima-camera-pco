@@ -25,7 +25,6 @@
 #define PCO_ERRT_H_CREATE_OBJECT
 #define BYPASS
 
-#define TOUT_MIN_DIMAX 500
 #define ERROR_MSG_LINE 128
 
 // #define BUFF_INFO_SIZE 5000
@@ -51,6 +50,7 @@
 #include "PcoSyncCtrlObj.h"
 #include "PcoBufferCtrlObj.h"
 #include "PcoCameraUtils.h"
+#include "PcoAcqThread.h"
 
 using namespace lima;
 using namespace lima::Pco;
@@ -69,6 +69,313 @@ const char *_timestamp_pcoroictrlobj();
 char *_split_date(const char *s);
 int __xlat_date(char *s1, char &ptrTo, int lenTo);
 char *_xlat_date(char *s1, char *s2, char *s3);
+
+//=========================================================================================================
+//========================================================================================================= 
+Camera::_AcqThread::_AcqThread(Camera &aCam) : m_cam(aCam)
+{
+    DEB_CONSTRUCTOR();
+    pthread_attr_setscope(&m_thread_attr, PTHREAD_SCOPE_PROCESS);
+}
+
+void Camera::_AcqThread::threadFunction()
+{
+    m_cam.threadFunction();
+}
+
+//=========================================================================================================
+//========================================================================================================= 
+Camera::Camera(const std::string &camPar)
+    : m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL),
+      m_handle(NULL), m_Roi_lastFixed_time(0),
+      m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
+      m_bRecorderForcedFifo(false),
+      m_acq_thread(*this),
+      m_status(Camera::Status::Ready)
+{
+    DEF_FNID;
+    DEB_CONSTRUCTOR();
+
+    int error = 0;
+    m_config = true;
+    DebParams::checkInit();
+
+    m_msgLog = new ringLog(300);
+    m_tmpLog = new ringLog(300);
+    if (m_msgLog == NULL)
+        throw LIMA_HW_EXC(Error, "m_msgLog > creation error");
+    if (m_tmpLog == NULL)
+        throw LIMA_HW_EXC(Error, "m_tmpLog > creation error");
+
+    m_pcoData = new stcPcoData();
+    if (m_pcoData == NULL)
+        throw LIMA_HW_EXC(Error, "m_pcoData > creation error");
+
+    m_checkImgNr = new CheckImgNr(this);
+
+    // properties: params
+    paramsInit(camPar.c_str());
+
+    char *value;
+    const char *key;
+    bool ret;
+    int iValue;
+
+    /***
+    key = "test";
+    key = "withConfig";
+    key = "testMode";
+    key = "debugPco";
+    ***/
+    key = "testMode";
+    ret = paramsGet(key, value);
+    if (ret)
+    {
+        //m_pcoData->testCmdMode = _atoi64(value);
+        m_pcoData->testCmdMode = atoll(value);
+    }
+
+    key = "acqTimeoutRetry";
+    ret = paramsGet(key, value);
+    iValue = ret ? atoi(value) : 3;
+    m_pcoData->acqTimeoutRetry = (iValue < 0) ? 0 : iValue;
+
+    // patch in xMinSize meanwhile firmware for CLHS 1.19 is fixed
+    key = "xMinSize";
+    m_pcoData->params_xMinSize = !!paramsGet(key, value);
+
+    // ignore the nbMaxImages calculated for dimax HS
+    key = "ignoreMaxImages";
+    m_pcoData->params_ignoreMaxImages = !!paramsGet(key, value);
+
+    DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version) << ALWAYS_NL
+                 << _checkLogFiles(true);
+
+    // m_bin.changed = Invalid;
+    try
+    {
+        _init();
+        m_config = false;
+        _setActionTimestamp(tsConstructor);
+    }
+    catch (lima::Exception& ex)
+    {
+        uint32_t err = PCO_NOERROR;
+        err = PCO_CleanupLib();
+        if (err)
+            DEB_ERROR() << "*** "
+                        << "~Camera(): PCO_CleanupLib - cleanup pco sdk - "
+                        << err;
+        throw ex;
+    }
+}
+
+//=========================================================================================================
+//=========================================================================================================
+Camera::~Camera()
+{
+    DEB_DESTRUCTOR();
+
+    m_cam_connected = false;
+
+    reset(RESET_CLOSE_INTERFACE);
+
+    uint32_t err = PCO_NOERROR;
+    err = PCO_CleanupLib();
+    if (err)
+        DEB_ERROR() << "*** " << "~Camera(): PCO_CleanupLib - cleanup pco sdk - " << err;
+}
+
+bool Camera::_isRunAfterAssign()
+{
+    return (_isCameraType(Edge) && (_isInterfaceType(ifCameralinkAll)));
+}
+
+//=================================================================================================
+//=================================================================================================
+void Camera::startAcq()
+{
+    DEB_MEMBER_FUNCT();
+
+    m_acq_frame_nb = -1;
+    m_pcoData->pcoError = 0;
+    m_pcoData->pcoErrorMsg[0] = 0;
+
+    m_pcoData->traceAcqClean();
+
+    TIME_USEC tStart;
+    msElapsedTimeSet(tStart);
+
+    //=====================================================================
+    DEF_FNID;
+    HANDLE hEvent = NULL;
+
+    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]") << _checkLogFiles();
+
+    int error;
+
+    //------------------------------------------------- start acquisition
+
+    m_pcoData->traceAcq.msStartAcqStart = msElapsedTime(tStart);
+
+    m_sync->setStarted(true);
+    // m_sync->setExposing(pcoAcqRecordStart);
+    m_sync->setExposing(pcoAcqStart);
+
+    int iRequestedFrames;
+    m_sync->getNbFrames(iRequestedFrames);
+
+    int forced = 0;
+    getRecorderForcedFifo(forced);
+
+    int iPending;
+    PCO_GetPendingBuffer(m_handle, &iPending);
+    if (iPending < m_pco_buffer_nrevents)
+    {
+        PCO_CancelImages(m_handle);
+        DEB_ALWAYS() << "PCO_CancelImages " << DEB_VAR1(iPending);
+    }
+
+    unsigned long ulFramesMaxInSegment =
+        _pco_GetNumberOfImagesInSegment_MaxCalc(m_pcoData->wActiveRamSegment);
+    unsigned long ulRequestedFrames = (unsigned long)iRequestedFrames;
+
+    if (ulRequestedFrames > 0)
+    {
+        WORD wDoubleImage;
+        int err;
+
+        // Double Image -> requested images will be the total nr of images
+        // (basic + primary)
+        //      must be even and twice of the nr of images for pco
+        _pco_GetDoubleImageMode(wDoubleImage, err);
+
+        bool bOutOfRange = false;
+
+        if ((wDoubleImage) && ((ulRequestedFrames % 2) != 0))
+        {
+            DEB_ALWAYS() << "\nERROR odd nr of frames in DoubleImage";
+            bOutOfRange = true;
+        }
+
+        if ((ulFramesMaxInSegment > 0) &&
+            (ulRequestedFrames > ulFramesMaxInSegment) && (!forced))
+        {
+            DEB_ALWAYS() << "\nERROR many frames in record mode";
+            bOutOfRange = true;
+        }
+
+        if (bOutOfRange)
+        {
+            char msg[MSG1K];
+            __sprintfSExt(
+                msg, sizeof(msg) - 1,
+                "ERROR frames OUT OF RANGE ulRequestedFrames[%ld], "
+                "ulFramesMaxInSegment[%ld], wDoubleImage[%d], forced[%d]",
+                ulRequestedFrames, ulFramesMaxInSegment, wDoubleImage, forced);
+
+            DEB_ALWAYS() << msg;
+            m_sync->setStarted(false);
+            m_sync->setExposing(pcoAcqError);
+
+            throw LIMA_EXC(CameraPlugin, InvalidValue, msg);
+            return;
+        }
+    }
+
+    if (!_isRunAfterAssign())
+    {
+        DEB_TRACE() << "========================= recordingState 1 - BEFORE "
+                       "ASSIGN (startAcq)";
+        _pco_SetRecordingState(1, error);
+    }
+
+    m_acq_thread.start();
+
+    //// Start acquisition thread
+    //AutoMutex aLock(m_cond_thread.mutex());
+    //m_wait_flag = false;
+    //m_cond_thread.broadcast();
+    //DEB_TRACE() << "[... starting after mutex] [EXIT]";
+
+    m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
+
+    return;
+}
+
+
+//=================================================================================================
+//=================================================================================================
+void Camera::threadFunction()
+{
+    DEB_MEMBER_FUNCT();
+
+    if (_isCameraType(Edge))
+    {
+        DEB_TRACE() << "Running _pco_acq_thread_edge";
+        _pco_acq_thread_edge(this);
+
+        return;
+    }
+
+    if (_isCameraType(Dimax | Pco2k | Pco4k))
+    {
+        int error = 0;
+        int iRequestedFrames;
+        m_sync->getNbFrames(iRequestedFrames);
+
+        TrigMode trig_mode;
+        m_sync->getTrigMode(trig_mode);
+        _pco_SetRecordingState(1, error);
+
+        int forcedFifo = 0;
+        getRecorderForcedFifo(forcedFifo);
+
+        if ((iRequestedFrames > 0) && (forcedFifo == 0))
+        {
+            if ((trig_mode == ExtTrigSingle))
+            {
+                DEB_TRACE() << "Running _pco_acq_thread_dimax_trig_single";
+                _pco_acq_thread_dimax_trig_single(this);
+            }
+            else
+            {
+                DEB_TRACE() << "Running _pco_acq_thread_dimax";
+                _pco_acq_thread_dimax(this); // normal mode
+            }
+        }
+        else
+        {
+            DEB_TRACE() << "Running _pco_acq_thread_dimax_live";
+            _pco_acq_thread_dimax_live(this);
+        }
+    }
+}
+
+//=================================================================================================
+//=================================================================================================
+void Camera::_set_shutter_rolling_edge(DWORD dwRolling, int &error)
+{
+    DEB_MEMBER_FUNCT();
+    error = 0;
+
+    if (!_isValid_rollingShutter(dwRolling))
+    {
+        DEB_ALWAYS() << "ERROR requested Rolling Shutter not allowed "
+                     << DEB_VAR1(dwRolling);
+        error = -1;
+        return;
+    }
+
+    m_pcoData->dwRollingShutter = dwRolling;
+
+    DEB_TRACE() << "requested Rolling Shutter OK " << DEB_VAR1(dwRolling);
+
+    // ************************ TODO
+    //_beginthread(_pco_shutter_thread_edge, 0, (void *)this);
+
+    return;
+}
 
 //=========================================================================================================
 //=========================================================================================================
@@ -1807,5 +2114,3 @@ bool Camera::_isValid_rollingShutter(DWORD dwRolling)
 //================================= ROLLING SHUTTER / end
 //========================================
 //================================================================================================
-
-#include "PcoCameraWin.cpp"
