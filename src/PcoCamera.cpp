@@ -480,7 +480,11 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &e
                                              {CAMERASUBTYPE_PCO_EDGE_DICAM, "DICAM"},
                                              {CAMERASUBTYPE_PCO_EDGE_42_LT, "EDGE_42_LT"},
                                              {CAMERASUBTYPE_PCO_EDGE_42_BI, "EDGE_42_BI"},
+                                             {CAMERASUBTYPE_PCO_EDGE_100_BI_CLHS, "EDGE_10_BI_CLHS"},
+                                             {CAMERASUBTYPE_PCO_EDGE_100_BI_LT_CLHS, "EDGE_10_BI_LT_CLHS"},
                                              {CAMERASUBTYPE_PCO_EDGE_260_CLHS, "EDGE_26_CLHS"},
+                                             {CAMERASUBTYPE_PCO_EDGE_260_DS_CLHS, "EDGE_26_DS_CLHS"},
+                                             {CAMERASUBTYPE_PCO_EDGE_260_NIR_CLHS, "EDGE_26_NIR_CLHS"},
                                              {0, "NO_subType"},
                                              {0, NULL}};
 
