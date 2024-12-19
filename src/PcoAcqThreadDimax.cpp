@@ -20,6 +20,8 @@
 //  along with this program; if not, see <http://www.gnu.org/licenses/>.
 // ###########################################################################
 
+#include <chrono>
+
 #include "PcoAcqThread.h"
 
 const int TOUT_MIN_DIMAX = 500;
@@ -53,10 +55,8 @@ namespace lima
             struct stcPcoData *m_pcoData = m_cam->_getPcoData();
             m_pcoData->traceAcq.fnId = fnId;
 
-            const char *msg;
-            TIME_USEC tStart, tStart0;
-            msElapsedTimeSet(tStart);
-            tStart0 = tStart;
+            auto tStart = std::chrono::steady_clock::now();
+            const auto tStart0 = tStart;
 
             long timeout, timeout0, msNowRecordLoop, msRecord, msXfer, msTotal;
             DWORD dwPcoAcquiredFrames;
@@ -165,7 +165,7 @@ namespace lima
             m_pcoData->msAcqTnow = msNowRecordLoop = msElapsedTime(tStart);
             m_pcoData->traceAcq.msRecordLoop = msNowRecordLoop;
 
-            msg = m_cam->_pco_SetRecordingState(0, error);
+            const char* msg = m_cam->_pco_SetRecordingState(0, error);
             if (error)
             {
                 printf("=== %s [%d]> ERROR %s\n", fnId, __LINE__, msg);
@@ -200,7 +200,7 @@ namespace lima
                 m_pcoData->traceAcq.nrImgAcquired = iLimaAcquiredFrames;
                 m_pcoData->traceAcq.nrImgRequested = iLimaRequestedFrames;
 
-                msElapsedTimeSet(tStart); // reset for xfer
+                tStart = std::chrono::steady_clock::now();
 
                 if (iLimaAcquiredFrames < iLimaRequestedFrames)
                     m_sync->setNbFrames(iLimaAcquiredFrames);
@@ -316,7 +316,6 @@ namespace lima
 
             Camera *m_cam = (Camera *)argin;
             SyncCtrlObj *m_sync = m_cam->_getSyncCtrlObj();
-            // BufferCtrlObj* m_buffer = m_sync->_getBufferCtrlObj();
             BufferCtrlObj *m_buffer = m_cam->_getBufferCtrlObj();
 
             struct stcPcoData *m_pcoData = m_cam->_getPcoData();
@@ -324,10 +323,8 @@ namespace lima
 
             m_cam->_sprintComment(true, fnId, "[ENTRY]");
 
-            const char *msg;
-            TIME_USEC tStart, tStart0;
-            msElapsedTimeSet(tStart);
-            tStart0 = tStart;
+            auto tStart = std::chrono::steady_clock::now();
+            const auto tStart0 = tStart;
 
             long timeout, timeout0, msNowRecordLoop, msRecord, msXfer, msTotal;
             int nb_acq_frames;
@@ -427,7 +424,7 @@ namespace lima
             m_pcoData->msAcqTnow = msNowRecordLoop = msElapsedTime(tStart);
             m_pcoData->traceAcq.msRecordLoop = msNowRecordLoop;
 
-            msg = m_cam->_pco_SetRecordingState(0, error);
+            const char* msg = m_cam->_pco_SetRecordingState(0, error);
             if (error)
             {
                 printf("=== %s [%d]> ERROR %s\n", fnId, __LINE__, msg);
@@ -460,7 +457,7 @@ namespace lima
                 m_pcoData->traceAcq.nrImgAcquired = nb_acq_frames;
                 m_pcoData->traceAcq.nrImgRequested = nb_frames;
 
-                msElapsedTimeSet(tStart); // reset for xfer
+                tStart = std::chrono::steady_clock::now();
 
                 if (nb_acq_frames < nb_frames)
                     m_sync->setNbFrames(nb_acq_frames);
@@ -532,8 +529,7 @@ namespace lima
 
             struct stcPcoData *m_pcoData = m_cam->_getPcoData();
 
-            TIME_USEC tStart;
-            msElapsedTimeSet(tStart);
+            const auto tStart = std::chrono::steady_clock::now();
             int error;
             long msXfer;
             int requestStop = stopNone;

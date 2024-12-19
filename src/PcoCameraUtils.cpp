@@ -813,17 +813,13 @@ const char *Camera::_talk(const char *_cmd, char *output, int lg)
         //--- test of sleep
         if ((tokNr == 2) && (_stricmp(tok[1], "time") == 0))
         {
-            long long us;
-
-            long long usStart;
-
             ptr += __sprintfSExt(ptr, ptrMax - ptr, "sleeping ...\n");
 
-            usElapsedTimeSet(usStart);
+            const auto tStart = std::chrono::steady_clock::now();
 
             ::Sleep(atoi(tok[2]) * 1000);
 
-            us = usElapsedTime(usStart);
+            long long us = usElapsedTime(tStart);
             double ticksPerSec = usElapsedTimeTicsPerSec();
             ptr += __sprintfSExt(
                 ptr, ptrMax - ptr, "us[%lld] ms[%5.3f] tics/us[%g]\n", us,
@@ -3195,87 +3191,14 @@ const char *Camera::_sprintComment(bool bAlways, const char *comment,
     return buff;
 }
 
-//====================================================================
-//====================================================================
-
-void usElapsedTimeSet(long long &us0)
+long msElapsedTime(std::chrono::steady_clock::time_point const& start)
 {
-#ifdef __linux__
-    TIME_UTICKS tickNow;
-    clock_gettime(CLOCK_REALTIME, &tickNow);
-
-    us0 = (long long)((tickNow.tv_sec) * 1000000. + (tickNow.tv_nsec) / 1000.);
-
-#else
-    TIME_UTICKS tick; // A point in time
-    TIME_UTICKS ticksPerSecond;
-    QueryPerformanceFrequency(&ticksPerSecond);
-    QueryPerformanceCounter(&tick);
-
-    double ticsPerUSecond = ticksPerSecond.QuadPart / 1.0e6;
-    us0 = (long long)(tick.QuadPart / ticsPerUSecond);
-#endif
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
 }
 
-//------------------------------------------------
-long long usElapsedTime(long long &us0)
+long usElapsedTime(std::chrono::steady_clock::time_point const& start)
 {
-    long long usDiff;
-
-#ifdef __linux__
-    TIME_UTICKS tickNow;
-    clock_gettime(CLOCK_REALTIME, &tickNow);
-
-    usDiff = ((long long int)((tickNow.tv_sec) * 1000000. +
-                              (tickNow.tv_nsec) / 1000.)) -
-             us0;
-
-#else
-    TIME_UTICKS tick; // A point in time
-    TIME_UTICKS ticksPerSecond;
-    QueryPerformanceFrequency(&ticksPerSecond);
-    QueryPerformanceCounter(&tick);
-
-    double ticsPerUSecond = ticksPerSecond.QuadPart / 1.0e6;
-    long long us = (long long)(tick.QuadPart / ticsPerUSecond);
-    usDiff = us - us0;
-#endif
-
-    return usDiff;
-}
-//------------------------------------------------
-
-long msElapsedTime(TIME_USEC &t0)
-{
-    long msDiff;
-    TIME_USEC tNow;
-
-#ifdef __linux__
-    long seconds, useconds;
-    gettimeofday(&tNow, NULL);
-
-    seconds = tNow.tv_sec - t0.tv_sec;
-    useconds = tNow.tv_usec - t0.tv_usec;
-
-    msDiff = long(((seconds)*1000 + useconds / 1000.0) + 0.5);
-#else
-    _ftime64_s(&tNow);
-
-    msDiff = (long)((tNow.time - t0.time) * 1000) + (tNow.millitm - t0.millitm);
-#endif
-
-    return msDiff;
-}
-
-//------------------------------------------------
-
-void msElapsedTimeSet(TIME_USEC &t0)
-{
-#ifdef __linux__
-    gettimeofday(&t0, NULL);
-#else
-    _ftime64_s(&t0);
-#endif
+    return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count();
 }
 
 //------------------------------------------------

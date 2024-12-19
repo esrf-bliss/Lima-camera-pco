@@ -43,8 +43,8 @@ namespace lima
 
             struct stcPcoData *m_pcoData = m_cam->_getPcoData();
 
-            TIME_USEC tStart;
-            msElapsedTimeSet(tStart);
+            const auto tStart = std::chrono::steady_clock::now();
+
             int error;
             long msXfer;
             int requestStop = stopNone;
@@ -81,36 +81,37 @@ namespace lima
             m_sync->getLatTime(m_pcoData->traceAcq.sDelay);
 
             m_pcoData->msAcqXfer = msXfer = msElapsedTime(tStart);
-            __sprintfSExt(_msg, LEN_MSG, "%s> [EXIT] xfer[%ld] (ms) status[%s]\n", fnId, msXfer, sPcoAcqStatus[status]);
-            m_cam->_traceMsg(_msg);
+            // __sprintfSExt(_msg, LEN_MSG, "%s> [EXIT] xfer[%ld] (ms) status[%s]\n", fnId, msXfer, sPcoAcqStatus[status]);
+            // m_cam->_traceMsg(_msg);
 
             m_sync->setStarted(false); // updated
 
-            const char *errMsg = NULL;
-            switch (status)
-            {
-                case pcoAcqRecordTimeout:
-                    errMsg = "pcoAcqRecordTimeout";
-                    break;
-                case pcoAcqWaitTimeout:
-                    errMsg = "pcoAcqWaitTimeout";
-                    break;
-                case pcoAcqWaitError:
-                    errMsg = "pcoAcqWaitError";
-                    break;
-                case pcoAcqError:
-                    errMsg = "pcoAcqError";
-                    break;
-                case pcoAcqPcoError:
-                    errMsg = "pcoAcqPcoError";
-                    break;
-                default:
-                    errMsg = NULL;
-            }
+            // const char *errMsg = NULL;
+            // switch (status)
+            // {
+            //     case pcoAcqRecordTimeout:
+            //         errMsg = "pcoAcqRecordTimeout";
+            //         break;
+            //     case pcoAcqWaitTimeout:
+            //         errMsg = "pcoAcqWaitTimeout";
+            //         break;
+            //     case pcoAcqWaitError:
+            //         errMsg = "pcoAcqWaitError";
+            //         break;
+            //     case pcoAcqError:
+            //         errMsg = "pcoAcqError";
+            //         break;
+            //     case pcoAcqPcoError:
+            //         errMsg = "pcoAcqPcoError";
+            //         break;
+            //     default:
+            //         errMsg = NULL;
+            // }
 
-            if (errMsg != NULL)
+            // If status is error
+            if (status == pcoAcqRecordTimeout || status == pcoAcqWaitTimeout || status == pcoAcqWaitError ||status == pcoAcqError || status == pcoAcqPcoError)
             {
-                Event *ev = new Event(Hardware, Event::Error, Event::Camera, Event::CamFault, errMsg);
+                Event *ev = new Event(Hardware, Event::Error, Event::Camera, Event::CamFault, sPcoAcqStatus[status]);
                 // m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
             }
 

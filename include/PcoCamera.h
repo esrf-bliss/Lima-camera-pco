@@ -24,6 +24,8 @@
 #ifndef PCOCAMERA_H
 #define PCOCAMERA_H
 
+#include <chrono>
+
 #include "Pco.h"
 #include "pco_err.h"
 
@@ -172,11 +174,8 @@ struct stcSegmentInfo
 #define LEN_DUMP 128
 char DLL_EXPORT *_hex_dump_bytes(void *obj, size_t lenObj, char *buff, size_t lenBuff);
 
-long msElapsedTime(TIME_USEC &t0);
-void msElapsedTimeSet(TIME_USEC &t0);
-
-void usElapsedTimeSet(long long &us0);
-long long usElapsedTime(long long &us0);
+long msElapsedTime(std::chrono::steady_clock::time_point const& start);
+long usElapsedTime(std::chrono::steady_clock::time_point const& start);
 
 double usElapsedTimeTicsPerSec();
 
@@ -1125,8 +1124,10 @@ namespace lima
             int _pco_AddBufferEx(DWORD dw1stImage, DWORD dwLastImage, SHORT sBufNr, WORD wXRes, WORD wYRes,
                                  WORD wBitPerPixel);
 
+#if defined(__linux__)
             int _pco_WaitforNextBufferNum(SHORT *sBufNr, int timeout);
             int _pco_WaitforNextBufferAdr(void **BufferAddress, int timeout);
+#endif //defined(__linux__)
 
             //----
             int _pco_RebootCamera();

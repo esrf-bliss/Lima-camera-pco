@@ -524,11 +524,10 @@ const char *Camera::_pco_SetRecordingState(int state, int &err)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
-    long long usStart;
 
     WORD wRecState_new = state ? 0x0001 : 0x0000; // 0x0001 => START acquisition
 
-    usElapsedTimeSet(usStart);
+    auto tStart = std::chrono::steady_clock::now();
 
     WORD wRecState_actual;
     err = _pco_GetRecordingState(wRecState_actual);
@@ -538,17 +537,17 @@ const char *Camera::_pco_SetRecordingState(int state, int &err)
 
     _setCameraState(CAMSTATE_RECORD_STATE, !!(wRecState_actual));
 
-    m_pcoData->traceAcq.usTicks[8].value = usElapsedTime(usStart);
+    m_pcoData->traceAcq.usTicks[8].value = usElapsedTime(tStart);
     m_pcoData->traceAcq.usTicks[8].desc = "PCO_GetRecordingState execTime";
-    usElapsedTimeSet(usStart);
+    tStart = std::chrono::steady_clock::now();
 //#else
 //    //_setCameraState(CAMSTATE_RECORD_STATE, !!(wRecState_actual));
 //
 //    m_pcoData->traceAcq.usTicks[traceAcq_GetRecordingState].value =
-//        usElapsedTime(usStart);
+//        usElapsedTime(tStart);
 //    m_pcoData->traceAcq.usTicks[traceAcq_GetRecordingState].desc =
 //        "PCO_GetRecordingState execTime";
-//    usElapsedTimeSet(usStart);
+//    tStart = std::chrono::steady_clock::now();
 //#endif
 
     if (wRecState_new == wRecState_actual)
@@ -625,29 +624,30 @@ const char *Camera::_pco_SetRecordingState(int state, int &err)
     _setCameraState(CAMSTATE_RECORD_STATE, !!(wRecState_actual));
 
 //#ifndef __linux__
-    m_pcoData->traceAcq.usTicks[9].value = usElapsedTime(usStart);
+    m_pcoData->traceAcq.usTicks[9].value = usElapsedTime(tStart);
     m_pcoData->traceAcq.usTicks[9].desc = "PCO_SetRecordingState execTime";
-    usElapsedTimeSet(usStart);
+    
+    tStart = std::chrono::steady_clock::now();
 //#else
 //    m_pcoData->traceAcq.usTicks[traceAcq_SetRecordingState].value =
-//        usElapsedTime(usStart);
+//        usElapsedTime(tStart);
 //    m_pcoData->traceAcq.usTicks[traceAcq_SetRecordingState].desc =
 //        "PCO_SetRecordingState execTime";
-//    usElapsedTimeSet(usStart);
+//    tStart = std::chrono::steady_clock::now();
 //#endif
 
     _armRequired(true);
 
 //#ifndef __linux__
-    m_pcoData->traceAcq.usTicks[10].value = usElapsedTime(usStart);
+    m_pcoData->traceAcq.usTicks[10].value = usElapsedTime(tStart);
     m_pcoData->traceAcq.usTicks[10].desc = "PCO_CancelImages execTime";
-    usElapsedTimeSet(usStart);
+    tStart = std::chrono::steady_clock::now();
 //#else
 //    m_pcoData->traceAcq.usTicks[traceAcq_CancelImages].value =
-//        usElapsedTime(usStart);
+//        usElapsedTime(tStart);
 //    m_pcoData->traceAcq.usTicks[traceAcq_CancelImages].desc =
 //        "PCO_CancelImages execTime";
-//    usElapsedTimeSet(usStart);
+//    tStart = std::chrono::steady_clock::now();
 //#endif
 
     // DEB_TRACE() << fnId << ": " << DEB_VAR4(error, state, wRecState_actual,
@@ -3667,6 +3667,8 @@ int Camera::_pco_AddBufferEx(DWORD dw1stImage, DWORD dwLastImage, SHORT sBufNr,
     return err;
 }
 
+#if defined(__linux__)
+
 //=================================================================================================
 //=================================================================================================
 
@@ -3701,6 +3703,8 @@ int Camera::_pco_WaitforNextBufferAdr(void **BufferAddress, int timeout)
 
     return err;
 }
+
+#endif //defined(__linux__)
 
 //=================================================================================================
 //=================================================================================================
@@ -4230,6 +4234,7 @@ void Camera::_pco_OpenCameraSn(DWORD snRequested, int &err)
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
+#ifdef __linux__
     err = 0;
 
     const int max_device_count = 5;
@@ -4310,83 +4315,78 @@ void Camera::_pco_OpenCameraSn(DWORD snRequested, int &err)
             PCO_CHECK_ERROR(err, "PCO_GetCameraDescription");
         }
     }
-//
-//
-//
-////#ifdef __linux__
-////    DEB_ALWAYS() << NOT_IMPLEMENTED;
-////    return;
-////
-////#else
-//    HANDLE handleList[HANDLE_LIST_DIM];
-//    DWORD snList[HANDLE_LIST_DIM];
-//    char *ptr, *ptr0;
-//    ptr = ptr0 = m_pcoData->camerasFound;
-//    char *ptrMax = m_pcoData->camerasFound + sizeof(m_pcoData->camerasFound);
-//    *ptr = 0;
-//
-//    int iHandle, iHandleLast;
-//    for (iHandle = 0; iHandle < HANDLE_LIST_DIM; iHandle++)
-//    {
-//        handleList[iHandle] = NULL;
-//    }
-//
-//    iHandle = 0;
-//    iHandleLast = -1;
-//    while (true)
-//    {
-//        if (iHandle >= HANDLE_LIST_DIM)
-//        {
-//            DEB_ALWAYS() << "WARNING!!!! - many opened cameras! "
-//                         << DEB_VAR1(iHandle);
-//            break;
-//        }
-//
-//        err = PCO_OpenCamera(&handleList[iHandle], 0);
-//        PCO_CHECK_ERROR(err, "PCO_OpenCamera");
-//        if (err != PCO_NOERROR)
-//            break;
-//        iHandleLast = iHandle++;
-//    }
-//
-//    if (iHandleLast < 0)
-//    {
-//        DEB_ALWAYS() << "ERROR!!!! - no cam found!";
-//        err = -1;
-//        return;
-//    }
-//
-//    for (iHandle = 0; iHandle <= iHandleLast; iHandle++)
-//    {
-//        m_handle = handleList[iHandle];
-//        _pco_GetCameraType(err);
-//
-//        snList[iHandle] = _getCameraSerialNumber();
-//
-//        ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _getCameraIdn());
-//    }
-//
-//    DEB_ALWAYS() << "\n* CAMERA SEARCH:\n" << ptr0; 
-//
-//    HANDLE handleOK = NULL;
-//
-//    // ---- if sn == 0, it opens the first camera!
-//    for (iHandle = 0; iHandle <= iHandleLast; iHandle++)
-//    {
-//        m_handle = handleList[iHandle];
-//        DWORD snCam = snList[iHandle];
-//        if (((snRequested == 0) || (snCam == snRequested)) &&
-//            (handleOK == NULL))
-//        {
-//            handleOK = m_handle;
-//            DEB_ALWAYS() << "\n* CAMERA FOUND & OPENED: "
-//                         << DEB_VAR4(snRequested, snCam, iHandle, iHandleLast);
-//        }
-//        else
-//        {
-//            _pco_CloseCamera(err);
-//        }
-//    }
+
+#else //defined(__linux__)
+
+   HANDLE handleList[HANDLE_LIST_DIM];
+   DWORD snList[HANDLE_LIST_DIM];
+   char *ptr, *ptr0;
+   ptr = ptr0 = m_pcoData->camerasFound;
+   char *ptrMax = m_pcoData->camerasFound + sizeof(m_pcoData->camerasFound);
+   *ptr = 0;
+
+   int iHandle, iHandleLast;
+   for (iHandle = 0; iHandle < HANDLE_LIST_DIM; iHandle++)
+   {
+       handleList[iHandle] = NULL;
+   }
+
+   iHandle = 0;
+   iHandleLast = -1;
+   while (true)
+   {
+       if (iHandle >= HANDLE_LIST_DIM)
+       {
+           DEB_ALWAYS() << "WARNING!!!! - many opened cameras! "
+                        << DEB_VAR1(iHandle);
+           break;
+       }
+
+       err = PCO_OpenCamera(&handleList[iHandle], 0);
+       PCO_CHECK_ERROR(err, "PCO_OpenCamera");
+       if (err != PCO_NOERROR)
+           break;
+       iHandleLast = iHandle++;
+   }
+
+   if (iHandleLast < 0)
+   {
+       DEB_ALWAYS() << "ERROR!!!! - no cam found!";
+       err = -1;
+       return;
+   }
+
+   for (iHandle = 0; iHandle <= iHandleLast; iHandle++)
+   {
+       m_handle = handleList[iHandle];
+       _pco_GetCameraType(err);
+
+       snList[iHandle] = _getCameraSerialNumber();
+
+       ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _getCameraIdn());
+   }
+
+   DEB_ALWAYS() << "\n* CAMERA SEARCH:\n" << ptr0; 
+
+   HANDLE handleOK = NULL;
+
+   // ---- if sn == 0, it opens the first camera!
+   for (iHandle = 0; iHandle <= iHandleLast; iHandle++)
+   {
+       m_handle = handleList[iHandle];
+       DWORD snCam = snList[iHandle];
+       if (((snRequested == 0) || (snCam == snRequested)) &&
+           (handleOK == NULL))
+       {
+           handleOK = m_handle;
+           DEB_ALWAYS() << "\n* CAMERA FOUND & OPENED: "
+                        << DEB_VAR4(snRequested, snCam, iHandle, iHandleLast);
+       }
+       else
+       {
+           _pco_CloseCamera(err);
+       }
+   }
 
     //if (handleOK != NULL)
     //{
@@ -4401,7 +4401,7 @@ void Camera::_pco_OpenCameraSn(DWORD snRequested, int &err)
     //    err = -1;
     //}
 
-//#endif
+#endif //defined(__linux__)
 }
 //=================================================================================================
 //=================================================================================================

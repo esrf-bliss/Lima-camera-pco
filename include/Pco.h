@@ -24,8 +24,6 @@
 #ifndef PCO_H
 #define PCO_H
 
-#define _LINUX
-
 #ifdef __x86_64
 #    define _x64
 #else
@@ -45,25 +43,30 @@
 //===============================================================
 #include "processlib/Compatibility.h"
 
-#ifdef __linux__
+#if defined(__linux__)
 #include "linux/limits.h" // For PATH_MAX
 
 #include "pco_linux_defs.h"
 #include "pco_device.h"
+#else
+#include <windows.h>
+#include <sys/types.h>
 #endif
 
-#include "pco_color_corr_coeff.h"
-#include "pco_convstructures.h"
-#include "pco_convexport.h"
+//#include "pco_color_corr_coeff.h"
+//#include "pco_convstructures.h"
+//#include "pco_convexport.h"
 //#include "pco_convdlgexport.h"
 
-#include "sc2_sdkaddendum.h"
 #include "sc2_sdkstructures.h"
+#include "sc2_sdkaddendum.h"
 //#include "sc2_common.h"
 #include "sc2_camexport.h"
 #include "sc2_defs.h"
 
-#include "pco_camexport.h"
+#if defined(__linux__)
+#include "pco_camexport.h" // For PCO_ScanCameras, PCO_OpenNextCamera, PCO_OpenCameraDevice an other linux specific functions
+#endif //defined(__linux__)
 
 #include <math.h>
 
@@ -98,9 +101,6 @@
 
 #define ID_FILE_TIMESTAMP                                                      \
     "$Id: [" __DATE__ " " __TIME__ "] [" __TIMESTAMP__ "] [" __FILE__ "] $"
-
-typedef DWORD tPvUint32;
-typedef int tPvErr;
 
 ////-------------------- linux
 //#ifdef __linux__
@@ -239,21 +239,6 @@ typedef struct __timeb64 TIME_USEC;
 #    define DEF_FNID static char *fnId = __FUNCTION__;
 #else
 #    define DEF_FNID const char *fnId __attribute__((unused)) = __FUNCTION__;
-#endif
-
-//====================================================
-// bypass win fn
-//====================================================
-
-#ifdef __linux__
-
-unsigned int *_beginthread(void (*)(void *), unsigned int, void *);
-void _endthread(void);
-void *CreateEvent(void *, bool, bool, void *);
-DWORD WaitForMultipleObjects(DWORD, void **, bool, DWORD);
-#    define WAIT_OBJECT_0 0
-#    define WAIT_TIMEOUT 5
-
 #endif
 
 #endif

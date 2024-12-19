@@ -203,8 +203,7 @@ void Camera::startAcq()
 
     m_pcoData->traceAcqClean();
 
-    TIME_USEC tStart;
-    msElapsedTimeSet(tStart);
+    const auto tStart = std::chrono::steady_clock::now();
 
     //=====================================================================
     DEF_FNID;
@@ -786,10 +785,12 @@ void Camera::_init()
 
     int error = 0;
 
+#if defined(__linux__)
     // Tango signal management workaround
     sigset_t signals;
     sigfillset(&signals);
     sigprocmask(SIG_UNBLOCK, &signals, NULL);
+#endif
 
     uint32_t err = PCO_NOERROR;
     err = PCO_InitializeLib();

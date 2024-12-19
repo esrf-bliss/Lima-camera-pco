@@ -60,7 +60,9 @@ struct stcAllocBuff
 
     DWORD dwStatus[8]; // PCO_AddBufferEx status/error return
 
-    // HANDLE bufferAllocEvent[PCO_MAX_NR_ALLOCATED_BUFFERS];
+#if !defined(__linux__)
+    HANDLE bufferAllocEvent[PCO_MAX_NR_ALLOCATED_BUFFERS];
+#endif //!defined(__linux__)    
 
     DWORD bufferAssignedFrameFirst[PCO_MAX_NR_ALLOCATED_BUFFERS];
     DWORD bufferAssignedFrameLast[PCO_MAX_NR_ALLOCATED_BUFFERS];
