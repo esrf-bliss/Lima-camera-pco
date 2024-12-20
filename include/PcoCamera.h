@@ -656,9 +656,6 @@ namespace lima
 
             void getCameraName(std::string &name);
 
-            std::string talk(const std::string &cmd);
-            const char *_talk(const char *cmd, char *output, int lg);
-
             unsigned long _pco_GetNumberOfImagesInSegment_MaxCalc(int segmentPco);
 
             unsigned long pcoGetFramesPerBuffer()
@@ -919,7 +916,6 @@ namespace lima
             void getLastImgAcquired(unsigned long &img);
 
             void getMaxNbImages(unsigned long &nr);
-            void getPcoLogsEnabled(int &enabled);
 
             void getLastFixedRoi(std::string &o_sn);
 
@@ -944,8 +940,6 @@ namespace lima
             void getBinningInfo(std::string &o_sn);
             void getFirmwareInfo(std::string &o_sn);
             void getRoiInfo(std::string &o_sn);
-
-            void getMsgLog(std::string &o_sn);
 
             //--------------------------------------
 

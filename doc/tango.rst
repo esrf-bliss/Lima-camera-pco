@@ -148,6 +148,4 @@ State                   DevVoid         DevLong                 Return the devic
 Status                  DevVoid         DevString               Return the device state as a string
 getAttrStringValueList  DevString:      DevVarStringArray:      Return the authorized string value list for
                         Attribute name  String value list       a given attribute name
-talk                    DevString       DevString               **WARNING**: use this command for test only, 
-                                                                This is a backdoor cmd and it can distrub Lima
 ======================= =============== ======================= ===========================================

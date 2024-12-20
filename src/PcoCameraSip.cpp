@@ -163,13 +163,6 @@ void Camera::getMaxNbImages(unsigned long &nr)
 
     return;
 }
-//====================================================================
-//====================================================================
-
-void Camera::getPcoLogsEnabled(int &enabled)
-{
-    enabled = m_pcoData->pcoLogActive;
-}
 
 //====================================================================
 // SIP - attrib

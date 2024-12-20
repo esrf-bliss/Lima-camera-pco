@@ -15,8 +15,6 @@ namespace Pco
         void 	startAcq();
         void	reset(int);
 
-        std::string talk(const std::string& cmd);
-
         int getNbAcquiredFrames();
 
         void getMaxWidthHeight(unsigned int& width,unsigned int& height /Out/);
@@ -64,8 +62,6 @@ namespace Pco
 		void getLastError(std::string &o_sn /Out/) ;   // last error
 		void getLastImgAcquired(unsigned long & img /Out/);   // lastImgAcquired
 		void getLastImgRecorded(unsigned long & img /Out/);   // lastImgRecorded
-		void getMsgLog(std::string &o_sn /Out/);  // logMsg
-		void getPcoLogsEnabled(int & enabled /Out/);      // logPcoEnabled
 
 		void getMaxNbImages(unsigned long & nr /Out/);     // maxNbImages
 
