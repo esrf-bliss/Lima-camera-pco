@@ -98,9 +98,6 @@
 #define MBYTEF (KBYTEF * KBYTEF)
 #define GBYTEF (KBYTEF * KBYTEF * KBYTEF)
 
-#define ID_FILE_TIMESTAMP                                                      \
-    "$Id: [" __DATE__ " " __TIME__ "] [" __TIMESTAMP__ "] [" __FILE__ "] $"
-
 ////-------------------- linux
 //#ifdef __linux__
 //typedef uint32_t DWORD;

@@ -53,17 +53,6 @@
 using namespace lima;
 using namespace lima::Pco;
 
-// const char *timebaseUnits[] = {"ns", "us", "ms"};
-
-// char *_checkLogFiles();
-
-const char *_timestamp_pcosyncctrlobj();
-const char *_timestamp_pcointerface();
-const char *_timestamp_pcobufferctrlobj();
-const char *_timestamp_pcodetinfoctrlobj();
-const char *_timestamp_pcocamerautils();
-const char *_timestamp_pcoroictrlobj();
-
 char *_split_date(const char *s);
 int __xlat_date(char *s1, char &ptrTo, int lenTo);
 char *_xlat_date(char *s1, char *s2, char *s3);
@@ -376,15 +365,6 @@ void Camera::_set_shutter_rolling_edge(DWORD dwRolling, int &error)
 
 //=========================================================================================================
 //=========================================================================================================
-const char *_timestamp_pcocamera()
-{
-    return ID_FILE_TIMESTAMP;
-}
-
-//=========================================================================================================
-
-//=========================================================================================================
-//=========================================================================================================
 const char *Camera::xlatCode2Str(int code, struct stcXlatCode2Str *stc)
 {
     const char *type;
@@ -582,20 +562,6 @@ stcPcoData::stcPcoData()
     ptr = version;
     *ptr = 0;
     ptrMax = ptr + BUFFVERSION_LEN - 1;
-
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "\n");
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcocamera()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcosyncctrlobj()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcointerface()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcobufferctrlobj()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcodetinfoctrlobj()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcocamerautils()));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _split_date(_timestamp_pcoroictrlobj()));
-
-#ifdef WITH_GIT_VERSION
-    char buffVersion[BUFFVERSION_LEN + 1];
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s\n", _timestamp_gitversion(buffVersion, BUFFVERSION_LEN));
-#endif
 
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "       timestamp: %s\n", getTimestamp(Iso));
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "   computer name: %s\n", _getComputerName(buff, BUFFER_LEN));
