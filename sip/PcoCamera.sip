@@ -88,8 +88,6 @@ namespace Pco
 
 		void getVersion(std::string &o_sn /Out/) ;   // version
 
-		void getSdkRelease(std::string &o_sn /Out/) ; // versionSdk
-
 		void getDebugIntTypes(std::string &o_sn /Out/);
 		void getDebugInt(std::string &o_sn /Out/);
 		void setDebugInt(std::string &i_sn); 

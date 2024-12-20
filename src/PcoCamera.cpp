@@ -381,38 +381,6 @@ const char *_timestamp_pcocamera()
     return ID_FILE_TIMESTAMP;
 }
 
-#ifdef WITH_GIT_VERSION
-#    include "PcoGitVersion.h"
-
-char *_timestamp_gitversion(char *buffVersion, int len)
-{
-    __sprintfSExt(buffVersion, len,
-#    ifdef PCO_GIT_VERSION
-                  PCO_GIT_VERSION "\n"
-#    endif
-#    ifdef PCO_SDK_VERSION
-                  PCO_SDK_VERSION "\n"
-#    endif
-#    ifdef PROCLIB_GIT_VERSION
-                  PROCLIB_GIT_VERSION "\n"
-#    endif
-#    ifdef LIBCONFIG_GIT_VERSION
-                  LIBCONFIG_GIT_VERSION "\n"
-#    endif
-#    ifdef LIMA_GIT_VERSION
-                  LIMA_GIT_VERSION "\n"
-#    endif
-#    ifdef TANGO_GIT_VERSION
-                  TANGO_GIT_VERSION "\n"
-#    endif
-#    ifdef SPEC_GIT_VERSION
-                  SPEC_GIT_VERSION "\n"
-#    endif
-                                  "\n");
-    return buffVersion;
-}
-#endif
-
 //=========================================================================================================
 
 //=========================================================================================================
@@ -635,18 +603,6 @@ stcPcoData::stcPcoData()
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "       user name: %s\n", _getUserName(buff, BUFFER_LEN));
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "   configuration: %s\n", _getVSconfiguration(buff, BUFFER_LEN));
     ptr += __sprintfSExt(ptr, ptrMax - ptr, "        SISO dir: %s\n", _getEnviroment("SISODIR5"));
-
-#ifndef __linux__
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, " PCO SDK version: %s\n",
-                         _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_cam.dll"));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "                  %s\n",
-                         _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_cl_me4.dll"));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "                  %s\n",
-                         _getPcoSdkVersion(buff, BUFFER_LEN, (char *)"sc2_clhs.dll"));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "    lima pco dll: %s\n", _getDllPath(FILE_PCO_DLL, buff, BUFFER_LEN));
-#else
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, " PCO SDK version: %s\n", _getPcoSdkVersion(buff, BUFFER_LEN, NULL));
-#endif
 
     stcPcoGeneral.wSize = sizeof(stcPcoGeneral);
     stcPcoGeneral.strCamType.wSize = sizeof(stcPcoGeneral.strCamType);

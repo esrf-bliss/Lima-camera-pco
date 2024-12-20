@@ -57,14 +57,8 @@ from Lima import Core
 from Lima import Pco as PcoAcq
 from Lima.Server import AttrHelper
 
-#VERSION_ATT ="20180522"
-#VERSION_ATT ="20190402"
-# linux / server version
-#VERSION_ATT ="20190405"
-#VERSION_ATT ="tango/Pco.py: 2019/04/08"
-VERSION_ATT ="tango/Pco.py: 2019/04/25"
+RESET_CLOSE_INTERFACE = 100
 
-RESET_CLOSE_INTERFACE	= 100
 
 class Pco(tango.LatestDeviceImpl):
 

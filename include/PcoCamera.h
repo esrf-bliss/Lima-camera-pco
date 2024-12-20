@@ -975,7 +975,6 @@ namespace lima
             void getCoolingTemperature(int &val);
             void setCoolingTemperature(int val);
 
-            void getSdkRelease(std::string &o_sn);
             void getCameraNameEx(std::string &o_sn);
             void getCameraNameBase(std::string &o_sn);
 

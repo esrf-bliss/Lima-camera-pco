@@ -66,5 +66,3 @@ if(PCO_FOUND)
         endif (WIN32)
     endif()
 endif()
-
-list(APPEND PCO_DEFINITIONS WITH_GIT_VERSION)

@@ -61,9 +61,6 @@ include(LimaTools)
 # Set version
 include(project_version)
 
-# Enable git hash in the version
-option(WITH_GIT_VERSION "include the git commit hash" OFF)
-
 # Enable python binding code compilation using sip generator
 if (CAMERA_MASTER_PROJECT)
   option(LIMA_ENABLE_PYTHON "compile python binding code?" OFF)
@@ -104,10 +101,6 @@ target_include_directories(pco
     PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"           # For export header
     PUBLIC "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
-
-if(WITH_GIT_VERSION)
-	target_compile_definitions(pco PUBLIC WITH_GIT_VERSION)
-endif()
 
 target_compile_definitions(pco PUBLIC PCO_LINUX)
 

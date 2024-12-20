@@ -43,8 +43,6 @@
 
 #include "lima/Exceptions.h"
 
-#include "PcoSdkVersion.h"
-
 #include "PcoCamera.h"
 #include "PcoCameraUtils.h"
 #include "PcoSyncCtrlObj.h"
@@ -547,27 +545,6 @@ void Camera::setCoolingTemperature(int val)
 {
     int error;
     _pco_SetCoolingSetpointTemperature(val, error);
-}
-
-//====================================================================
-// SIP - attributes
-//====================================================================
-
-void Camera::getSdkRelease(std::string &o_sn)
-{
-    char *ptr = buff;
-    char *ptrMax = buff + sizeof(buff);
-    const char *release;
-
-//#ifdef __linux__
-    release = PCO_SDK_RELEASE;
-//#else
-//    release = PCO_SDK_WIN_RELEASE;
-//#endif
-
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, release);
-
-    o_sn = buff;
 }
 
 //=================================================================================================

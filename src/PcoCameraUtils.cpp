@@ -48,8 +48,6 @@
 
 #include "lima/Exceptions.h"
 
-#include "PcoSdkVersion.h"
-
 #include "PcoCamera.h"
 #include "PcoCameraUtils.h"
 #include "PcoSyncCtrlObj.h"
@@ -2639,31 +2637,7 @@ int GetFileVerStructA(TCHAR *pzFileName, int *ima, int *imi, int *imb)
 }
 
 #endif
-//=======================================================================================================
-//=======================================================================================================
 
-char *_getPcoSdkVersion(char *infoBuff, int strLen, char *lib)
-{
-    char *ptr = infoBuff;
-
-#ifndef __linux__
-
-    int ima, imi, imb;
-    int nr;
-
-    *ptr = 0;
-
-    if (!GetFileVerStructA(lib, &ima, &imi, &imb))
-    {
-        nr = __sprintfSExt(ptr, strLen, "file[%s] ver[%d.%d.%d]\n", lib, ima,
-                           imi, imb);
-    }
-#else
-    __sprintfSExt(ptr, strLen, PCO_SDK_RELEASE);
-
-#endif
-    return infoBuff;
-}
 
 //====================================================================
 //====================================================================
