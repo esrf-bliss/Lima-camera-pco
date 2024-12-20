@@ -2280,110 +2280,6 @@ void print_hex_dump_buff(void *ptr_buff, size_t len)
     }
 }
 
-//====================================================================
-//====================================================================
-
-ringLog::ringLog(int size)
-{
-    buffer = new struct data[size];
-    m_capacity = m_capacity_max = size;
-    m_size = 0;
-    m_head = 0;
-}
-void ringLog::flush(int capacity)
-{
-    if ((capacity > 0) && (capacity <= m_capacity_max))
-        m_capacity = capacity;
-    m_size = 0;
-    m_head = 0;
-}
-
-ringLog::~ringLog()
-{
-    delete buffer;
-}
-
-int ringLog::add(const char *s)
-{
-    struct data *ptr;
-    int offset;
-
-    if (m_size < m_capacity)
-    {
-        offset = (m_head + m_size) % m_capacity;
-        ptr = buffer + offset;
-        m_size++;
-    }
-    else
-    {
-        ptr = buffer + m_head;
-        m_head = (m_head + 1) % m_capacity;
-        m_size = m_capacity;
-    }
-
-    ptr->timestamp = getTimestamp();
-
-    long long l = strlen(s);
-
-    strncpy_s(ptr->str, RING_LOG_BUFFER_SIZE, s, RING_LOG_BUFFER_SIZE - 1);
-    return m_size;
-}
-
-void ringLog::dumpPrint(bool direction)
-{
-    static char timeline[128];
-    struct data *ptr;
-    int offset;
-    time_t ltime;
-    struct tm today;
-    const char *fmt = "%Y/%m/%d %H:%M:%S";
-    int i;
-
-    for (i = 0; i < m_size; i++)
-    {
-        offset = direction ? i : m_size - 1 - i;
-
-        ptr = buffer + (m_head + offset) % m_capacity;
-        ltime = ptr->timestamp;
-
-        localtime_s(&today, &ltime);
-
-        strftime(timeline, 128, fmt, &today);
-
-        printf("%s> %s\n", timeline, ptr->str);
-    }
-}
-
-int ringLog::dump(char *s, int lgMax, bool direction)
-{
-    // static char timeline[128];
-    struct data *ptr;
-    int offset;
-    time_t ltime;
-    struct tm today;
-    const char *fmt = "%Y/%m/%d %H:%M:%S";
-    int linMax = 25 + RING_LOG_BUFFER_SIZE;
-    int i;
-
-    int lg = 0;
-    // char *ptrOut = s;
-
-    for (i = 0; (i < m_size) && ((lgMax - lg) > linMax); i++)
-    {
-        offset = direction ? i : m_size - 1 - i;
-
-        ptr = buffer + (m_head + offset) % m_capacity;
-        ltime = ptr->timestamp;
-
-        localtime_s(&today, &ltime);
-
-        lg += (int)strftime(s + lg, lgMax - lg, fmt, &today);
-        lg += __sprintfSExt(s + lg, lgMax - lg, "> %s\n", ptr->str);
-    }
-
-    return lg;
-}
-
 //=========================================================================================================
 //=========================================================================================================
 
@@ -3139,14 +3035,8 @@ const char *Camera::_sprintComment(bool bAlways, const char *comment,
     DEB_MEMBER_FUNCT();
 
     static char buff[LEN_COMMENT + 1];
-    //			"\n=================================================\n---
-    //%s %s %s %s\n",
 
     __sprintfSExt(buff, LEN_COMMENT, "%s %s %s", comment, comment1, comment2);
-    msgLog(buff);
-
-    __sprintfSExt(buff, LEN_COMMENT, "\n--- %s %s %s %s\n",
-                  getTimestamp(IsoMilliSec), comment, comment1, comment2);
 
     if (bAlways)
     {

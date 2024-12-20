@@ -87,13 +87,6 @@ Camera::Camera(const std::string &camPar)
     m_config = true;
     DebParams::checkInit();
 
-    m_msgLog = new ringLog(300);
-    m_tmpLog = new ringLog(300);
-    if (m_msgLog == NULL)
-        throw LIMA_HW_EXC(Error, "m_msgLog > creation error");
-    if (m_tmpLog == NULL)
-        throw LIMA_HW_EXC(Error, "m_tmpLog > creation error");
-
     m_pcoData = new stcPcoData();
     if (m_pcoData == NULL)
         throw LIMA_HW_EXC(Error, "m_pcoData > creation error");
@@ -1296,16 +1289,12 @@ int Camera::PcoCheckError(int line, const char *file, int err, const char *fn, c
     DEF_FNID;
 
     static char tmpMsg[LEN_TMP_MSG + 1];
-    static char tmpMsg1[LEN_TMP_MSG + 1];
     char *msg;
     size_t lg;
 
     __sprintfSExt(tmpMsg, LEN_TMP_MSG, "PCOfn[%s] file[%s] line[%d]", fn, file, line);
     if (err != 0)
     {
-        __sprintfSExt(tmpMsg1, LEN_TMP_MSG, "ERROR - PCOfn[%s]", fn);
-        msgLog(tmpMsg);
-
         DWORD dwErr = err;
         m_pcoData->pcoError = err;
         msg = m_pcoData->pcoErrorMsg;
@@ -1647,13 +1636,6 @@ void Camera::_presetPixelRate(DWORD &pixRate, int &error)
 
     m_pcoData->dwPixelRateRequested = pixRate;
     error = 0;
-}
-
-//=================================================================================================
-//=================================================================================================
-void Camera::msgLog(const char *s)
-{
-    m_msgLog->add(s);
 }
 
 //=================================================================================================

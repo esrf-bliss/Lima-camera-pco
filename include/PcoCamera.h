@@ -229,38 +229,6 @@ struct stcFrame
 
 //================================================================
 //================================================================
-#define RING_LOG_BUFFER_SIZE 64
-class ringLog
-{
-    // enum { bufferSize = 64 };
-    struct data
-    {
-        time_t timestamp;
-        char str[RING_LOG_BUFFER_SIZE + 1];
-    };
-
-  public:
-    ringLog(int size);
-    ~ringLog();
-    int add(const char *s);
-    int size()
-    {
-        return m_size;
-    };
-    void dumpPrint(bool direction);
-    void flush(int capacity);
-    int dump(char *s, int lgMax, bool direction);
-
-  private:
-    int m_capacity;
-    int m_capacity_max;
-    int m_size;
-    int m_head;
-    struct data *buffer;
-};
-
-//================================================================
-//================================================================
 struct stcTemp
 {
     short sCcd, sCam, sPower;
@@ -730,7 +698,7 @@ namespace lima
                 return m_config;
             };
             void _pco_set_shutter_rolling_edge(int &error);
-            void msgLog(const char *s);
+
             bool _getIsArmed()
             {
                 return m_isArmed;
@@ -878,12 +846,7 @@ namespace lima
             void _get_MaxImageSize(Size &max_image_size);
             unsigned long long _getDebug(unsigned long long mask);
 
-            ringLog *m_msgLog;
-            ringLog *m_tmpLog;
-
             CheckImgNr *m_checkImgNr;
-            char *mybla, *myblamax;
-            char *mytalk, *mytalkmax;
 
             const char *_checkLogFiles(bool firstCall = false);
             char *_camInfo(char *ptr, char *ptrMax, long long int flag);

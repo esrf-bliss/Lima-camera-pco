@@ -623,22 +623,7 @@ void Camera::getRoiInfo(std::string &o_sn)
 }
 
 //=================================================================================================
-// SIP - msgLog
-//=================================================================================================
-void Camera::getMsgLog(std::string &o_sn)
-{
-    char *ptr = buff;
-    char *ptrMax = buff + sizeof(buff);
-
-    // 0 -> decreasing / older - last
-    // 1 -> increasing / newer - last
-    m_msgLog->dump(ptr, (int)(ptrMax - ptr), 1);
-
-    o_sn = buff;
-}
-
-//=================================================================================================
-// SIP - msgLog
+// SIP - getCamerasFound
 //=================================================================================================
 void Camera::getCamerasFound(std::string &o_sn)
 {

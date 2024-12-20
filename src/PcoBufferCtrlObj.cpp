@@ -628,9 +628,6 @@ int BufferCtrlObj::_xferImag()
     int error;
     bool live_mode;
     int _nrStop;
-    char msg[RING_LOG_BUFFER_SIZE + 1];
-    const char *pmsg = msg;
-    m_cam->m_tmpLog->flush(-1);
     int maxWaitTimeout;
     m_cam->getAcqTimeoutRetry(maxWaitTimeout);
 
@@ -746,7 +743,6 @@ int BufferCtrlObj::_xferImag()
                 char msg[512];
                 __sprintfSExt(msg, sizeof(msg), "... ASSIGN BUFFER[%d] frame[%d] recordState[%d] live[%d]", bufIdx,
                               dwFrameFirst2assign, recording, live_mode);
-                m_cam->m_tmpLog->add(msg);
                 DEB_ALWAYS() << msg;
             }
             if ((error = _assignImage2Buffer(dwFrameFirst2assign, dwFrameLast2assign, dwRequestedFrames, bufIdx,
@@ -792,11 +788,8 @@ int BufferCtrlObj::_xferImag()
         DEB_TRACE() << "========================= recordingState 1 - AFTER "
                        "ASSIGN (_xferImag)";
         if (dbgWaitobj)
-        {
-            pmsg = "... EDGE - recordingState 1";
-            m_cam->m_tmpLog->add(pmsg);
-            DEB_TRACE() << pmsg;
-        }
+            DEB_TRACE() << "... EDGE - recordingState 1";
+        
         m_cam->_pco_SetRecordingState(1, error);
     }
 
@@ -1524,9 +1517,7 @@ int BufferCtrlObj::_xferImag_getImage_edge()
         ::Sleep(sleepMs);
         if (dbgWaitobj)
         {
-            const char *pmsg = "... EDGE - recordingState 1";
-            m_cam->m_tmpLog->add(pmsg);
-            DEB_ALWAYS() << pmsg;
+            DEB_ALWAYS() << "... EDGE - recordingState 1";
         }
         DEB_TRACE() << "========================= recordingState 1 - AFTER "
                        "ASSIGN (_xferImag_getImage_edge";
@@ -2178,9 +2169,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
     int lima_buffer_nb;
     bool live_mode;
     int _nrStop;
-    char msg[RING_LOG_BUFFER_SIZE + 1];
-    const char *pmsg = msg;
-    m_cam->m_tmpLog->flush(-1);
+
     int maxWaitTimeout;
     m_cam->getAcqTimeoutRetry(maxWaitTimeout);
 
@@ -2279,8 +2268,8 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
         if (dbgWaitobj)
         {
-            __sprintfSExt(msg, RING_LOG_BUFFER_SIZE, "... ASSIGN BUFFER[%d] frame[%d]", bufIdx, dwPcoFrameFirst2assign);
-            m_cam->m_tmpLog->add(msg);
+            char msg[64];
+            __sprintfSExt(msg, sizeof(msg), "... ASSIGN BUFFER[%d] frame[%d]", bufIdx, dwPcoFrameFirst2assign);
             DEB_ALWAYS() << msg;
         }
 
@@ -2314,9 +2303,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
                        "ASSIGN (_xferImag)";
         if (dbgWaitobj)
         {
-            pmsg = "... EDGE - recordingState 1";
-            m_cam->m_tmpLog->add(pmsg);
-            DEB_TRACE() << pmsg;
+            DEB_TRACE() << "... EDGE - recordingState 1";
         }
         m_cam->_pco_SetRecordingState(1, error);
     }
@@ -2506,9 +2493,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
         // --------------- check if there is some buffer ready
         if (dbgWaitobj)
         {
-            pmsg = "... _pco_WaitforNextBufferNum - waiting";
-            m_cam->m_tmpLog->add(pmsg);
-            DEB_ALWAYS() << pmsg;
+            DEB_ALWAYS() << "... _pco_WaitforNextBufferNum - waiting";
         }
 
 
@@ -2532,9 +2517,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
                 m_allocBuff.bufferReady[0] = 1;
                 if (dbgWaitobj)
                 {
-                    pmsg = "... WAITOBJ 0 found";
-                    m_cam->m_tmpLog->add(pmsg);
-                    DEB_ALWAYS() << pmsg;
+                    DEB_ALWAYS() << "... WAITOBJ 0 found";
                 }
                 goto _RETRY;
 
@@ -2542,9 +2525,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
                m_allocBuff.bufferReady[1] = 1;
                if (dbgWaitobj)
                {
-                   pmsg = "... WAITOBJ 1 found";
-                   m_cam->m_tmpLog->add(pmsg);
-                   DEB_ALWAYS() << pmsg;
+                   DEB_ALWAYS() << "... WAITOBJ 1 found";
                }
                goto _RETRY;
 
@@ -2552,9 +2533,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
                m_allocBuff.bufferReady[2] = 1;
                if (dbgWaitobj)
                {
-                   pmsg = "... WAITOBJ 2 found";
-                   m_cam->m_tmpLog->add(pmsg);
-                   DEB_ALWAYS() << pmsg;
+                   DEB_ALWAYS() << "... WAITOBJ 2 found";
                }
                goto _RETRY;
 
@@ -2562,19 +2541,13 @@ int BufferCtrlObj::_xferImagDoubleImage()
                m_allocBuff.bufferReady[3] = 1;
                if (dbgWaitobj)
                {
-                   pmsg = "... WAITOBJ 3 found";
-                   m_cam->m_tmpLog->add(pmsg);
-                   DEB_ALWAYS() << pmsg;
+                   DEB_ALWAYS() << "... WAITOBJ 3 found";
                }
                goto _RETRY;
 
            case WAIT_TIMEOUT:
            {
                maxWaitTimeout--;
-               if (dbgWaitobj)
-               {
-                   m_cam->m_tmpLog->dumpPrint(true);
-               }
 
                char errstr[MSG4K + 1];
                char *ptr = errstr;
@@ -2628,11 +2601,6 @@ int BufferCtrlObj::_xferImagDoubleImage()
         m_sync->setAcqFrames(dwPcoFrameIdx * 2);
         dwPcoFrameIdx++;
     } // while(frameIdx ...
-
-    if (dbgWaitobj)
-    {
-        m_cam->m_tmpLog->dumpPrint(true);
-    } // true first .... last
 
     m_pcoData->traceAcq.msXfer = msElapsedTime(tStart);
     m_pcoData->traceAcq.endXferTimestamp = getTimestamp();
