@@ -34,7 +34,6 @@
 #include "lima/HwInterface.h"
 
 #include "PcoBufferCtrlObj.h"
-#include "PcoHwEventCtrlObj.h"
 #include "PcoSyncCtrlObj.h"
 
 // --------------------- cam utils
@@ -651,10 +650,6 @@ namespace lima
                 return m_pcoData->frames_per_buffer;
             }
 
-            PcoHwEventCtrlObj *_getPcoHwEventCtrlObj()
-            {
-                return m_HwEventCtrlObj;
-            }
             BufferCtrlObj *_getBufferCtrlObj()
             {
                 return m_buffer;
@@ -701,7 +696,6 @@ namespace lima
             void _setActionTimestamp(int action);
 
           private:
-            PcoHwEventCtrlObj *m_HwEventCtrlObj;
             SyncCtrlObj *m_sync;
             BufferCtrlObj *m_buffer;
             

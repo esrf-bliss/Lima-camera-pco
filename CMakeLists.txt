@@ -85,7 +85,6 @@ add_library(pco SHARED
   src/PcoCameraSip.cpp
   src/PcoCameraUtils.cpp
   src/PcoDetInfoCtrlObj.cpp
-  src/PcoHwEventCtrlObj.cpp
   src/PcoInterface.cpp
   src/PcoRoiCtrlObj.cpp
   src/PcoSyncCtrlObj.cpp

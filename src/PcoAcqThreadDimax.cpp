@@ -289,15 +289,6 @@ namespace lima
             // included in 34a8fb6723594919f08cf66759fe5dbd6dc4287e only for dimax (to
             // check for others)
             m_sync->setStarted(false);
-
-#if 0
-    if (requestStop == stopRequest)
-    {
-        Event* ev = new Event(Hardware, Event::Error, Event::Camera, Event::CamFault, errMsg);
-        m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
-    }
-
-#endif
         }
 
         //==========================================================================================================
@@ -501,15 +492,6 @@ namespace lima
             // included in 34a8fb6723594919f08cf66759fe5dbd6dc4287e only for dimax (to
             // check for others)
             m_sync->setStarted(false);
-
-#if 0
-    if (requestStop == stopRequest)
-    {
-        Event* ev = new Event(Hardware, Event::Error, Event::Camera, Event::CamFault, errMsg);
-        m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
-    }
-
-#endif
         }
 
         //=====================================================================

@@ -29,7 +29,6 @@
 #include "PcoSyncCtrlObj.h"
 #include "PcoRoiCtrlObj.h"
 #include "PcoBinCtrlObj.h"
-#include "PcoHwEventCtrlObj.h"
 
 using namespace lima;
 using namespace lima::Pco;
@@ -39,9 +38,6 @@ using namespace lima::Pco;
 Interface::Interface(Camera *cam) : m_cam(cam)
 {
     DEB_CONSTRUCTOR();
-
-    // cam->m_HwEventCtrlObj = m_HwEventCtrlObj = new PcoHwEventCtrlObj(cam);
-    cam->m_HwEventCtrlObj = m_HwEventCtrlObj = new PcoHwEventCtrlObj();
 
     m_BinCtrlObj = new BinCtrlObj(*cam);
     m_RoiCtrlObj = new RoiCtrlObj(cam);
@@ -65,7 +61,6 @@ Interface::Interface(Camera *cam) : m_cam(cam)
 Interface::~Interface()
 {
     DEB_DESTRUCTOR();
-    delete m_HwEventCtrlObj;
     delete m_RoiCtrlObj;
     delete m_BinCtrlObj;
     delete m_buffer;
@@ -77,7 +72,6 @@ Interface::~Interface()
 //=========================================================================================================
 void Interface::getCapList(CapList &cap_list) const
 {
-    cap_list.push_back(HwCap(m_HwEventCtrlObj));
     cap_list.push_back(HwCap(m_RoiCtrlObj));
     cap_list.push_back(HwCap(m_BinCtrlObj));
     cap_list.push_back(HwCap(m_sync));

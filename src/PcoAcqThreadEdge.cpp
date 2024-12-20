@@ -108,13 +108,6 @@ namespace lima
             //         errMsg = NULL;
             // }
 
-            // If status is error
-            if (status == pcoAcqRecordTimeout || status == pcoAcqWaitTimeout || status == pcoAcqWaitError ||status == pcoAcqError || status == pcoAcqPcoError)
-            {
-                Event *ev = new Event(Hardware, Event::Error, Event::Camera, Event::CamFault, sPcoAcqStatus[status]);
-                // m_cam->_getPcoHwEventCtrlObj()->reportEvent(ev);
-            }
-
             printf("=== %s [%d]> TRACE %s\n", fnId, __LINE__, "exit thread");
         }
 

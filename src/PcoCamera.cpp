@@ -1176,12 +1176,8 @@ void Camera::prepareAcq()
 		{
 
 			DEB_ALWAYS() << "\nERROR frames OUT OF RANGE " << DEB_VAR3(ulRequestedFrames, ulFramesMaxInSegment, wDoubleImage);
-			{
-				Event *ev = new Event(Hardware,Event::Error,Event::Camera,Event::CamNoMemory, "ERROR frames OUT OF RANGE");
-				_getPcoHwEventCtrlObj()->reportEvent(ev);
-			}
-				m_sync->setStarted(false);
-				return;
+            m_sync->setStarted(false);
+            return;
 		}
 	}
 #    endif
