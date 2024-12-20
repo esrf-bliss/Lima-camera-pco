@@ -618,20 +618,9 @@ namespace lima
 
             void threadFunction();
 
-            // #ifdef __linux__
-            //             CPco_com *camera;
-            //             CPco_grab_cl_me4 *grabber;
-            //             CPco_Log *mylog;
-            //
-            //             void stopAcq();
-            //             void _stopAcq(bool waitForThread);
-            // #endif
-
-            // ----- BIN
             void setBin(const Bin &aBin);
             void getBin(Bin &aBin);
             void checkBin(Bin &aBin);
-            // -----
 
             HANDLE &getHandle()
             {
@@ -749,8 +738,6 @@ namespace lima
             };
 
             friend class _AcqThread;
-            //_AcqThread *m_acq_threadAcq;
-            //_AcqThread *m_acq_threadSw;
             _AcqThread m_acq_thread;
 
             volatile bool m_wait_flag;
@@ -766,8 +753,6 @@ namespace lima
             Roi m_Roi_lastFixed_hw;
             Roi m_Roi_lastFixed_requested;
             time_t m_Roi_lastFixed_time;
-
-            // struct stcSize m_size;
 
             int m_acq_frame_nb;
             bool m_config;

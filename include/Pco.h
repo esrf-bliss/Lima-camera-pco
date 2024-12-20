@@ -98,44 +98,14 @@
 #define MBYTEF (KBYTEF * KBYTEF)
 #define GBYTEF (KBYTEF * KBYTEF * KBYTEF)
 
-////-------------------- linux
-//#ifdef __linux__
-//typedef uint32_t DWORD;
-//// typedef unsigned long       DWORD;
-//typedef unsigned char BYTE;
-//typedef unsigned short WORD;
-//typedef bool BOOL;
-//
-//#    ifndef HANDLE
-//typedef int HANDLE;
-//#    endif
-//
-//typedef short SHORT;
-//// typedef long LONG;
-//
-//typedef uint64_t UINT64;
-//
+
 #    ifndef ULLONG_MAX
 #        define LONG_MAX 2147483647L
 #        define ULONG_MAX 0xffffffffUL
 #        define ULLONG_MAX                                                     \
             0xffffffffffffffffULL /* maximum unsigned long long int value */
 #    endif
-//
-//#    define far
-//
-//#    define DECLARE_HANDLE(n)                                                  \
-//        typedef struct n##__                                                   \
-//        {                                                                      \
-//            int i;                                                             \
-//        } *n
-//
-//DECLARE_HANDLE(HWND);
-//
-//#    ifndef __TIMESTAMP__
-//#        define __TIMESTAMP__
-//#    endif
-//#endif
+
 
 //-------------------- win
 #ifndef __linux__
