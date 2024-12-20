@@ -752,10 +752,8 @@ namespace lima
             PcoHwEventCtrlObj *m_HwEventCtrlObj;
             SyncCtrlObj *m_sync;
             BufferCtrlObj *m_buffer;
+            
             HANDLE m_handle; /* handle of opened camera */
-
-            std::string m_log;
-            // char pcoErrorMsg[ERR_SIZE+1];
 
             struct stcPcoData *m_pcoData;
 

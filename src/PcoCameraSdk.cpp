@@ -1729,13 +1729,12 @@ void Camera::_pco_GetTemperatureInfo(int &error)
                                &m_pcoData->temperature.sPower);
     if (error)
         return;
-    // PCO_THROW_OR_TRACE(error, "PCO_GetTemperature") ;
 
     __sprintfSExt(msg, MSG_SIZE, "* temperature: CCD[%.1f]  CAM[%d]  PS[%d]\n",
                   m_pcoData->temperature.sCcd / 10.,
                   m_pcoData->temperature.sCam, m_pcoData->temperature.sPower);
-    // DEB_TRACE() <<   msg;
-    m_log.append(msg);
+    DEB_TRACE() <<   msg;
+    
 
     m_pcoData->temperature.sMinCoolSet =
         m_pcoData->stcPcoDescription.sMinCoolSetDESC;
@@ -1744,15 +1743,11 @@ void Camera::_pco_GetTemperatureInfo(int &error)
     m_pcoData->temperature.sDefaultCoolSet =
         m_pcoData->stcPcoDescription.sDefaultCoolSetDESC;
 
-    // SC2_SDK_FUNC int WINAPI PCO_GetCoolingSetpointTemperature(HANDLE ph,
-    // SHORT* sCoolSet)
-
     if ((m_pcoData->temperature.sMinCoolSet == 0) &&
         (m_pcoData->temperature.sMaxCoolSet == 0)) // no cooled camera
     {
         m_pcoData->temperature.sSetpoint = 0;
-        __sprintfSExt(msg, MSG_SIZE, "*     cooling: NO cooled camera");
-        m_log.append(msg);
+        DEB_WARNING() <<   "*     cooling: NO cooled camera";
         return;
     }
 
@@ -1765,7 +1760,7 @@ void Camera::_pco_GetTemperatureInfo(int &error)
                   m_pcoData->temperature.sMaxCoolSet,
                   m_pcoData->temperature.sDefaultCoolSet,
                   m_pcoData->temperature.sSetpoint);
-    m_log.append(msg);
+    DEB_TRACE() <<   msg;
 
 //#endif
     return;

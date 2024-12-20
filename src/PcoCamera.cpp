@@ -801,9 +801,6 @@ void Camera::_init()
 
     _armRequired(true);
 
-    m_log.clear();
-    __sprintfSExt(msg, sizeof(msg), "*** Pco log %s\n", getTimestamp(Iso));
-    m_log.append(msg);
 
     // DEB_TRACE() << _getDllPath(FILE_PCO_DLL, msg, sizeof(msg));
 
@@ -898,11 +895,9 @@ void Camera::_init()
 
     __sprintfSExt(msg, MSG_SIZE, "* CCD Size = X[%d] * Y[%d] (%d bits)\n", maxWidth, maxHeight, bitsPerPix);
     DEB_TRACE() << msg;
-    m_log.append(msg);
 
     __sprintfSExt(msg, MSG_SIZE, "* ROI Steps = x:%d, y:%d\n", maxwidth_step, maxheight_step);
     DEB_TRACE() << msg;
-    m_log.append(msg);
 
     _pco_GetTemperatureInfo(error);
     PCO_THROW_OR_TRACE(error, "_pco_GetTemperatureInfo");
@@ -939,7 +934,6 @@ void Camera::_init()
 
     _pco_SetCameraToCurrentTime(error);
 
-    DEB_TRACE() << m_log;
     DEB_TRACE() << "END OF CAMERA";
     DEB_ALWAYS() << _sprintComment(false, fnId, "[EXIT]");
 }
@@ -974,14 +968,12 @@ void Camera::_init_dimax()
         __sprintfSExt(msg, MSG_SIZE, "* ramPages[%d] pixPerPage[%d] bitsPerPix[%d]\n", m_pcoData->dwRamSize,
                       m_pcoData->wPixPerPage, bitsPerPix);
         DEB_TRACE() << msg;
-        m_log.append(msg);
 
         double nrBytes = (double)m_pcoData->dwRamSize * (double)m_pcoData->wPixPerPage * (double)bitsPerPix /
                          9.; // 8 bits data + 1 bit CRC -> 9
 
         __sprintfSExt(msg, MSG_SIZE, "* camMemorySize [%lld B] [%g GB]\n", (long long int)nrBytes, nrBytes / GIGABYTE);
         DEB_TRACE() << msg;
-        m_log.append(msg);
 
         // ----------------- get initial seg Size - images & print
 
@@ -999,7 +991,6 @@ void Camera::_init_dimax()
             __sprintfSExt(msg, MSG_SIZE, "* segment[%d] number of pages[%d]\n", segmentPco,
                           m_pcoData->dwSegmentSize[segmentArr]);
             DEB_TRACE() << msg;
-            m_log.append(msg);
         }
 
         //---- get nr de images in each segment & nr max of img on each segmente
@@ -1016,7 +1007,6 @@ void Camera::_init_dimax()
             __sprintfSExt(msg, MSG_SIZE, "* segment[%d] nr images [%d]  max imag [%d]\n", segmentPco, _dwValidImageCnt,
                           _dwMaxImageCnt);
             DEB_TRACE() << msg;
-            m_log.append(msg);
 
         } // for
 
@@ -1033,7 +1023,6 @@ void Camera::_init_dimax()
         __sprintfSExt(msg, MSG_SIZE, "* m_pcoData->dwSegmentSize0 [%d]  m_pcoData->dwRamSize [%d]\n",
                       m_pcoData->dwSegmentSize[0], m_pcoData->dwRamSize);
         DEB_TRACE() << msg;
-        m_log.append(msg);
 
         _pco_SetCameraRamSegmentSize(&m_pcoData->dwSegmentSize[0], error);
         PCO_THROW_OR_TRACE(error, pcoFn);
