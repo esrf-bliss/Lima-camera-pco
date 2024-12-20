@@ -57,7 +57,7 @@ int __xlat_date(char *s1, char &ptrTo, int lenTo);
 char *_xlat_date(char *s1, char *s2, char *s3);
 
 //=========================================================================================================
-//========================================================================================================= 
+//=========================================================================================================
 Camera::_AcqThread::_AcqThread(Camera &aCam) : m_cam(aCam)
 {
     DEB_CONSTRUCTOR();
@@ -70,13 +70,10 @@ void Camera::_AcqThread::threadFunction()
 }
 
 //=========================================================================================================
-//========================================================================================================= 
+//=========================================================================================================
 Camera::Camera(const std::string &camPar)
-    : m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL),
-      m_handle(NULL), m_Roi_lastFixed_time(0),
-      m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
-      m_bRecorderForcedFifo(false),
-      m_acq_thread(*this),
+    : m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL), m_handle(NULL), m_Roi_lastFixed_time(0),
+      m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0), m_bRecorderForcedFifo(false), m_acq_thread(*this),
       m_status(Camera::Status::Ready)
 {
     DEF_FNID;
@@ -110,7 +107,7 @@ Camera::Camera(const std::string &camPar)
     ret = paramsGet(key, value);
     if (ret)
     {
-        //m_pcoData->testCmdMode = _atoi64(value);
+        // m_pcoData->testCmdMode = _atoi64(value);
         m_pcoData->testCmdMode = atoll(value);
     }
 
@@ -136,14 +133,13 @@ Camera::Camera(const std::string &camPar)
         m_config = false;
         _setActionTimestamp(tsConstructor);
     }
-    catch (lima::Exception& ex)
+    catch (lima::Exception &ex)
     {
         uint32_t err = PCO_NOERROR;
         err = PCO_CleanupLib();
         if (err)
             DEB_ERROR() << "*** "
-                        << "~Camera(): PCO_CleanupLib - cleanup pco sdk - "
-                        << err;
+                        << "~Camera(): PCO_CleanupLib - cleanup pco sdk - " << err;
         throw ex;
     }
 }
@@ -161,7 +157,8 @@ Camera::~Camera()
     uint32_t err = PCO_NOERROR;
     err = PCO_CleanupLib();
     if (err)
-        DEB_ERROR() << "*** " << "~Camera(): PCO_CleanupLib - cleanup pco sdk - " << err;
+        DEB_ERROR() << "*** "
+                    << "~Camera(): PCO_CleanupLib - cleanup pco sdk - " << err;
 }
 
 bool Camera::_isRunAfterAssign()
@@ -206,8 +203,7 @@ void Camera::startAcq()
         DEB_ALWAYS() << "PCO_CancelImages " << DEB_VAR1(iPending);
     }
 
-    unsigned long ulFramesMaxInSegment =
-        _pco_GetNumberOfImagesInSegment_MaxCalc(m_pcoData->wActiveRamSegment);
+    unsigned long ulFramesMaxInSegment = _pco_GetNumberOfImagesInSegment_MaxCalc(m_pcoData->wActiveRamSegment);
     unsigned long ulRequestedFrames = (unsigned long)iRequestedFrames;
 
     if (ulRequestedFrames > 0)
@@ -228,8 +224,7 @@ void Camera::startAcq()
             bOutOfRange = true;
         }
 
-        if ((ulFramesMaxInSegment > 0) &&
-            (ulRequestedFrames > ulFramesMaxInSegment) && (!forced))
+        if ((ulFramesMaxInSegment > 0) && (ulRequestedFrames > ulFramesMaxInSegment) && (!forced))
         {
             DEB_ALWAYS() << "\nERROR many frames in record mode";
             bOutOfRange = true;
@@ -238,11 +233,10 @@ void Camera::startAcq()
         if (bOutOfRange)
         {
             char msg[MSG1K];
-            __sprintfSExt(
-                msg, sizeof(msg) - 1,
-                "ERROR frames OUT OF RANGE ulRequestedFrames[%ld], "
-                "ulFramesMaxInSegment[%ld], wDoubleImage[%d], forced[%d]",
-                ulRequestedFrames, ulFramesMaxInSegment, wDoubleImage, forced);
+            __sprintfSExt(msg, sizeof(msg) - 1,
+                          "ERROR frames OUT OF RANGE ulRequestedFrames[%ld], "
+                          "ulFramesMaxInSegment[%ld], wDoubleImage[%d], forced[%d]",
+                          ulRequestedFrames, ulFramesMaxInSegment, wDoubleImage, forced);
 
             DEB_ALWAYS() << msg;
             m_sync->setStarted(false);
@@ -264,14 +258,13 @@ void Camera::startAcq()
     m_acq_thread.start();
 
     //// Start acquisition thread
-    //AutoMutex aLock(m_cond_thread.mutex());
-    //m_wait_flag = false;
-    //m_cond_thread.broadcast();
-    //DEB_TRACE() << "[... starting after mutex] [EXIT]";
+    // AutoMutex aLock(m_cond_thread.mutex());
+    // m_wait_flag = false;
+    // m_cond_thread.broadcast();
+    // DEB_TRACE() << "[... starting after mutex] [EXIT]";
 
     m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
 }
-
 
 //=================================================================================================
 //=================================================================================================
@@ -330,8 +323,7 @@ void Camera::_set_shutter_rolling_edge(DWORD dwRolling, int &error)
 
     if (!_isValid_rollingShutter(dwRolling))
     {
-        DEB_ALWAYS() << "ERROR requested Rolling Shutter not allowed "
-                     << DEB_VAR1(dwRolling);
+        DEB_ALWAYS() << "ERROR requested Rolling Shutter not allowed " << DEB_VAR1(dwRolling);
         error = -1;
         return;
     }
@@ -506,7 +498,7 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &e
                     default:
                         ptr = NULL;
                 } // switch(camtype.wCamSubType / 0x100) ...
-        } // switch(camtype.wCamSubType) ...
+        }         // switch(camtype.wCamSubType) ...
 
         if (ptr)
         {

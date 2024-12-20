@@ -32,8 +32,7 @@ using namespace lima::Pco;
 
 //=========================================================================================================
 //=========================================================================================================
-DetInfoCtrlObj::DetInfoCtrlObj(Camera *cam)
-    : m_cam(cam), m_handle(cam->getHandle())
+DetInfoCtrlObj::DetInfoCtrlObj(Camera *cam) : m_cam(cam), m_handle(cam->getHandle())
 {
 }
 

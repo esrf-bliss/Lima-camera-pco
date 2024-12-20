@@ -26,7 +26,6 @@
 
 #include "Pco.h"
 
-
 #include "PcoCamera.h"
 #include "PcoSyncCtrlObj.h"
 #include "PcoBufferCtrlObj.h"
@@ -41,8 +40,7 @@ using namespace lima::Pco;
 SyncCtrlObj::SyncCtrlObj(Camera *cam, BufferCtrlObj *buffer)
     : m_exp_time(0.), m_lat_time(0.),
 
-      m_cam(cam), m_trig_mode(IntTrig),
-      m_buffer(buffer), m_nb_frames(1), m_nb_acq_frames(0), m_started(false),
+      m_cam(cam), m_trig_mode(IntTrig), m_buffer(buffer), m_nb_frames(1), m_nb_acq_frames(0), m_started(false),
       m_exposing(pcoAcqIdle), m_pcoData(cam->_getPcoData())
 {
     DEB_CONSTRUCTOR();
@@ -132,9 +130,8 @@ enum TrigMode {
 };
 ******************************************************************************/
 
-void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
-                                       WORD &pcoTrigMode, WORD &pcoAcqMode,
-                                       bool &extTrig, int &err)
+void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode, WORD &pcoTrigMode, WORD &pcoAcqMode, bool &extTrig,
+                                       int &err)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
@@ -271,8 +268,7 @@ void SyncCtrlObj::xlatLimaTrigMode2Pco(lima::TrigMode limaTrigMode,
     pcoAcqMode = _pcoAcqMode;
     extTrig = ext_trig;
     DEB_ALWAYS() << "\n ... " << DEB_VAR1(sLimaTriggerMode) << "\n ... "
-                 << DEB_VAR3(sPcoTriggerMode, pcoTrigMode, extTrig) << "\n ... "
-                 << DEB_VAR2(sPcoAcqMode, pcoAcqMode);
+                 << DEB_VAR3(sPcoTriggerMode, pcoTrigMode, extTrig) << "\n ... " << DEB_VAR2(sPcoAcqMode, pcoAcqMode);
 
     return;
 }
@@ -304,8 +300,7 @@ void SyncCtrlObj::setExpTime(double exp_time)
 
 #endif
 
-    if ((exp_time >= m_pcoData->min_exp_time) &&
-        (exp_time <= m_pcoData->max_exp_time))
+    if ((exp_time >= m_pcoData->min_exp_time) && (exp_time <= m_pcoData->max_exp_time))
     {
         m_exp_time = exp_time;
         return;
@@ -414,35 +409,23 @@ void SyncCtrlObj::getNbHwFrames(int &nb_frames)
 //=========================================================================================================
 void SyncCtrlObj::getValidRanges(ValidRangesType &valid_ranges)
 {
-    m_pcoData->step_exp_time =
-        (m_pcoData->stcPcoDescription.dwMinExposureStepDESC) *
-        NANO; // step exposure time in ns
+    m_pcoData->step_exp_time = (m_pcoData->stcPcoDescription.dwMinExposureStepDESC) * NANO; // step exposure time in ns
 
-    m_pcoData->min_exp_time = (m_pcoData->stcPcoDescription.dwMinExposureDESC) *
-                              NANO; // Minimum exposure time in ns
-    valid_ranges.min_exp_time = m_pcoData->min_exp_time_err =
-        m_pcoData->min_exp_time - m_pcoData->step_exp_time;
+    m_pcoData->min_exp_time = (m_pcoData->stcPcoDescription.dwMinExposureDESC) * NANO; // Minimum exposure time in ns
+    valid_ranges.min_exp_time = m_pcoData->min_exp_time_err = m_pcoData->min_exp_time - m_pcoData->step_exp_time;
 
-    m_pcoData->max_exp_time = (m_pcoData->stcPcoDescription.dwMaxExposureDESC) *
-                              MILI; // Maximum exposure time in ms
-    valid_ranges.max_exp_time = m_pcoData->max_exp_time_err =
-        m_pcoData->max_exp_time + m_pcoData->step_exp_time;
+    m_pcoData->max_exp_time = (m_pcoData->stcPcoDescription.dwMaxExposureDESC) * MILI; // Maximum exposure time in ms
+    valid_ranges.max_exp_time = m_pcoData->max_exp_time_err = m_pcoData->max_exp_time + m_pcoData->step_exp_time;
 
-    m_pcoData->step_lat_time =
-        (m_pcoData->stcPcoDescription.dwMinDelayStepDESC) *
-        NANO; // step delay time in ns
+    m_pcoData->step_lat_time = (m_pcoData->stcPcoDescription.dwMinDelayStepDESC) * NANO; // step delay time in ns
 
-    m_pcoData->min_lat_time = (m_pcoData->stcPcoDescription.dwMinDelayDESC) *
-                              NANO; // Minimum delay time in ns
-    valid_ranges.min_lat_time = m_pcoData->min_lat_time_err =
-        (m_pcoData->min_lat_time < m_pcoData->step_lat_time)
-            ? m_pcoData->min_lat_time
-            : m_pcoData->min_lat_time - m_pcoData->step_lat_time;
+    m_pcoData->min_lat_time = (m_pcoData->stcPcoDescription.dwMinDelayDESC) * NANO; // Minimum delay time in ns
+    valid_ranges.min_lat_time = m_pcoData->min_lat_time_err = (m_pcoData->min_lat_time < m_pcoData->step_lat_time)
+                                                                  ? m_pcoData->min_lat_time
+                                                                  : m_pcoData->min_lat_time - m_pcoData->step_lat_time;
 
-    m_pcoData->max_lat_time = (m_pcoData->stcPcoDescription.dwMaxDelayDESC) *
-                              MILI; // Maximum delay time in ms
-    valid_ranges.max_lat_time = m_pcoData->max_lat_time_err =
-        m_pcoData->max_lat_time + m_pcoData->step_lat_time;
+    m_pcoData->max_lat_time = (m_pcoData->stcPcoDescription.dwMaxDelayDESC) * MILI; // Maximum delay time in ms
+    valid_ranges.max_lat_time = m_pcoData->max_lat_time_err = m_pcoData->max_lat_time + m_pcoData->step_lat_time;
 }
 
 //=========================================================================================================
@@ -458,8 +441,7 @@ void SyncCtrlObj::startAcq()
 
     m_cam->_camInfo(msg, msg + sizeof(msg), CAMINFO_ACQ);
 
-    DEB_ALWAYS() << "\n"
-                 << msg << m_cam->_sprintComment(false, fnId, "[ENTRY]");
+    DEB_ALWAYS() << "\n" << msg << m_cam->_sprintComment(false, fnId, "[ENTRY]");
 
     DEB_TRACE() << ": SyncCtrlObj::startAcq() " << DEB_VAR1(_started);
 
@@ -488,12 +470,10 @@ void SyncCtrlObj::startAcq()
 
         while (((val = getExposing()) == val0) && retry--)
         {
-            DEB_TRACE() << "+++ getExposing - WAIT for != pcoAcqStart - "
-                        << DEB_VAR3(val, val0, retry);
+            DEB_TRACE() << "+++ getExposing - WAIT for != pcoAcqStart - " << DEB_VAR3(val, val0, retry);
             resWait = m_cond.wait(2.);
         }
-        DEB_TRACE() << "+++ getExposing - EXIT - "
-                    << DEB_VAR3(val, val0, retry);
+        DEB_TRACE() << "+++ getExposing - EXIT - " << DEB_VAR3(val, val0, retry);
         lock.unlock();
 
         setStarted(true);
@@ -578,9 +558,7 @@ void SyncCtrlObj::stopAcq(bool clearQueue)
     _stopRequestOut = _getRequestStop(_nrStop);
 
     DEB_ALWAYS() << fnId << " [exit]"
-                 << ": "
-                 << DEB_VAR5(_started, _stopRequestIn, _stopRequestOut, _nrStop,
-                             resWait);
+                 << ": " << DEB_VAR5(_started, _stopRequestIn, _stopRequestOut, _nrStop, resWait);
 }
 //=========================================================================================================
 //=========================================================================================================
@@ -667,8 +645,7 @@ void SyncCtrlObj::_setRequestStop(int requestStop)
             m_requestStop = requestStop;
             break;
     }
-    DEB_ALWAYS() << DEB_VAR4(m_requestStop0, m_requestStop, m_requestStopRetry,
-                             requestStop);
+    DEB_ALWAYS() << DEB_VAR4(m_requestStop0, m_requestStop, m_requestStopRetry, requestStop);
 }
 //=========================================================================================================
 //=========================================================================================================

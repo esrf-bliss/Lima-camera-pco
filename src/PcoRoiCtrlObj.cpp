@@ -115,8 +115,7 @@ void RoiCtrlObj::getRoi(Roi &hw_roi)
 //=================================================================================================
 // ----- ROI
 //=================================================================================================
-void Camera::_xlatRoi_lima2pco(Roi roiLima, unsigned int &x0, unsigned int &x1,
-                               unsigned int &y0, unsigned int &y1)
+void Camera::_xlatRoi_lima2pco(Roi roiLima, unsigned int &x0, unsigned int &x1, unsigned int &y0, unsigned int &y1)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
@@ -132,8 +131,7 @@ void Camera::_xlatRoi_lima2pco(Roi roiLima, unsigned int &x0, unsigned int &x1,
 
 //=================================================================================================
 //=================================================================================================
-void Camera::_xlatRoi_pco2lima(Roi &roiLima, unsigned int x0, unsigned int x1,
-                               unsigned int y0, unsigned int y1)
+void Camera::_xlatRoi_pco2lima(Roi &roiLima, unsigned int x0, unsigned int x1, unsigned int y0, unsigned int y1)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
@@ -223,8 +221,8 @@ int Camera::_checkValidRoi(const Roi &roi_new, Roi &roi_fixed)
     if (yStepsNull)
         yMinSize = yMax;
 
-    iInvalid = _fixValidRoi(x0, x1, xMax, xSteps, xMinSize, bSymX) |
-               _fixValidRoi(y0, y1, yMax, ySteps, yMinSize, bSymY);
+    iInvalid =
+        _fixValidRoi(x0, x1, xMax, xSteps, xMinSize, bSymX) | _fixValidRoi(y0, y1, yMax, ySteps, yMinSize, bSymY);
 
     roi_fixed.setTopLeft(Point(x0 - 1, y0 - 1));
     roi_fixed.setSize(Size(x1 - x0 + 1, y1 - y0 + 1));
@@ -236,23 +234,18 @@ int Camera::_checkValidRoi(const Roi &roi_new, Roi &roi_fixed)
         Y0 = y0 - 1;
         Xsize = x1 - x0 + 1;
         Ysize = y1 - y0 + 1;
-        DEB_ALWAYS() << "\nREQUESTED roiX (pco from 1): "
-                     << DEB_VAR5(x0org, x1org, xSteps, xMax, xMinSize)
-                     << "\nREQUESTED roiY (pco from 1): "
-                     << DEB_VAR5(y0org, y1org, ySteps, yMax, yMinSize)
-                     << "\n    FIXED roi  (pco from 1): "
-                     << DEB_VAR4(x0, x1, y0, y1)
-                     << "\n    FIXED roi (lima from 0): "
-                     << DEB_VAR4(X0, Y0, Xsize, Ysize)
-                     << "\n                     STATUS: "
-                     << DEB_VAR3(iInvalid, bSymX, bSymY);
+        DEB_ALWAYS() << "\nREQUESTED roiX (pco from 1): " << DEB_VAR5(x0org, x1org, xSteps, xMax, xMinSize)
+                     << "\nREQUESTED roiY (pco from 1): " << DEB_VAR5(y0org, y1org, ySteps, yMax, yMinSize)
+                     << "\n    FIXED roi  (pco from 1): " << DEB_VAR4(x0, x1, y0, y1)
+                     << "\n    FIXED roi (lima from 0): " << DEB_VAR4(X0, Y0, Xsize, Ysize)
+                     << "\n                     STATUS: " << DEB_VAR3(iInvalid, bSymX, bSymY);
     }
 
     return iInvalid;
 }
 
-int Camera::_fixValidRoi(unsigned int &x0, unsigned int &x1, unsigned int xMax,
-                         unsigned int xSteps, unsigned int xMinSize, bool bSymX)
+int Camera::_fixValidRoi(unsigned int &x0, unsigned int &x1, unsigned int xMax, unsigned int xSteps,
+                         unsigned int xMinSize, bool bSymX)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
@@ -336,8 +329,7 @@ int Camera::_fixValidRoi(unsigned int &x0, unsigned int &x1, unsigned int xMax,
 
 //=================================================================================================
 //=================================================================================================
-void Camera::_set_logLastFixedRoi(const Roi &requested_roi,
-                                  const Roi &fixed_roi)
+void Camera::_set_logLastFixedRoi(const Roi &requested_roi, const Roi &fixed_roi)
 {
     m_Roi_lastFixed_hw = fixed_roi;
     m_Roi_lastFixed_requested = requested_roi;
@@ -346,8 +338,7 @@ void Camera::_set_logLastFixedRoi(const Roi &requested_roi,
 
 //=================================================================================================
 //=================================================================================================
-void Camera::_get_logLastFixedRoi(Roi &requested_roi, Roi &fixed_roi,
-                                  time_t &dt)
+void Camera::_get_logLastFixedRoi(Roi &requested_roi, Roi &fixed_roi, time_t &dt)
 {
     fixed_roi = m_Roi_lastFixed_hw;
     requested_roi = m_Roi_lastFixed_requested;

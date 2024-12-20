@@ -81,8 +81,8 @@ namespace lima
             m_sync->getLatTime(m_pcoData->traceAcq.sDelay);
 
             m_pcoData->msAcqXfer = msXfer = msElapsedTime(tStart);
-            // __sprintfSExt(_msg, LEN_MSG, "%s> [EXIT] xfer[%ld] (ms) status[%s]\n", fnId, msXfer, sPcoAcqStatus[status]);
-            // m_cam->_traceMsg(_msg);
+            // __sprintfSExt(_msg, LEN_MSG, "%s> [EXIT] xfer[%ld] (ms) status[%s]\n", fnId, msXfer,
+            // sPcoAcqStatus[status]); m_cam->_traceMsg(_msg);
 
             m_sync->setStarted(false); // updated
 

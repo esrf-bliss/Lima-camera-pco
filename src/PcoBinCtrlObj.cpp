@@ -109,8 +109,8 @@ void Camera::checkBin(Bin &aBin)
     hw_binX = _binning_fit(set_binX, binMaxX, binModeX);
     hw_binY = _binning_fit(set_binY, binMaxY, binModeY);
 
-    DEB_RETURN() << "\n... " << DEB_VAR4(set_binX, hw_binX, binMaxX, binModeX)
-                 << "\n... " << DEB_VAR4(set_binY, hw_binY, binMaxY, binModeY);
+    DEB_RETURN() << "\n... " << DEB_VAR4(set_binX, hw_binX, binMaxX, binModeX) << "\n... "
+                 << DEB_VAR4(set_binY, hw_binY, binMaxY, binModeY);
 
     aBin = Bin(hw_binX, hw_binY);
 }

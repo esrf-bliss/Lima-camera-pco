@@ -160,12 +160,12 @@ namespace lima
                     break;
                 }
                 Sleep(dwMsSleepOneFrame); // sleep 1 frame
-            } // while(true)
+            }                             // while(true)
 
             m_pcoData->msAcqTnow = msNowRecordLoop = msElapsedTime(tStart);
             m_pcoData->traceAcq.msRecordLoop = msNowRecordLoop;
 
-            const char* msg = m_cam->_pco_SetRecordingState(0, error);
+            const char *msg = m_cam->_pco_SetRecordingState(0, error);
             if (error)
             {
                 printf("=== %s [%d]> ERROR %s\n", fnId, __LINE__, msg);
@@ -410,12 +410,12 @@ namespace lima
                     break;
                 }
                 Sleep(dwMsSleepOneFrame); // sleep 1 frame
-            } // while(true)
+            }                             // while(true)
 
             m_pcoData->msAcqTnow = msNowRecordLoop = msElapsedTime(tStart);
             m_pcoData->traceAcq.msRecordLoop = msNowRecordLoop;
 
-            const char* msg = m_cam->_pco_SetRecordingState(0, error);
+            const char *msg = m_cam->_pco_SetRecordingState(0, error);
             if (error)
             {
                 printf("=== %s [%d]> ERROR %s\n", fnId, __LINE__, msg);
