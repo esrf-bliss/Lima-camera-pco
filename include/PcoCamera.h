@@ -411,15 +411,6 @@ enum enumTblXlatCode2Str
     ModelSubType
 };
 
-#if 0
-struct stcBinning 
-{
-	enumChange	changed;		/* have values been changed ? */
-	unsigned int x;			/* amount to bin/group x data.                 */
-	unsigned int y;			/* amount to bin/group y data.                 */
-};
-#endif
-
 enum enumTraceAcqId
 {
     traceAcq_ExecTimeTot,
@@ -458,24 +449,9 @@ namespace lima
             PCO_CameraType stcPcoCamType;
             PCO_Sensor stcPcoSensor;
 
-            // #ifndef __linux__
             PCO_Description stcPcoDescription; /* camera description structure */
             PCO_Signal stcPcoHWIOSignal[SIZEARR_stcPcoHWIOSignal];
             PCO_Single_Signal_Desc stcPcoHWIOSignalDesc[SIZEARR_stcPcoHWIOSignal];
-            // #else
-            //             PCO_Description
-            //                 stcPcoDescriptionWin; /* camera description structure */
-            //             SC2_Camera_Description_Response
-            //                 stcPcoDescription; /* camera description structure */
-            //
-            //             SC2_Camera_Description_Response stcPcoDesc1;
-            //             SC2_Camera_Description_2_Response stcPcoDesc2;
-            //             PCO_SignalLinux stcPcoHWIOSignal[SIZEARR_stcPcoHWIOSignal];
-            //             SC2_Get_HW_IO_Signal_Descriptor_Response
-            //                 stcPcoHWIOSignalDesc[SIZEARR_stcPcoHWIOSignal];
-            //             char sPcoHWIOSignalDesc[SIZEARR_stcPcoHWIOSignal]
-            //                                    [SIZESTR_PcoHWIOSignal + 1];
-            // #endif
 
             const char *sClTransferParameterSettings;
 
