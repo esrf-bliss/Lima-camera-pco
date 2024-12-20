@@ -137,16 +137,16 @@ Commands
       Status                   DevVoid          DevString            Return the device state as a string
       getAttrStringValueList   DevString:       DevVarStringArray:   Return the authorized string value list for
                                Attribute name   String value list    a given attribute name
-      talk                     DevString        DevString            **WARNING**: use this command for test only,
-                                                                     This is a backdoor cmd and it can distrub Lima
 
-
-
+```
 conda install -c esrf-bcu lima-camera-pco
+```
 
 ### Camera tango device server
 
+```
 conda install -c tango-controls -c esrf-bcu lima-camera-pco-tango
+```
 
 # LImA
 
@@ -156,6 +156,4 @@ Lima is a C++ library which can be used with many different cameras. The library
 
 ## Documentation
 
-The documentation is available [here](https://lima.blissgarden.org)
-
-
+The documentation is available [here](https://lima1.readthedocs.org)
