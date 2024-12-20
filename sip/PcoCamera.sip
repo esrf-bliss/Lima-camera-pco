@@ -93,9 +93,6 @@ namespace Pco
 		void getDebugIntTypes(std::string &o_sn /Out/);
 		void getDebugInt(std::string &o_sn /Out/);
 		void setDebugInt(std::string &i_sn); 
-		
-		void setTest(std::string &i_sn) ;
-		void getTest(std::string &o_sn /Out/) ;
  
 		void setTimestampMode(int mode);
 		void getTimestampMode(int &mode /Out/);
@@ -115,9 +112,6 @@ namespace Pco
 		void getLastImgFifo(int & val /Out/);
         
         void getGeneralCAPS1(std::string &o_sn  /Out/);
- 
-        void getParamsInfo(std::string &o_sn /Out/);
-
 
 	private:
 		Camera(const Pco::Camera&);

@@ -1154,9 +1154,6 @@ namespace lima
             void getDebugInt(std::string &o_sn);
             void setDebugInt(std::string &i_sn);
 
-            void setTest(std::string &i_sn);
-            void getTest(std::string &o_sn);
-
             void setTimestampMode(int mode);
             void getTimestampMode(int &mode);
 
@@ -1179,8 +1176,6 @@ namespace lima
             void Sleep_ms(unsigned int time_ms);
 
             void getGeneralCAPS1(std::string &o_sn);
-
-            void getParamsInfo(std::string &o_sn);
 
         }; // class camera
     } // namespace Pco
