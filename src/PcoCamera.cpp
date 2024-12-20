@@ -47,7 +47,6 @@
 #include "PcoCamera.h"
 #include "PcoSyncCtrlObj.h"
 #include "PcoBufferCtrlObj.h"
-#include "PcoCameraUtils.h"
 #include "PcoAcqThread.h"
 
 using namespace lima;
@@ -128,8 +127,7 @@ Camera::Camera(const std::string &camPar)
     key = "ignoreMaxImages";
     m_pcoData->params_ignoreMaxImages = !!paramsGet(key, value);
 
-    DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version) << ALWAYS_NL
-                 << _checkLogFiles(true);
+    DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version);
 
     // m_bin.changed = Invalid;
     try
@@ -176,6 +174,7 @@ bool Camera::_isRunAfterAssign()
 void Camera::startAcq()
 {
     DEB_MEMBER_FUNCT();
+    DEF_FNID;
 
     m_acq_frame_nb = -1;
     m_pcoData->pcoError = 0;
@@ -184,14 +183,6 @@ void Camera::startAcq()
     m_pcoData->traceAcqClean();
 
     const auto tStart = std::chrono::steady_clock::now();
-
-    //=====================================================================
-    DEF_FNID;
-    HANDLE hEvent = NULL;
-
-    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]") << _checkLogFiles();
-
-    int error;
 
     //------------------------------------------------- start acquisition
 
@@ -266,6 +257,7 @@ void Camera::startAcq()
     {
         DEB_TRACE() << "========================= recordingState 1 - BEFORE "
                        "ASSIGN (startAcq)";
+        int error;
         _pco_SetRecordingState(1, error);
     }
 
@@ -278,8 +270,6 @@ void Camera::startAcq()
     //DEB_TRACE() << "[... starting after mutex] [EXIT]";
 
     m_pcoData->traceAcq.msStartAcqEnd = msElapsedTime(tStart);
-
-    return;
 }
 
 
@@ -536,32 +526,9 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &e
 //=========================================================================================================
 //=========================================================================================================
 
-#define BUFFER_LEN 256
-#define BUFFVERSION_LEN (MSG8K)
 stcPcoData::stcPcoData()
 {
-    char *ptr, *ptrMax;
-    int i;
-    char buff[BUFFER_LEN + 1];
-
     memset(this, 0, sizeof(struct stcPcoData));
-
-    version = new char[BUFFVERSION_LEN];
-    if (!version)
-    {
-        throw LIMA_HW_EXC(Error, "version > creation error");
-    }
-
-    ptr = version;
-    *ptr = 0;
-    ptrMax = ptr + BUFFVERSION_LEN - 1;
-
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "       timestamp: %s\n", getTimestamp(Iso));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "   computer name: %s\n", _getComputerName(buff, BUFFER_LEN));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "              OS: %s\n", _getOs());
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "       user name: %s\n", _getUserName(buff, BUFFER_LEN));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "   configuration: %s\n", _getVSconfiguration(buff, BUFFER_LEN));
-    ptr += __sprintfSExt(ptr, ptrMax - ptr, "        SISO dir: %s\n", _getEnviroment("SISODIR5"));
 
     stcPcoGeneral.wSize = sizeof(stcPcoGeneral);
     stcPcoGeneral.strCamType.wSize = sizeof(stcPcoGeneral.strCamType);
@@ -574,7 +541,7 @@ stcPcoData::stcPcoData()
     stcPcoStorage.wSize = sizeof(stcPcoStorage);
     stcPcoRecording.wSize = sizeof(stcPcoRecording);
 
-    for (i = 0; i < SIZEARR_stcPcoHWIOSignal; i++)
+    for (int i = 0; i < SIZEARR_stcPcoHWIOSignal; i++)
     {
         stcPcoHWIOSignal[i].wSize = sizeof(stcPcoHWIOSignal[i]);
         stcPcoHWIOSignalDesc[i].wSize = sizeof(stcPcoHWIOSignalDesc[i]);
@@ -713,9 +680,6 @@ void Camera::_init()
     char msg[MSG4K + 1];
 
     _armRequired(true);
-
-
-    // DEB_TRACE() << _getDllPath(FILE_PCO_DLL, msg, sizeof(msg));
 
     const char *key = "sn";
     char *value;
@@ -989,8 +953,6 @@ void Camera::prepareAcq()
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    DEB_ALWAYS() << _sprintComment(false, fnId, "[ENTRY]") << _checkLogFiles();
-
     int error;
 
     int iRequestedFrames;
@@ -1116,8 +1078,6 @@ void Camera::prepareAcq()
             PCO_THROW_OR_TRACE(error, "PCO_SetRecordStopEvent");
         }
     }
-
-    //-------------------------------------------------
 
     //-----------------------------------------------------------------------------------------------
     //	5. Arm the camera.

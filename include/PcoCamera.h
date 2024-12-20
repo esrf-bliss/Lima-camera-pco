@@ -444,7 +444,6 @@ namespace lima
                 char buff[PARAMS_LEN_BUFF + 1];
 
                 WORD logBits;
-                char logPath[PATH_MAX];
                 unsigned long long testMode;
             } params;
 
@@ -845,7 +844,6 @@ namespace lima
 
             CheckImgNr *m_checkImgNr;
 
-            const char *_checkLogFiles(bool firstCall = false);
             char *_camInfo(char *ptr, char *ptrMax, long long int flag);
 
             WORD _getInterfaceType();

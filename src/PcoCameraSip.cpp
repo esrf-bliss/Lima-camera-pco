@@ -44,7 +44,6 @@
 #include "lima/Exceptions.h"
 
 #include "PcoCamera.h"
-#include "PcoCameraUtils.h"
 #include "PcoSyncCtrlObj.h"
 #include "PcoBufferCtrlObj.h"
 
