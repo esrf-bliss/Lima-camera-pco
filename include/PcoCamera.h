@@ -598,7 +598,7 @@ namespace lima
             DEB_CLASS_NAMESPC(DebModCamera, "Camera", "Pco");
 
           public:
-            Camera(const std::string &camPar);
+            Camera(const std::string &sn, const std::string &camPar);
             ~Camera();
 
             enum Status
@@ -699,6 +699,8 @@ namespace lima
             SyncCtrlObj *m_sync;
             BufferCtrlObj *m_buffer;
             
+            DWORD m_dwSn;
+
             HANDLE m_handle; /* handle of opened camera */
 
             struct stcPcoData *m_pcoData;

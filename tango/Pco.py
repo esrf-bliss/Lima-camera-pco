@@ -134,12 +134,8 @@ class PcoClass(tango.DeviceClass):
     #    Device Properties
 
     device_property_list = {
+        "sn": [tango.DevString, "camera serial number", None],
         "params": [tango.DevString, "general parameters", []],
-        "dummy": [tango.DevString, "dummy string", []],
-        "debug_control": [tango.DevString, "general debug", []],
-        "debug_module": [tango.DevString, "debug module flags", []],
-        "debug_format": [tango.DevString, "debug format flags", []],
-        "debug_type": [tango.DevString, "debug flags flags", []],
     }
 
     #    Command definitions
@@ -407,11 +403,7 @@ _PcoControl = None
 
 
 def get_control(
-    debug_control="0",
-    debug_module="0",
-    debug_type="0",
-    mem_factor="0",
-    debug_format="0x31",
+    sn='',
     params=[],
     **keys
 ):
@@ -419,12 +411,6 @@ def get_control(
     global _PcoCam
     global _PcoInterface
     global _PcoControl
-
-    debControl = int(debug_control, 0)
-    debModule = int(debug_module, 0)
-    debType = int(debug_type, 0)
-    debFormat = int(debug_format, 0)
-    memFactor = int(mem_factor, 0)
 
     if type(params) == str:
         # <type 'str'>
@@ -442,24 +428,10 @@ def get_control(
     print("         keys:", keys)
     print("       params:", params)
     print("     paramsIn:", paramsIn)
-    print("%s [%s] [0x%x]" % ("debug_control:", debug_control, debControl))
-    print("%s [%s] [0x%x]" % (" debug_module:", debug_module, debModule))
-    print("%s [%s] [0x%x]" % (" debug_format:", debug_format, debFormat))
-    print("%s [%s] [0x%x]" % ("   debug_type:", debug_type, debType))
-    print("%s [%s] [0x%x]" % ("   mem_factor:", mem_factor, memFactor))
     print("======================================")
 
-    if debControl:
-        Core.DebParams.setModuleFlags(debModule)
-        Core.DebParams.setTypeFlags(debType)
-    else:
-        Core.DebParams.setTypeFlags(0)
-        Core.DebParams.setModuleFlags(0)
-
-    Core.DebParams.setFormatFlags(debFormat)
-
     if _PcoCam is None:
-        _PcoCam = PcoAcq.Camera(paramsIn)
+        _PcoCam = PcoAcq.Camera(sn, paramsIn)
         _PcoInterface = PcoAcq.Interface(_PcoCam)
         _PcoControl = Core.CtControl(_PcoInterface)
 

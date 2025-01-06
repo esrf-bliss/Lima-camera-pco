@@ -1,24 +1,24 @@
-//###########################################################################
-// This file is part of LImA, a Library for Image Acquisition
+// ###########################################################################
+//  This file is part of LImA, a Library for Image Acquisition
 //
-// Copyright (C) : 2009-2024
-// European Synchrotron Radiation Facility
-// BP 220, Grenoble 38043
-// FRANCE
+//  Copyright (C) : 2009-2024
+//  European Synchrotron Radiation Facility
+//  BP 220, Grenoble 38043
+//  FRANCE
 //
-// This is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 3 of the License, or
-// (at your option) any later version.
+//  This is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 3 of the License, or
+//  (at your option) any later version.
 //
-// This software is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+//  This software is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, see <http://www.gnu.org/licenses/>.
-//###########################################################################
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, see <http://www.gnu.org/licenses/>.
+// ###########################################################################
 
 #define PCO_ERRT_H_CREATE_OBJECT
 #define BYPASS
@@ -71,17 +71,16 @@ void Camera::_AcqThread::threadFunction()
 
 //=========================================================================================================
 //=========================================================================================================
-Camera::Camera(const std::string &camPar)
-    : m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL), m_handle(NULL), m_Roi_lastFixed_time(0),
-      m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0), m_bRecorderForcedFifo(false), m_acq_thread(*this),
-      m_status(Camera::Status::Ready)
+Camera::Camera(const std::string &sn, const std::string &camPar)
+    : m_dwSn((DWORD)std::stoi(sn)), m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL),
+      m_handle(NULL), m_Roi_lastFixed_time(0), m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
+      m_bRecorderForcedFifo(false), m_acq_thread(*this), m_status(Camera::Status::Ready)
 {
     DEF_FNID;
     DEB_CONSTRUCTOR();
 
     int error = 0;
     m_config = true;
-    DebParams::checkInit();
 
     m_pcoData = new stcPcoData();
     if (m_pcoData == NULL)
@@ -498,7 +497,7 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &e
                     default:
                         ptr = NULL;
                 } // switch(camtype.wCamSubType / 0x100) ...
-        }         // switch(camtype.wCamSubType) ...
+        } // switch(camtype.wCamSubType) ...
 
         if (ptr)
         {
@@ -673,11 +672,6 @@ void Camera::_init()
 
     _armRequired(true);
 
-    const char *key = "sn";
-    char *value;
-    bool bRet = paramsGet(key, value);
-    DWORD dwSn = (DWORD)(bRet ? atoi(value) : 0);
-
     // --- Open Camera - close before if it is open
     if (m_handle)
     {
@@ -693,7 +687,7 @@ void Camera::_init()
     while (true)
     {
         //_pco_OpenCamera(error);
-        _pco_OpenCameraSn(dwSn, error);
+        _pco_OpenCameraSn(m_dwSn, error);
         if (error)
         {
             if (retry-- <= 0)
@@ -709,7 +703,7 @@ void Camera::_init()
 
     if (error)
     {
-        DEB_ALWAYS() << "\n... ERROR - PCO_OpenCamera / abort";
+        DEB_ERROR() << "PCO_OpenCamera failed";
         THROW_HW_ERROR(Error) << "ERROR - PCO_OpenCamera";
     }
 
@@ -746,6 +740,7 @@ void Camera::_init()
     // set alignment to [LSB aligned]; all raw image data will be aligned to the
     // LSB.
 
+    char *value = nullptr;
     if (paramsGet("bitAlignment", value))
     {
         std::string str(value);

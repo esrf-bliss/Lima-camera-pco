@@ -12,45 +12,10 @@ Properties
 =============== =============== =============== ==============================================================
 Property name   Mandatory       Default value   Description
 =============== =============== =============== ==============================================================
-debug_control   No              0               Enable/Disble the debug (0/1)
-debug_module    No              0               To set the debug module list (in hex format 0x....)
-                                                 - None           = 0x001
-                                                 - Common         = 0x002
-                                                 - Hardware       = 0x004
-                                                 - HardwareSerial = 0x008
-                                                 - Control        = 0x010
-                                                 - Espia          = 0x020
-                                                 - EspiaSerial    = 0x040
-                                                 - Focla          = 0x080
-                                                 - Camera         = 0x100
-                                                 - CameraCom      = 0x200
-                                                 - Test           = 0x400
-                                                 - Application    = 0x800
-debug_format    No              0               To set the debug format (in hex format 0x....)
-                                                 - DateTime = 0x001
-                                                 - Thread   = 0x002
-                                                 - Module   = 0x004
-                                                 - Obj      = 0x008
-                                                 - Funct    = 0x010
-                                                 - FileLine = 0x020
-                                                 - Type     = 0x040
-                                                 - Indent   = 0x080
-                                                 - Color    = 0x100
-debug_type      No              0               To set the debug type (in hex format 0x....)
-                                                 - Fatal   = 0x001
-                                                 - Error   = 0x002
-                                                 - Warning = 0x004
-                                                 - Trace   = 0x008
-                                                 - Funct   = 0x010
-                                                 - Param   = 0x020
-                                                 - Return  = 0x040
-                                                 - Always  = 0x080
-params          No              empty            List of parameters/options (one per line)
-                                                  - sn = <camera serial number>
-                                                    (
-                                                    if it is 0 or doesn't exist, the first camera found will be opened
-                                                    if the serial number is not found, OpenCam will fail
-                                                    )
+sn              No              empty           Camera serial number
+                                                if it is 0 or doesn't exist, the first camera found will be opened
+                                                if the serial number is not found, OpenCam will fail
+params          No              empty           List of parameters/options (one per line)
                                                   - trigSingleMulti = 1 
                                                     (
                                                     enable TriggerSingleMulti as TriggerMulti for compability
