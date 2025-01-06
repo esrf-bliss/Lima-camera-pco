@@ -72,8 +72,8 @@ void Camera::_AcqThread::threadFunction()
 //=========================================================================================================
 //=========================================================================================================
 Camera::Camera(const std::string &sn, const std::string &camPar)
-    : m_dwSn((DWORD)std::stoi(sn)), m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL),
-      m_handle(NULL), m_Roi_lastFixed_time(0), m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
+    : m_dwSn(0), m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL), m_handle(NULL),
+      m_Roi_lastFixed_time(0), m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
       m_bRecorderForcedFifo(false), m_acq_thread(*this), m_status(Camera::Status::Ready)
 {
     DEF_FNID;
@@ -81,6 +81,22 @@ Camera::Camera(const std::string &sn, const std::string &camPar)
 
     int error = 0;
     m_config = true;
+
+    if (!sn.empty())
+        try
+        {
+            m_dwSn = ((DWORD)std::stoi(sn));
+        }
+        catch (std::invalid_argument const &ex)
+        {
+            DEB_ERROR() << "Invalid serial number - invalid argument : " << ex.what();
+            throw LIMA_HW_EXC(Error, "Invalid serial number");
+        }
+        catch (std::out_of_range const &ex)
+        {
+            DEB_ERROR() << "Invalid serial number - out of range : " << ex.what();
+            throw LIMA_HW_EXC(Error, "Invalid serial number");
+        }
 
     m_pcoData = new stcPcoData();
     if (m_pcoData == NULL)
