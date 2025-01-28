@@ -45,9 +45,9 @@
 #include <time.h>
 
 #include "lima/HwSyncCtrlObj.h"
-
 #include "lima/Exceptions.h"
 
+#include "pco/project_version.h"
 #include "PcoCamera.h"
 
 using namespace lima;
@@ -294,7 +294,7 @@ void Camera::Sleep_ms(unsigned int time_ms) // time in ms
 void stcPcoData::traceAcqClean()
 {
     void *ptr = &this->traceAcq;
-    memset(ptr, 0, sizeof(STC_traceAcq));
+    memset(ptr, 0, sizeof(stcTraceAcq));
 }
 
 void stcPcoData::traceMsg(char *s)
@@ -482,7 +482,8 @@ void print_hex_dump_buff(void *ptr_buff, size_t len)
 
 unsigned long long Camera::_getDebug(unsigned long long mask = ULLONG_MAX)
 {
-    return m_pcoData->debugLevel & mask;
+    //return m_pcoData->debugLevel & mask;
+    return (DBG_BUFF | DBG_XFER2LIMA | DBG_LIMABUFF | DBG_ASSIGN_BUFF) & mask;
 }
 //=========================================================================================================
 //=========================================================================================================
@@ -535,7 +536,7 @@ char *Camera::_camInfo(char *ptr, char *ptrMax, long long int flag)
     if (flag & CAMINFO_VERSION)
     {
         ptr += __sprintfSExt(ptr, ptrMax - ptr, "* lima version \n");
-        ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s", m_pcoData->version);
+        ptr += __sprintfSExt(ptr, ptrMax - ptr, "%s", PCO_PACKAGE_VERSION);
     }
     //--------------- firmware
 
@@ -911,8 +912,6 @@ double usElapsedTimeTicsPerSec()
 
 int __sprintfSExt(char *ptr, size_t nrMax, const char *format, ...)
 {
-    char *ptrMax = ptr + nrMax;
-
     int nr;
 
     if (nrMax <= 1)

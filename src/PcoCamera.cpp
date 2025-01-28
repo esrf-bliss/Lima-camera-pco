@@ -71,16 +71,13 @@ void Camera::_AcqThread::threadFunction()
 
 //=========================================================================================================
 //=========================================================================================================
-Camera::Camera(const std::string &sn, const std::string &camPar)
+Camera::Camera(const std::string &sn)
     : m_dwSn(0), m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL), m_handle(NULL),
       m_Roi_lastFixed_time(0), m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
-      m_bRecorderForcedFifo(false), m_acq_thread(*this), m_status(Camera::Status::Ready)
+      m_bRecorderForcedFifo(false), m_acq_thread(*this), m_status(Camera::Status::Ready), m_config(true)
 {
     DEF_FNID;
     DEB_CONSTRUCTOR();
-
-    int error = 0;
-    m_config = true;
 
     if (!sn.empty())
         try
@@ -102,44 +99,15 @@ Camera::Camera(const std::string &sn, const std::string &camPar)
     if (m_pcoData == NULL)
         throw LIMA_HW_EXC(Error, "m_pcoData > creation error");
 
-    m_checkImgNr = new CheckImgNr(this);
+    // // properties: params
+    // paramsInit(camPar.c_str());
 
-    // properties: params
-    paramsInit(camPar.c_str());
+    // char *value;
+    // const char *key;
+    // bool ret;
+    // int iValue;
 
-    char *value;
-    const char *key;
-    bool ret;
-    int iValue;
-
-    /***
-    key = "test";
-    key = "withConfig";
-    key = "testMode";
-    key = "debugPco";
-    ***/
-    key = "testMode";
-    ret = paramsGet(key, value);
-    if (ret)
-    {
-        // m_pcoData->testCmdMode = _atoi64(value);
-        m_pcoData->testCmdMode = atoll(value);
-    }
-
-    key = "acqTimeoutRetry";
-    ret = paramsGet(key, value);
-    iValue = ret ? atoi(value) : 3;
-    m_pcoData->acqTimeoutRetry = (iValue < 0) ? 0 : iValue;
-
-    // patch in xMinSize meanwhile firmware for CLHS 1.19 is fixed
-    key = "xMinSize";
-    m_pcoData->params_xMinSize = !!paramsGet(key, value);
-
-    // ignore the nbMaxImages calculated for dimax HS
-    key = "ignoreMaxImages";
-    m_pcoData->params_ignoreMaxImages = !!paramsGet(key, value);
-
-    DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version);
+    // DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version);
 
     // m_bin.changed = Invalid;
     try
@@ -559,107 +527,107 @@ stcPcoData::stcPcoData()
     msAcqRecTimestamp = msAcqXferTimestamp = getTimestamp();
 }
 
-//=========================================================================================================
-//=========================================================================================================
-bool Camera::paramsGet(const char *key, char *&value)
-{
-    // DEF_FNID;
-    DEB_CONSTRUCTOR();
-    bool ret;
+// //=========================================================================================================
+// //=========================================================================================================
+// bool Camera::paramsGet(const char *key, char *&value)
+// {
+//     // DEF_FNID;
+//     DEB_CONSTRUCTOR();
+//     bool ret;
 
-    for (int i = 0; i < m_pcoData->params.nr; i++)
-    {
-        if (_stricmp(key, m_pcoData->params.ptrKey[i]) == 0)
-        {
-            ret = true;
-            value = m_pcoData->params.ptrValue[i];
-            DEB_TRACE() << DEB_VAR3(key, ret, value);
-            return ret;
-        }
-    }
-    ret = false;
-    value = (char *)"";
-    DEB_TRACE() << DEB_VAR3(key, ret, value);
-    return ret;
-}
+//     for (int i = 0; i < m_pcoData->params.nr; i++)
+//     {
+//         if (_stricmp(key, m_pcoData->params.ptrKey[i]) == 0)
+//         {
+//             ret = true;
+//             value = m_pcoData->params.ptrValue[i];
+//             DEB_TRACE() << DEB_VAR3(key, ret, value);
+//             return ret;
+//         }
+//     }
+//     ret = false;
+//     value = (char *)"";
+//     DEB_TRACE() << DEB_VAR3(key, ret, value);
+//     return ret;
+// }
 
-//=========================================================================================================
-//=========================================================================================================
+// //=========================================================================================================
+// //=========================================================================================================
 
-// params string:
-//      "key1 = value1 ; key2 = value2 ; key3 ; ...."
+// // params string:
+// //      "key1 = value1 ; key2 = value2 ; key3 ; ...."
 
-void Camera::paramsInit(const char *str)
-{
-    DEF_FNID;
-    DEB_CONSTRUCTOR();
+// void Camera::paramsInit(const char *str)
+// {
+//     DEF_FNID;
+//     DEB_CONSTRUCTOR();
 
-    DEB_TRACE() << _sprintComment(false, fnId, "[ENTRY]") << DEB_VAR1(str);
+//     DEB_TRACE() << _sprintComment(false, fnId, "[ENTRY]") << DEB_VAR1(str);
 
-    int i;
-    char *tokNext = NULL;
-    char *buff = m_pcoData->params.buff;
-    int &nrList = m_pcoData->params.nr;
-    int nr;
+//     int i;
+//     char *tokNext = NULL;
+//     char *buff = m_pcoData->params.buff;
+//     int &nrList = m_pcoData->params.nr;
+//     int nr;
 
-    memset((void *)&m_pcoData->params, 0, sizeof(m_pcoData->params));
+//     memset((void *)&m_pcoData->params, 0, sizeof(m_pcoData->params));
 
-    // --- split of params string
-    strcpy_s(buff, PARAMS_LEN_BUFF, str);
-    char *ptr = buff;
+//     // --- split of params string
+//     strcpy_s(buff, PARAMS_LEN_BUFF, str);
+//     char *ptr = buff;
 
-    for (nr = i = 0; i < PARAMS_NR; i++)
-    {
-        if ((m_pcoData->params.ptrKey[i] = strtok_s(ptr, ";", &tokNext)) == NULL)
-            break;
-        ptr = NULL;
-        nr = i + 1;
-    }
+//     for (nr = i = 0; i < PARAMS_NR; i++)
+//     {
+//         if ((m_pcoData->params.ptrKey[i] = strtok_s(ptr, ";", &tokNext)) == NULL)
+//             break;
+//         ptr = NULL;
+//         nr = i + 1;
+//     }
 
-    nrList = 0;
+//     nrList = 0;
 
-    for (i = 0; i < nr; i++)
-    {
-        char *key, *value;
-        bool found;
+//     for (i = 0; i < nr; i++)
+//     {
+//         char *key, *value;
+//         bool found;
 
-        ptr = str_trim(m_pcoData->params.ptrKey[i]);
-        key = strtok_s(ptr, "=", &tokNext);
-        value = strtok_s(NULL, "=", &tokNext);
-        str_toupper(key);
-        m_pcoData->params.ptrKey[i] = key = str_trim(key);
-        value = str_trim(value);
-        if (value == NULL)
-            value = (char *)"";
-        m_pcoData->params.ptrValue[i] = value;
+//         ptr = str_trim(m_pcoData->params.ptrKey[i]);
+//         key = strtok_s(ptr, "=", &tokNext);
+//         value = strtok_s(NULL, "=", &tokNext);
+//         str_toupper(key);
+//         m_pcoData->params.ptrKey[i] = key = str_trim(key);
+//         value = str_trim(value);
+//         if (value == NULL)
+//             value = (char *)"";
+//         m_pcoData->params.ptrValue[i] = value;
 
-        found = false;
-        for (int j = 0; j < nrList; j++)
-        {
-            if (_stricmp(m_pcoData->params.ptrKey[j], m_pcoData->params.ptrKey[i]) == 0)
-            {
-                m_pcoData->params.ptrValue[j] = m_pcoData->params.ptrValue[i];
-                found = true;
-                break;
-            }
-        }
-        if (!found)
-        {
-            key = m_pcoData->params.ptrKey[nrList] = m_pcoData->params.ptrKey[i];
-            value = m_pcoData->params.ptrValue[nrList] = m_pcoData->params.ptrValue[i];
-            nrList++;
-        }
-    }
+//         found = false;
+//         for (int j = 0; j < nrList; j++)
+//         {
+//             if (_stricmp(m_pcoData->params.ptrKey[j], m_pcoData->params.ptrKey[i]) == 0)
+//             {
+//                 m_pcoData->params.ptrValue[j] = m_pcoData->params.ptrValue[i];
+//                 found = true;
+//                 break;
+//             }
+//         }
+//         if (!found)
+//         {
+//             key = m_pcoData->params.ptrKey[nrList] = m_pcoData->params.ptrKey[i];
+//             value = m_pcoData->params.ptrValue[nrList] = m_pcoData->params.ptrValue[i];
+//             nrList++;
+//         }
+//     }
 
-    for (int j = 0; j < nrList; j++)
-    {
-        char *key, *value;
-        key = m_pcoData->params.ptrKey[j];
-        value = m_pcoData->params.ptrValue[j];
-        DEB_TRACE() << DEB_VAR2(key, value);
-    }
-    DEB_TRACE() << _sprintComment(false, fnId, "[EXIT]");
-};
+//     for (int j = 0; j < nrList; j++)
+//     {
+//         char *key, *value;
+//         key = m_pcoData->params.ptrKey[j];
+//         value = m_pcoData->params.ptrValue[j];
+//         DEB_TRACE() << DEB_VAR2(key, value);
+//     }
+//     DEB_TRACE() << _sprintComment(false, fnId, "[EXIT]");
+// };
 
 //=========================================================================================================
 //=========================================================================================================
@@ -756,14 +724,14 @@ void Camera::_init()
     // set alignment to [LSB aligned]; all raw image data will be aligned to the
     // LSB.
 
-    char *value = nullptr;
-    if (paramsGet("bitAlignment", value))
-    {
-        std::string str(value);
+    // char *value = nullptr;
+    // if (paramsGet("bitAlignment", value))
+    // {
+    //     std::string str(value);
 
-        DEB_ALWAYS() << "params bitAligment): " << str;
-        setBitAlignment(str);
-    }
+    //     DEB_ALWAYS() << "params bitAligment): " << str;
+    //     setBitAlignment(str);
+    // }
 
     // -- Initialise size, bin, roi
     unsigned int maxWidth, maxHeight, maxwidth_step, maxheight_step;
@@ -1220,10 +1188,9 @@ void Camera::reset(int reset_level)
         case RESET_CLOSE_INTERFACE:
             DEB_TRACE() << "\n... RESET - freeBuff, closeCam, resetLib  " << DEB_VAR1(reset_level);
 
-#ifndef __linux__
             if (m_buffer)
                 m_buffer->_pcoAllocBuffersFree();
-#endif
+
             _pco_CloseCamera(error);
             PCO_PRINT_ERR(error, "_pco_CloseCamera");
             m_handle = 0;
@@ -1851,7 +1818,6 @@ void Camera::_pco_set_shutter_rolling_edge(int &error)
     if (error)
         return;
 
-    // m_sync->_getBufferCtrlObj()->_pcoAllocBuffersFree();
     m_buffer->_pcoAllocBuffersFree();
 
     cmsg = "[PCO_CloseCamera]";

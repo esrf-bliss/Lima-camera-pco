@@ -46,7 +46,7 @@ using namespace lima::Pco;
 
 //=========================================================================================================
 //=========================================================================================================
-BufferCtrlObj::BufferCtrlObj(Camera *cam) : m_cam(cam), m_pcoData(m_cam->_getPcoData())
+BufferCtrlObj::BufferCtrlObj(Camera *cam) : m_cam(cam), m_pcoData(m_cam->_getPcoData()), m_checkImgNr(cam)
 // m_status(0)
 {
     DEB_CONSTRUCTOR();
@@ -228,18 +228,17 @@ Warning Codes
 ********************************************************************************************************/
 //===================================================================================================================
 //===================================================================================================================
-#define BUFFER_DUMMY_IMG_LEN (2 * 2016 * 2016)
 
 int BufferCtrlObj::_assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast, DWORD dwRequestedFrames, int bufIdx,
                                        bool live_mode, WORD wDoubleImage)
 {
     DEF_FNID;
-    // static char _buffer[2][BUFFER_DUMMY_IMG_LEN];
     DEB_MEMBER_FUNCT();
+
     int error = 0;
-    char *sErr;
-    void *myLimaBufferPtr;
-    void *myLimaBufferPtr1;
+    char *sErr = nullptr;
+    void *myLimaBufferPtr = nullptr;
+    void *myLimaBufferPtr1 = nullptr;
     int myLimaBufferNr, myLimaBufferNr1;
     DWORD myLimaBufferLen;
     DWORD myPcoBufferLen;
@@ -394,23 +393,20 @@ int BufferCtrlObj::_assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast, 
     m_ImageBufferSize = dwArmLen;
     // DWORD myPcoBufferLenReal = dwArmLen;
 
-#ifdef DEBUG_XFER_IMAG
-    DEB_ALWAYS() << "_assignImage2Buffer: " << DEB_VAR3(myBufferLen, myPcoBufferLen, dwArmLen);
-#endif
+    if (m_cam->_getDebug(DBG_ASSIGN_BUFF))
+        DEB_ALWAYS() << "_assignImage2Buffer: " << DEB_VAR3(myLimaBufferLen, myPcoBufferLen, dwArmLen);
 
     FrameDim dim;
     getFrameDim(dim);
     int dimSize = dim.getMemSize();
 
     if (m_cam->_getDebug(DBG_ASSIGN_BUFF))
-    {
         DEB_ALWAYS() << DEB_VAR5(dwArmLen, dimSize, myLimaBufferPtr, lima_buffer_nb,
                                  m_pcoData->iAllocatedBufferNumberLima);
-    }
 
     if (myLimaBufferPtr == NULL)
     {
-        DEB_ALWAYS() << "ERROR myLimaBufferPtr "
+        DEB_ERROR() << "ERROR myLimaBufferPtr "
                      << DEB_VAR5(dwArmLen, dimSize, myLimaBufferPtr, lima_buffer_nb,
                                  m_pcoData->iAllocatedBufferNumberLima);
         return -1;
@@ -418,7 +414,7 @@ int BufferCtrlObj::_assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast, 
 
     if (wDoubleImage && (myLimaBufferPtr1 == NULL))
     {
-        DEB_ALWAYS() << "ERROR myLimaBufferPtr1 "
+        DEB_ERROR() << "ERROR myLimaBufferPtr1 "
                      << DEB_VAR5(dwArmLen, dimSize, myLimaBufferPtr, lima_buffer_nb,
                                  m_pcoData->iAllocatedBufferNumberLima);
         return -1;
@@ -441,7 +437,6 @@ int BufferCtrlObj::_assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast, 
             << DEB_VAR2(myPcoBufferLen, myPcoBufferLenReal);
         return -1;
     }
-
 #endif
 
     if (dbgWaitobj)
@@ -500,13 +495,13 @@ int BufferCtrlObj::_assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast, 
         dwFrame = 0;
     }
 
-    DEB_TRACE() << "PCO_AddBufferEx -> " << DEB_VAR6(dwFrame, iPcoBufIdx, bufIdx, wArmWidth, wArmHeight, wBitPerPixel);
+    DEB_ALWAYS() << "PCO_AddBufferEx -> " << DEB_VAR6(dwFrame, iPcoBufIdx, bufIdx, wArmWidth, wArmHeight, wBitPerPixel);
 
     // SAM TODO should initially add all buffers
 
     error = m_cam->_pco_AddBufferEx(dwFrame, dwFrame, iPcoBufIdx, wArmWidth, wArmHeight, wBitPerPixel);
 
-    DEB_TRACE() << "PCO_AddBufferEx -> " << DEB_VAR6(error, dwFrame, iPcoBufIdx, bufIdx, wArmWidth, wArmHeight);
+    DEB_ALWAYS() << "PCO_AddBufferEx -> " << DEB_VAR6(error, dwFrame, iPcoBufIdx, bufIdx, wArmWidth, wArmHeight);
 
     if (error)
     {
@@ -603,7 +598,7 @@ int BufferCtrlObj::_xferImag_buff2lima(DWORD const &dwFrameIdx, int &bufIdx)
     m_buffer_cb_mgr.newFrameReady(frame_info);
 
     //=============================== check PCO ImgNr with the limaFrame
-    m_cam->m_checkImgNr->update(iLimaFrame, ptrSrc);
+    m_checkImgNr.update(iLimaFrame, ptrSrc);
 
     //----- the image dwFrameIdx is already in the buffer -> callback!
     if ((m_sync->_getRequestStop(_nrStop) == stopRequest) && (_nrStop > MAX_NR_STOP))
@@ -644,7 +639,7 @@ int BufferCtrlObj::_xferImag()
     unsigned long long dbgWaitobj = m_cam->_getDebug(DBG_WAITOBJ);
     unsigned long long dbgTraceFifo = m_cam->_getDebug(DBG_TRACE_FIFO);
 
-    m_cam->m_checkImgNr->init(&m_pcoData->traceAcq);
+    m_checkImgNr.init(&m_pcoData->traceAcq);
 
     int forcedFifo = 0;
     m_cam->getRecorderForcedFifo(forcedFifo);
@@ -918,7 +913,7 @@ int BufferCtrlObj::_xferImag()
 
         if (dbgTraceFifo)
         {
-            printf("---TRACE iLoopsPolled[%d] dwStatusDll[0x%lx] sBufNr[%d] "
+            printf("---TRACE iLoopsPolled[%d] dwStatusDll[0x%x] sBufNr[%d] "
                    "dwFrameIdx[%d]\n",
                    iLoopsPolled, dwStatusDll, sBufNr, dwFrameIdx);
         }
@@ -1258,7 +1253,7 @@ int BufferCtrlObj::_xferImag_getImage()
 
     auto tStart = std::chrono::steady_clock::now();
 
-    m_cam->m_checkImgNr->init(&m_pcoData->traceAcq);
+    m_checkImgNr.init(&m_pcoData->traceAcq);
 
     _pcoAllocBuffers(true); // allocate 2 pco buff at max size
 
@@ -1373,7 +1368,7 @@ int BufferCtrlObj::_xferImag_getImage()
         memcpy(ptrLimaBuffer, ptrSrc, dwFrameSize);
 
         //=============================== check PCO ImgNr with the limaFrame
-        m_cam->m_checkImgNr->update(iLimaFrame, ptrSrc);
+        m_checkImgNr.update(iLimaFrame, ptrSrc);
 
         ptrSrc = ((char *)ptrSrc) + dwFrameSize;
 
@@ -1464,7 +1459,7 @@ int BufferCtrlObj::_xferImag_getImage_edge()
 
     auto tStart = std::chrono::steady_clock::now();
 
-    m_cam->m_checkImgNr->init(&m_pcoData->traceAcq);
+    m_checkImgNr.init(&m_pcoData->traceAcq);
 
     _pcoAllocBuffers(true); // allocate 2 pco buff at max size
 
@@ -1586,7 +1581,7 @@ int BufferCtrlObj::_xferImag_getImage_edge()
         memcpy(ptrLimaBuffer, ptrSrc, dwFrameSize);
 
         //=============================== check PCO ImgNr with the limaFrame
-        m_cam->m_checkImgNr->update(iLimaFrame, ptrSrc);
+        m_checkImgNr.update(iLimaFrame, ptrSrc);
 
         ptrSrc = ((char *)ptrSrc) + dwFrameSize;
 
@@ -1941,7 +1936,7 @@ int BufferCtrlObj::_xferImagMult()
 
 //===================================================================================================================
 //===================================================================================================================
-#define BUFFER_DUMMY_IMG_LEN (2 * 2016 * 2016)
+
 // called by startAcq
 void BufferCtrlObj::_pcoAllocBuffers(bool max)
 {
@@ -2183,7 +2178,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
     int iLimaFrame;
     SHORT sBufNr = 0;
 
-    m_cam->m_checkImgNr->init(&m_pcoData->traceAcq);
+    m_checkImgNr.init(&m_pcoData->traceAcq);
 
     DEB_ALWAYS() << m_cam->_sprintComment(false, fnId, "[WaitForMultipleObjects]", "[ENTRY]");
 
@@ -2193,8 +2188,8 @@ int BufferCtrlObj::_xferImagDoubleImage()
     DWORD dwRequestedFramesMax = DWORD_MAX;
 
     WORD wDoubleImage = 1;
-    // int err;
-    // m_cam->_pco_GetDoubleImageMode(wDoubleImage, err);
+    int err;
+    m_cam->_pco_GetDoubleImageMode(wDoubleImage, err);
 
     // --------------- live video -> nr frames = 0 / idx lima buffers 32b
     // (0...ffff)
@@ -2448,7 +2443,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
                 //=============================== check PCO ImgNr with the
                 // limaFrame
-                m_cam->m_checkImgNr->update(iLimaFrame, ptrPcoBuffer);
+                m_checkImgNr.update(iLimaFrame, ptrPcoBuffer);
 
                 //----- the image dwPcoFrameIdx is already in the buffer ->
                 // callback!

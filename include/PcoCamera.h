@@ -246,7 +246,7 @@ struct stcLongLongStr
 
 //================================================================
 //================================================================
-struct STC_traceAcq
+struct stcTraceAcq
 {
     DWORD nrImgRecorded;
     DWORD maxImgCount;
@@ -427,7 +427,7 @@ namespace lima
 
             WORD wNrPcoHWIOSignal0;
             WORD wNrPcoHWIOSignal;
-            unsigned long long debugLevel;
+            unsigned long long debugLevel = 0xFFFFFFFF;
             unsigned long long testCmdMode;
             BYTE ipField[4];
 
@@ -435,16 +435,16 @@ namespace lima
 #define PARAMS_LEN_TOKEN (31)
 #define PARAMS_LEN_BUFF (PARAMS_NR * (PARAMS_LEN_TOKEN + 1))
 
-            struct stcParams
-            {
-                char *ptrKey[PARAMS_NR];
-                char *ptrValue[PARAMS_NR];
-                int nr;
-                char buff[PARAMS_LEN_BUFF + 1];
+            // struct stcParams
+            // {
+            //     char *ptrKey[PARAMS_NR];
+            //     char *ptrValue[PARAMS_NR];
+            //     int nr;
+            //     char buff[PARAMS_LEN_BUFF + 1];
 
-                WORD logBits;
-                unsigned long long testMode;
-            } params;
+            //     WORD logBits;
+            //     unsigned long long testMode;
+            // } params;
 
             DWORD dwPixelRateMax;
 
@@ -505,7 +505,7 @@ namespace lima
             long msAcqRec, msAcqXfer, msAcqTout, msAcqTnow, msAcqAll;
             time_t msAcqRecTimestamp, msAcqXferTimestamp, msAcqToutTimestamp, msAcqTnowTimestamp;
 
-            STC_traceAcq traceAcq;
+            stcTraceAcq traceAcq;
 
             DWORD dwPixelRate, dwPixelRateRequested;
             double fTransferRateMHzMax;
@@ -517,8 +517,6 @@ namespace lima
             int iAllocatedBufferNumberLima;
             bool bAllocatedBufferDone;
             DWORD dwRollingShutter;
-
-            char *version;
 
             double min_exp_time, min_exp_time_err, step_exp_time;
             double max_exp_time, max_exp_time_err;
@@ -543,7 +541,6 @@ namespace lima
             void traceMsg(char *s);
 
             int testForceFrameFirst0;
-            bool pcoLogActive;
 
             int acqTimeoutRetry; // max nr of timeout during acq (wait for mult
                                  // obj)
@@ -557,34 +554,6 @@ namespace lima
 
         }; // struct stcPcoData
 
-        //--------------------------------------- class CehckImgNr
-        class CheckImgNr
-        {
-          public:
-            CheckImgNr(Camera *cam);
-            ~CheckImgNr();
-            void init(STC_traceAcq *traceAcq);
-            void update(int iLimaFrame, void *ptrImage);
-
-            int _get_imageNr_from_imageTimestamp(void *buf, int shift);
-#ifndef __linux__
-            int _get_time_from_imageTimestamp(void *buf, int shift, SYSTEMTIME *st);
-#endif
-
-          private:
-            Camera *m_cam;
-            STC_traceAcq *m_traceAcq;
-            bool checkImgNr;
-            int pcoImgNrDiff;
-            int pcoImgNrOrder;
-            int pcoImgNrLast;
-            int alignmentShift;
-            bool bNoTimestamp;
-        }; // class CheckImgNr
-
-        //--------------------------------------- class Camera
-        //-------------------------------------------------------------
-        //-------------------------------------------------------------
         class DLL_EXPORT Camera : public HwMaxImageSizeCallbackGen
         {
             friend class Interface;
@@ -598,7 +567,7 @@ namespace lima
             DEB_CLASS_NAMESPC(DebModCamera, "Camera", "Pco");
 
           public:
-            Camera(const std::string &sn, const std::string &camPar);
+            Camera(const std::string &sn);
             ~Camera();
 
             enum Status
@@ -689,21 +658,21 @@ namespace lima
             };
             void _traceMsg(char *s);
 
-            void paramsInit(const char *str);
+            // void paramsInit(const char *str);
+            // bool paramsGet(const char *key, char *&value);
 
-            bool paramsGet(const char *key, char *&value);
             time_t _getActionTimestamp(int action);
             void _setActionTimestamp(int action);
 
           private:
-            SyncCtrlObj *m_sync;
-            BufferCtrlObj *m_buffer;
+            SyncCtrlObj *m_sync = nullptr;
+            BufferCtrlObj *m_buffer = nullptr;
             
             DWORD m_dwSn;
 
             HANDLE m_handle; /* handle of opened camera */
 
-            struct stcPcoData *m_pcoData;
+            struct stcPcoData *m_pcoData = nullptr;
 
             bool m_cam_connected;
 
@@ -750,7 +719,7 @@ namespace lima
             Roi m_Roi_lastFixed_requested;
             time_t m_Roi_lastFixed_time;
 
-            int m_acq_frame_nb;
+            int m_acq_frame_nb = 1;
             bool m_config;
 
             bool m_isArmed;
@@ -822,8 +791,6 @@ namespace lima
             void _get_DetectorType(std::string &det_type);
             void _get_MaxImageSize(Size &max_image_size);
             unsigned long long _getDebug(unsigned long long mask);
-
-            CheckImgNr *m_checkImgNr;
 
             char *_camInfo(char *ptr, char *ptrMax, long long int flag);
 

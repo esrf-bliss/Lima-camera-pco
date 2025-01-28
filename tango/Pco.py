@@ -67,7 +67,6 @@ class Pco(tango.LatestDeviceImpl):
             "lastImgAcquired": "LastImgAcquired",
             "lastImgRecorded": "LastImgRecorded",
             "logMsg": "MsgLog",
-            "logPcoEnabled": "PcoLogsEnabled",
             "maxNbImages": "MaxNbImages",
             "paramsInfo": "ParamsInfo",
             "pixelRate": "PixelRate",
@@ -260,10 +259,6 @@ class PcoClass(tango.DeviceClass):
             [tango.DevString, tango.SCALAR, tango.READ],
             {"unit": "N/A", "format": "%s", "description": "print the log msgs"},
         ],
-        "logPcoEnabled": [
-            [tango.DevLong, tango.SCALAR, tango.READ],
-            {"unit": "N/A", "format": "%d", "description": "PCO logs are enabled"},
-        ],
         "maxNbImages": [
             [tango.DevLong, tango.SCALAR, tango.READ],
             {
@@ -419,15 +414,10 @@ def get_control(
         # <class 'tango._tango.StdStringVector'>
         paramsIn = "".join("%s;" % (x,) for x in params)
 
-    bParamsIn = paramsIn.encode()
-    # bParamsIn -> bytes
-    #   <class 'bytes'>
-    #   b'bitAlignment = MSB;trigSingleMulti=1;'
-
     print("============= Properties =============")
+    print("           sn:", sn)
     print("         keys:", keys)
-    print("       params:", params)
-    print("     paramsIn:", paramsIn)
+    print("       params:", paramsIn)
     print("======================================")
 
     if _PcoCam is None:

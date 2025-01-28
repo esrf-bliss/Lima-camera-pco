@@ -45,11 +45,6 @@ SyncCtrlObj::SyncCtrlObj(Camera *cam, BufferCtrlObj *buffer)
 {
     DEB_CONSTRUCTOR();
     _setRequestStop(stopNone);
-    bool ret;
-    char *value;
-
-    ret = cam->paramsGet("trigSingleMulti", value);
-    m_extTrigSingle_eq_Multi = ret && (!!atoi(value));
 }
 
 //=========================================================================================================
@@ -463,7 +458,6 @@ void SyncCtrlObj::startAcq()
 
         AutoMutex lock(m_cond.mutex());
 
-        bool resWait;
         int retry = 3;
         int val, val0;
         val0 = pcoAcqStart;
@@ -471,7 +465,7 @@ void SyncCtrlObj::startAcq()
         while (((val = getExposing()) == val0) && retry--)
         {
             DEB_TRACE() << "+++ getExposing - WAIT for != pcoAcqStart - " << DEB_VAR3(val, val0, retry);
-            resWait = m_cond.wait(2.);
+            bool resWait = m_cond.wait(2.);
         }
         DEB_TRACE() << "+++ getExposing - EXIT - " << DEB_VAR3(val, val0, retry);
         lock.unlock();

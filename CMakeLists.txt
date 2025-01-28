@@ -108,6 +108,9 @@ if(NOT LIMA_ENABLE_DEBUG)
     target_compile_definitions(pco PUBLIC LIMA_NO_DEBUG)
 endif()
 
+# target_compile_options(pco PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address PUBLIC -fno-omit-frame-pointer)
+# target_link_options(pco BEFORE PUBLIC -fsanitize=undefined PUBLIC -fsanitize=address)
+
 # Set version and output name
 set_target_properties(pco PROPERTIES
   OUTPUT_NAME "lima${PROJECT_NAME_LOWER}"
@@ -149,20 +152,20 @@ install(
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}  # this does not actually install anything (but used by downstream projects)
 )
 
-install(
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-  COMPONENT devel
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILES_MATCHING PATTERN "*.h"
-)
+#install(
+#  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+#  COMPONENT devel
+#  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#  FILES_MATCHING PATTERN "*.h"
+#)
 
-install(
-  FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/project_version.h
-    ${PROJECT_BINARY_DIR}/pco_export.h
-  COMPONENT devel
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
+#install(
+#  FILES
+#    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}/project_version.h
+#    ${PROJECT_BINARY_DIR}/pco_export.h
+#  COMPONENT devel
+#  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#)
 
 message("... LIMA_ENABLE_PYTHON: [${LIMA_ENABLE_PYTHON}]")
 message("... PYTHON_SITE_PACKAGES_DIR: [${PYTHON_SITE_PACKAGES_DIR}]")

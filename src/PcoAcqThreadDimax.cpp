@@ -64,8 +64,6 @@ namespace lima
 
             int requestStop = stopNone;
 
-            HANDLE m_handle = m_cam->getHandle();
-
             WORD wSegment;
             m_cam->_pco_GetActiveRamSegment(wSegment, error);
             double msPerFrame = (m_cam->pcoGetCocRunTime() * 1000.);
@@ -139,7 +137,7 @@ namespace lima
                     // m_sync->stopAcq();
                     m_sync->setExposing(pcoAcqStop);
                     printf("=== %s [%d]> TIMEOUT!!! tout[(%ld) 0(%ld)] recLoopTime[%ld "
-                           "ms] lastImgRecorded[%ld] dwPcoRequestedFrames[%d]\n",
+                           "ms] lastImgRecorded[%d] dwPcoRequestedFrames[%d]\n",
                            fnId, __LINE__, timeout, timeout0, msNowRecordLoop, _dwPcoValidImageCnt,
                            dwPcoRequestedFrames);
                     break;
@@ -320,8 +318,6 @@ namespace lima
             long timeout, timeout0, msNowRecordLoop, msRecord, msXfer, msTotal;
             int nb_acq_frames;
             int requestStop = stopNone;
-
-            HANDLE m_handle = m_cam->getHandle();
 
             WORD wSegment;
             m_cam->_pco_GetActiveRamSegment(wSegment, error);
@@ -519,8 +515,6 @@ namespace lima
             pcoAcqStatus status;
 
             m_cam->_sprintComment(true, fnId, "[ENTRY]");
-
-            HANDLE m_handle = m_cam->getHandle();
 
             m_sync->setAcqFrames(0);
 

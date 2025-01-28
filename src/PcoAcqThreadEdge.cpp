@@ -47,10 +47,7 @@ namespace lima
 
             int error;
             long msXfer;
-            int requestStop = stopNone;
             pcoAcqStatus status;
-
-            HANDLE m_handle = m_cam->getHandle();
 
             m_sync->setAcqFrames(0);
 

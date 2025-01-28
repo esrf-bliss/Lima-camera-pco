@@ -172,7 +172,7 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
 
 //--------------------------------------------------------------------
 //--------------------------------------------------------------------
-void CheckImgNr::init(STC_traceAcq *traceAcq)
+void CheckImgNr::init(stcTraceAcq *traceAcq)
 {
     DEF_FNID;
 
@@ -3086,7 +3086,7 @@ void Camera::_pco_GetBinning(Bin &bin, int &err)
 
     if (PCO_CHECK_ERROR(err, "PCO_GetBinning"))
     {
-        wBinHorz, wBinVert = 1;
+        wBinHorz = 1, wBinVert = 1;
         DEB_ALWAYS() << "ERROR - PCO_GetBinning";
     }
     //#else
@@ -3216,26 +3216,9 @@ void Camera::getXYdescription(unsigned int &xSteps, unsigned int &ySteps, unsign
     xMax = m_pcoData->stcPcoDescription.wMaxHorzResStdDESC;
     yMax = m_pcoData->stcPcoDescription.wMaxVertResStdDESC;
 
-    //#ifndef __linux__
     unsigned int xMinSize0;
     xMinSize = xMinSize0 = m_pcoData->stcPcoDescription.wMinSizeHorzDESC;
     yMinSize = m_pcoData->stcPcoDescription.wMinSizeVertDESC;
-
-    { // patch meanwhile firmware 1.19 is fixed
-        if (m_pcoData->params_xMinSize)
-        {
-            xMinSize += xSteps;
-            DEB_TRACE() << "PATCH APPLIED: " << DEB_VAR2(xMinSize0, xMinSize);
-        }
-    }
-    //#else
-    //    // xMinSize = xMinSize0 = m_pcoData->stcPcoDescription.wRoiHorStepsDESC;
-    //    // yMinSize = m_pcoData->stcPcoDescription.wRoiVertStepsDESC;
-    //    WORD wXMinSize, wYMinSize;
-    //    _pco_GetCameraMinSizeCalc(wXMinSize, wYMinSize);
-    //    xMinSize = wXMinSize;
-    //    yMinSize = wYMinSize;
-    //#endif
 }
 
 void Camera::getXYsteps(unsigned int &xSteps, unsigned int &ySteps)
@@ -3420,13 +3403,6 @@ void Camera::_pco_FreeBuffer(int bufIdx, int &err)
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    err = 0;
-
-    //#ifdef __linux__
-    //    DEB_ALWAYS() << NOT_IMPLEMENTED;
-    //    return;
-    //
-    //#else
     err = PCO_FreeBuffer(m_handle, bufIdx);
 
     err = PCO_CHECK_ERROR(err, "PCO_FreeBuffer");
@@ -3436,7 +3412,6 @@ void Camera::_pco_FreeBuffer(int bufIdx, int &err)
         // PCO_THROW_OR_TRACE(err, "PCO_FreeBuffer") ;
     }
     return;
-    //#endif
 }
 
 //=================================================================================================
@@ -3447,13 +3422,6 @@ void Camera::_pco_AllocateBuffer(SHORT *sBufNr, DWORD dwSize, WORD **wBuf, void 
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    err = 0;
-
-    //#ifdef __linux__
-    //    DEB_ALWAYS() << NOT_IMPLEMENTED;
-    //    return;
-    //
-    //#else
     err = PCO_AllocateBuffer(m_handle, sBufNr, dwSize, wBuf, hEvent);
 
     PCO_CHECK_ERROR(err, "PCO_AllocateBuffer");
@@ -3463,7 +3431,6 @@ void Camera::_pco_AllocateBuffer(SHORT *sBufNr, DWORD dwSize, WORD **wBuf, void 
         PCO_THROW_OR_TRACE(err, "PCO_AllocateBuffer");
     }
     return;
-    //#endif
 }
 
 //=================================================================================================
@@ -4139,35 +4106,35 @@ void Camera::_pco_OpenCameraSn(DWORD snRequested, int &err)
         return;
     }
 
-    for (WORD i = 0; i < num_devices; i++)
-    {
-        //     if(pcodev[i].status&PCODEVICE_STATUS_BITS_CONNECTED)
-        {
-            printf("%d. Device ", i + 1);
-            if (pco_devices[i].status & PCODEVICE_STATUS_BITS_CONNECTED)
-            {
-                printf("is available ");
-                if (pco_devices[i].status & PCODEVICE_STATUS_BITS_ATTACHED)
-                    printf("attached ");
-                if (pco_devices[i].status & PCODEVICE_STATUS_BITS_OPENED)
-                    printf("and opened");
-            }
-            else
-                printf("is currently not connected");
+    // for (WORD i = 0; i < num_devices; i++)
+    // {
+    //     //     if(pcodev[i].status&PCODEVICE_STATUS_BITS_CONNECTED)
+    //     {
+    //         printf("%d. Device ", i + 1);
+    //         if (pco_devices[i].status & PCODEVICE_STATUS_BITS_CONNECTED)
+    //         {
+    //             printf("is available ");
+    //             if (pco_devices[i].status & PCODEVICE_STATUS_BITS_ATTACHED)
+    //                 printf("attached ");
+    //             if (pco_devices[i].status & PCODEVICE_STATUS_BITS_OPENED)
+    //                 printf("and opened");
+    //         }
+    //         else
+    //             printf("is currently not connected");
 
-            printf("\n");
-            printf(" id:                       %d\n", pco_devices[i].id);
-            printf(" processid:                %d\n", pco_devices[i].processid);
-            printf(" status :                  0x%08x\n", pco_devices[i].status);
-            printf(" SerialNumber:             %d\n", pco_devices[i].SerialNumber);
-            printf(" InterfaceType:            %d\n", pco_devices[i].PCO_InterfaceType);
-            printf(" CameraType:               0x%04x\n", pco_devices[i].CameraType);
-            printf(" CameraSubType:            0x%04x\n", pco_devices[i].CameraSubType);
-            printf(" CameraName:               %s\n", pco_devices[i].CameraName);
-            printf(" InterfaceName:            %s\n", pco_devices[i].PCO_InterfaceName);
-            printf("\n");
-        }
-    }
+    //         printf("\n");
+    //         printf(" id:                       %d\n", pco_devices[i].id);
+    //         printf(" processid:                %d\n", pco_devices[i].processid);
+    //         printf(" status :                  0x%08x\n", pco_devices[i].status);
+    //         printf(" SerialNumber:             %d\n", pco_devices[i].SerialNumber);
+    //         printf(" InterfaceType:            %d\n", pco_devices[i].PCO_InterfaceType);
+    //         printf(" CameraType:               0x%04x\n", pco_devices[i].CameraType);
+    //         printf(" CameraSubType:            0x%04x\n", pco_devices[i].CameraSubType);
+    //         printf(" CameraName:               %s\n", pco_devices[i].CameraName);
+    //         printf(" InterfaceName:            %s\n", pco_devices[i].PCO_InterfaceName);
+    //         printf("\n");
+    //     }
+    // }
 
     auto it = std::find_if(pco_devices.begin(), pco_devices.end(),
                            [snRequested](PCO_Device const &dev) { return dev.SerialNumber == snRequested; });
@@ -4420,13 +4387,6 @@ int Camera::_pco_SetImageParameters()
     if (error != PCO_NOERROR)
         PCO_THROW_OR_TRACE(error, "PCO_SetImageParameters");
 
-    // PCO_FN6(error, pcoFn, PCO_SetImageParameters, m_handle, wXres, wYres,
-    //         dwFlags, param, iLenParam);
-
-    if (_getDebug(DBG_TRACE_FIFO))
-    {
-        printf("---TRACE - PCO_SetImageParameters dwFlags[0x%lx]\n", dwFlags);
-    }
     if (error)
     {
         DEB_ALWAYS() << "ERROR: \n" << DEB_VAR2(pcoFn, error);

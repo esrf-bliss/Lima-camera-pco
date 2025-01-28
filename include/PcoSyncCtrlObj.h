@@ -102,27 +102,29 @@ namespace lima
             void setExposing(pcoAcqStatus exposing);
             void setStarted(bool started);
             bool getStarted();
+            
             pcoAcqStatus getExposing();
 
             int _getRequestStop(int &nrStop);
             void _setRequestStop(int requestStop);
 
           private:
-            double m_exp_time; /* exposure time in s */
-            double m_lat_time; /* lattency - delay? */
+            double m_exp_time = 0.0; /* exposure time in s */
+            double m_lat_time = 0.0; /* lattency - delay? */
 
-            Camera *m_cam;
-            TrigMode m_trig_mode;
-            BufferCtrlObj *m_buffer;
-            int m_nb_frames;
-            int m_nb_acq_frames;
-            bool m_started;
-            pcoAcqStatus m_exposing;
-            struct stcPcoData *m_pcoData;
+            Camera *m_cam = nullptr;
+            TrigMode m_trig_mode = IntTrig;
+            BufferCtrlObj *m_buffer = nullptr;
+            int m_nb_frames = 0;
+            int m_nb_acq_frames = 0;
+            bool m_started = false;
+            pcoAcqStatus m_exposing = pcoAcqIdle;
+            struct stcPcoData *m_pcoData = nullptr;
             Cond m_cond;
-            int m_requestStop, m_requestStopRetry;
+            int m_requestStop = 0;
+            int m_requestStopRetry = 0;
 
-            bool m_extTrigSingle_eq_Multi;
+            bool m_extTrigSingle_eq_Multi = false;
         };
 
     } // namespace Pco
