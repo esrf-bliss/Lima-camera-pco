@@ -5,8 +5,8 @@
 int main()
 {
     auto fut = std::async(std::launch::async, [] {
-        std::string params = "sn=61011182";
-        lima::Pco::Camera cam(params);
+        std::string sn = "61011182";
+        lima::Pco::Camera cam(sn);
     });
 
     fut.wait();
