@@ -3398,17 +3398,17 @@ void Camera::_pco_SetDelayExposureTime(int &error, int ph)
 //=================================================================================================
 //=================================================================================================
 
-void Camera::_pco_FreeBuffer(int bufIdx, int &err)
+void Camera::_pco_FreeBuffer(SHORT sBufNr, int &err)
 {
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-    err = PCO_FreeBuffer(m_handle, bufIdx);
+    err = PCO_FreeBuffer(m_handle, sBufNr);
 
     err = PCO_CHECK_ERROR(err, "PCO_FreeBuffer");
     if (err)
     {
-        DEB_ALWAYS() << "SDK ERROR - PCO_FreeBuffer: " << DEB_VAR3(err, m_handle, bufIdx);
+        DEB_ALWAYS() << "SDK ERROR - PCO_FreeBuffer: " << DEB_VAR3(err, m_handle, sBufNr);
         // PCO_THROW_OR_TRACE(err, "PCO_FreeBuffer") ;
     }
     return;
@@ -3478,11 +3478,8 @@ void Camera::_pco_GetBufferStatus(SHORT sBufNr, DWORD *dwStatusDll, DWORD *dwSta
 
     err = 0;
 
-    //#ifdef __linux__
-    //    DEB_ALWAYS() << NOT_IMPLEMENTED;
-    //    return;
-    //
-    //#else
+    //printf("PCO_GetBufferStatus sBufNr=%hd\n", sBufNr);
+
     err = PCO_GetBufferStatus(m_handle, sBufNr, dwStatusDll, dwStatusDrv);
 
     PCO_CHECK_ERROR(err, "PCO_GetBufferStatus");
@@ -3491,7 +3488,27 @@ void Camera::_pco_GetBufferStatus(SHORT sBufNr, DWORD *dwStatusDll, DWORD *dwSta
         PCO_THROW_OR_TRACE(err, "PCO_GetBufferStatus");
     }
     return;
-    //#endif
+}
+
+//=================================================================================================
+//=================================================================================================
+
+void Camera::_pco_GetBuffer(SHORT sBufNr, WORD** wBuf, HANDLE *hEvent, int &err)
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    err = 0;
+
+
+    err = PCO_GetBuffer(m_handle, sBufNr, wBuf, hEvent);
+
+    PCO_CHECK_ERROR(err, "PCO_GetBufferStatus");
+    if (err)
+    {
+        PCO_THROW_OR_TRACE(err, "PCO_GetBufferStatus");
+    }
+    return;
 }
 
 //=================================================================================================

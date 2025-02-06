@@ -495,13 +495,11 @@ int BufferCtrlObj::_assignImage2Buffer(DWORD &dwFrameFirst, DWORD &dwFrameLast, 
         dwFrame = 0;
     }
 
-    DEB_ALWAYS() << "PCO_AddBufferEx -> " << DEB_VAR6(dwFrame, iPcoBufIdx, bufIdx, wArmWidth, wArmHeight, wBitPerPixel);
+    DEB_TRACE() << "PCO_AddBufferEx -> " << DEB_VAR6(dwFrame, iPcoBufIdx, bufIdx, wArmWidth, wArmHeight, wBitPerPixel);
 
     // SAM TODO should initially add all buffers
 
     error = m_cam->_pco_AddBufferEx(dwFrame, dwFrame, iPcoBufIdx, wArmWidth, wArmHeight, wBitPerPixel);
-
-    DEB_ALWAYS() << "PCO_AddBufferEx -> " << DEB_VAR6(error, dwFrame, iPcoBufIdx, bufIdx, wArmWidth, wArmHeight);
 
     if (error)
     {
@@ -561,10 +559,14 @@ int BufferCtrlObj::_xferImag_buff2lima(DWORD const &dwFrameIdx, int &bufIdx)
 #    error ERROR --- USING_PCO_ALLOCATED_BUFFERS is not defined
 #endif
 
+    int err;
+    WORD *ptrSrc = nullptr;
+    m_cam->_pco_GetBuffer(sBufNr, &ptrSrc, nullptr, err);
+
     // we are using the PCO allocated buffer, so this buffer must be copied to
     // the lima buffer
     void *ptrDest = (void *)m_allocBuff.limaAllocBufferPtr[bufIdx];
-    void *ptrSrc = (void *)m_allocBuff.pcoAllocBufferPtr[bufIdx];
+    //void *ptrSrc = (void *)m_allocBuff.pcoAllocBufferPtr[bufIdx];
     size_t sizeLima = m_allocBuff.dwLimaAllocBufferSize[bufIdx];
     size_t size = m_allocBuff.dwPcoAllocBufferSize[bufIdx];
 
@@ -623,8 +625,8 @@ int BufferCtrlObj::_xferImag()
     int error;
     bool live_mode;
     int _nrStop;
-    int maxWaitTimeout;
-    m_cam->getAcqTimeoutRetry(maxWaitTimeout);
+    int acqTimeoutRetry;
+    m_cam->getAcqTimeoutRetry(acqTimeoutRetry);
 
     WORD wArmWidth, wArmHeight;
     WORD _wMaxWidth, _wMaxHeight;
@@ -894,10 +896,9 @@ int BufferCtrlObj::_xferImag()
                 DEB_WARNING() << "\n"
                               << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
                               << m_cam->_sprintComment(false, fnId, "[PCO_GetBufferStatus]", "[ERROR]");
-                // goto abnormal;
-
-                // SAM TODO According to sample code should call:
-                //_pco_AddBufferEx(0, 0, current_buffer_num, width, height, 16);
+    
+                // SAM - According to sample code should call:
+                m_cam->_pco_AddBufferEx(0, 0, sBufNr, wArmWidth, wArmHeight, wBitPerPixel);
             }
 
             iLoopsPolled++;
@@ -1229,8 +1230,8 @@ int BufferCtrlObj::_xferImag_getImage()
     int error;
     bool live_mode;
     DWORD dwFrameIdxFirst, dwFrameIdxLast;
-    int maxWaitTimeout;
-    m_cam->getAcqTimeoutRetry(maxWaitTimeout);
+    int acqTimeoutRetry;
+    m_cam->getAcqTimeoutRetry(acqTimeoutRetry);
     unsigned long long dbgWaitobj = m_cam->_getDebug(DBG_WAITOBJ);
 
     WORD _wBitPerPixel;
@@ -1436,8 +1437,8 @@ int BufferCtrlObj::_xferImag_getImage_edge()
     int error;
     bool live_mode;
     DWORD dwFrameIdxFirst, dwFrameIdxLast;
-    int maxWaitTimeout;
-    m_cam->getAcqTimeoutRetry(maxWaitTimeout);
+    int acqTimeoutRetry;
+    m_cam->getAcqTimeoutRetry(acqTimeoutRetry);
     WORD _wBitPerPixel;
     char *sErr;
     void *ptrLimaBuffer;
@@ -1682,8 +1683,8 @@ int BufferCtrlObj::_xferImagMult()
     int error;
     bool live_mode;
     DWORD dwFrameIdxFirst, dwFrameIdxLast;
-    int maxWaitTimeout;
-    m_cam->getAcqTimeoutRetry(maxWaitTimeout);
+    int acqTimeoutRetry;
+    m_cam->getAcqTimeoutRetry(acqTimeoutRetry);
     WORD _wBitPerPixel;
     char *sErr;
     void *ptrLimaBuffer;
@@ -2164,8 +2165,8 @@ int BufferCtrlObj::_xferImagDoubleImage()
     bool live_mode;
     int _nrStop;
 
-    int maxWaitTimeout;
-    m_cam->getAcqTimeoutRetry(maxWaitTimeout);
+    int acqTimeoutRetry;
+    m_cam->getAcqTimeoutRetry(acqTimeoutRetry);
 
     WORD wArmWidth, wArmHeight;
     unsigned int bytesPerPixel;
@@ -2538,7 +2539,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
                 goto _RETRY;
 
             case WAIT_TIMEOUT: {
-                maxWaitTimeout--;
+                acqTimeoutRetry--;
 
                 char errstr[MSG4K + 1];
                 char *ptr = errstr;
@@ -2558,16 +2559,16 @@ int BufferCtrlObj::_xferImagDoubleImage()
                         m_allocBuff.dwLimaAllocBufferSize[_id], m_allocBuff.dwPcoAllocBufferSize[_id]);
                 }
 
-                if (maxWaitTimeout)
+                if (acqTimeoutRetry)
                 {
-                    DEB_ALWAYS() << "\nWAITOBJ ERROR - TIMEOUT - RETRY " << DEB_VAR2(maxWaitTimeout, dwPcoFrameIdx)
+                    DEB_ALWAYS() << "\nWAITOBJ ERROR - TIMEOUT - RETRY " << DEB_VAR2(acqTimeoutRetry, dwPcoFrameIdx)
                                  << errstr;
                     goto _RETRY_WAIT; // retry when >0 (counting down up to 0) /
                                       // <0 infinite
                 }
                 else
                 {
-                    DEB_ALWAYS() << "\nWAITOBJ ERROR - TIMEOUT - ABORT " << DEB_VAR2(maxWaitTimeout, dwPcoFrameIdx)
+                    DEB_ALWAYS() << "\nWAITOBJ ERROR - TIMEOUT - ABORT " << DEB_VAR2(acqTimeoutRetry, dwPcoFrameIdx)
                                  << errstr;
                     return pcoAcqWaitTimeout;
                 }
@@ -2630,8 +2631,8 @@ int BufferCtrlObj::_xferImagMultDoubleImage()
     int bufIdx;
     int error;
     DWORD dwPcoFrameIdxFirst, dwPcoFrameIdxLast;
-    int maxWaitTimeout;
-    m_cam->getAcqTimeoutRetry(maxWaitTimeout);
+    int acqTimeoutRetry;
+    m_cam->getAcqTimeoutRetry(acqTimeoutRetry);
     WORD _wBitPerPixel;
     char *sErr;
     void *ptrLimaBuffer;

@@ -590,10 +590,7 @@ namespace lima
             void getBin(Bin &aBin);
             void checkBin(Bin &aBin);
 
-            HANDLE &getHandle()
-            {
-                return m_handle;
-            }
+            HANDLE &getHandle() { return m_handle; }
 
             // void getMaxWidthHeight(DWORD &xMax, DWORD &yMax);
             void getMaxWidthHeight(unsigned int &xMax, unsigned int &yMax);
@@ -887,7 +884,7 @@ namespace lima
             void getFirmwareInfo(std::string &o_sn);
             void getRoiInfo(std::string &o_sn);
 
-            //--------------------------------------
+            //-------------------------------------- SDK C++ Wrapper 
 
           public:                                         //----------- pco sdk functions
             void _pco_GetActiveRamSegment(WORD &, int &); // {return m_pcoData->wActiveRamSegment;}
@@ -984,7 +981,7 @@ namespace lima
             void _pco_SetRecordStopEvent(WORD wRecordStopEventMode, DWORD dwRecordStopDelayImages, int &err);
 
             //----
-            void _pco_FreeBuffer(int bufIdx, int &err);
+            void _pco_FreeBuffer(SHORT sBufNr, int &err);
 
             void _pco_AllocateBuffer(SHORT *sBufNr, DWORD dwSize, WORD **wBuf, void **hEvent, int &err);
 
@@ -992,6 +989,8 @@ namespace lima
                                  WORD wYRes, WORD wBitPerPixel, int &err);
 
             void _pco_GetBufferStatus(SHORT sBufNr, DWORD *dwStatusDll, DWORD *dwStatusDrv, int &err);
+            
+            void _pco_GetBuffer(SHORT sBufNr, WORD** wBuf, HANDLE *hEvent, int &err);
 
             int _pco_AddBufferExtern(HANDLE hEvent, WORD wActSeg, DWORD dw1stImage, DWORD dwLastImage, DWORD dwSynch,
                                      void *pBuf, DWORD dwLen, DWORD *dwStatus);

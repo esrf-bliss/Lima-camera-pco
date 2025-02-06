@@ -482,8 +482,7 @@ void print_hex_dump_buff(void *ptr_buff, size_t len)
 
 unsigned long long Camera::_getDebug(unsigned long long mask = ULLONG_MAX)
 {
-    //return m_pcoData->debugLevel & mask;
-    return (DBG_BUFF | DBG_XFER2LIMA | DBG_LIMABUFF | DBG_ASSIGN_BUFF) & mask;
+    return m_pcoData->debugLevel & mask;
 }
 //=========================================================================================================
 //=========================================================================================================
