@@ -41,6 +41,7 @@ class Pco(tango.LatestDeviceImpl):
 
         self.__Attribute2FunctionBase = {
             "acqTimeoutRetry": "AcqTimeoutRetry",
+            "acq_timeout": "AcqTimeout",
             "adc": "Adc",
             "adcMax": "AdcMax",
             "binInfo": "BinningInfo",
@@ -153,6 +154,15 @@ class PcoClass(tango.DeviceClass):
                 "unit": "number",
                 "format": "%d",
                 "description": "max Timeout retries during acq (0 - infinite)",
+            },
+        ],
+        'acq_timeout': [
+            [tango.DevDouble, tango.SCALAR, tango.READ_WRITE],
+            {
+                'label': 'Acquisition timeout',
+                'unit': 's',
+                'format': '%f',
+                'description': 'Acquisition timeout in s'
             },
         ],
         "adc": [
@@ -398,8 +408,7 @@ _PcoControl = None
 
 
 def get_control(
-    sn='',
-    params=[],
+    sn: str = "",
     **keys
 ):
 
@@ -407,21 +416,13 @@ def get_control(
     global _PcoInterface
     global _PcoControl
 
-    if type(params) == str:
-        # <type 'str'>
-        paramsIn = params
-    else:
-        # <class 'tango._tango.StdStringVector'>
-        paramsIn = "".join("%s;" % (x,) for x in params)
-
     print("============= Properties =============")
     print("           sn:", sn)
     print("         keys:", keys)
-    print("       params:", paramsIn)
     print("======================================")
 
     if _PcoCam is None:
-        _PcoCam = PcoAcq.Camera(sn, paramsIn)
+        _PcoCam = PcoAcq.Camera(sn)
         _PcoInterface = PcoAcq.Interface(_PcoCam)
         _PcoControl = Core.CtControl(_PcoInterface)
 

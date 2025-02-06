@@ -860,7 +860,9 @@ int BufferCtrlObj::_xferImag()
         // -----------------------------------------------------------------------------------------
         // Loop of WaitforNextBufferNum waiting the buff sBufNr is ready
         // -----------------------------------------------------------------------------------------
-        int msTimeout = 5000;
+        double acqTimeout;
+        m_cam->getAcqTimeout(acqTimeout);
+        int msTimeout = int(acqTimeout * 1000.);
         DWORD dwStatusDll, dwStatusDrv;
         // int iPending = 0;
         int iLoopsPolled = 0;

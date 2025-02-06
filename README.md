@@ -72,6 +72,7 @@ Attributes
       Attribute name         RW   Type        Description
       ---------------------- ---- ----------- -----------------------------------------------------------------------------------
       acqTimeoutRetry        rw   DevLong     Maximum Timeout retries during acq (0 - infinite)
+      acq_timeout            rw   DevDouble   Timeout during acq in second (0 - infinite)
       adc                    rw   DevLong     Number of working ADC's
       adcMax                 ro   DevLong     Maximum number of ADC's
       binInfo                ro   DevLong     PCO hw binning info

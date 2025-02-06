@@ -503,6 +503,7 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &e
 
 stcPcoData::stcPcoData()
 {
+    // TODO Fix this, we are not writing C
     memset(this, 0, sizeof(struct stcPcoData));
 
     stcPcoGeneral.wSize = sizeof(stcPcoGeneral);
@@ -525,6 +526,9 @@ stcPcoData::stcPcoData()
     bAllocatedBufferDone = false;
 
     msAcqRecTimestamp = msAcqXferTimestamp = getTimestamp();
+
+    acqTimeoutRetry = 0;
+    acqTimeout = 5.;
 }
 
 // //=========================================================================================================

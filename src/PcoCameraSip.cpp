@@ -76,6 +76,7 @@ void Camera::setPixelRate(int val)
 
 //====================================================================
 //====================================================================
+
 void Camera::getAcqTimeoutRetry(int &val)
 {
     val = m_pcoData->acqTimeoutRetry;
@@ -85,6 +86,20 @@ void Camera::setAcqTimeoutRetry(int val)
 {
     m_pcoData->acqTimeoutRetry = val < 0 ? 0 : val;
 }
+
+//====================================================================
+//====================================================================
+
+void Camera::getAcqTimeout(double& val) const
+{
+    val = m_pcoData->acqTimeout;
+}
+
+void Camera::setAcqTimeout(double val)
+{
+    m_pcoData->acqTimeout = val < 0 ? 0 : val;
+}
+
 //====================================================================
 //====================================================================
 void Camera::getAdc(int &adc)

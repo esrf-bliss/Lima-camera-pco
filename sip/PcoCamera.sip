@@ -26,6 +26,9 @@ namespace Pco
 		void getAcqTimeoutRetry(int &val /Out/);   // acqTimeoutRetry
 		void setAcqTimeoutRetry(int val);
 
+		void setAcqTimeout(double acq_timeout);
+		void getAcqTimeout(double& acq_timeout) const;
+
 		void getAdc(int & adc /Out/);    // adc
 		void setAdc(int val);
 

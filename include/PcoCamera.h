@@ -542,8 +542,8 @@ namespace lima
 
             int testForceFrameFirst0;
 
-            int acqTimeoutRetry; // max nr of timeout during acq (wait for mult
-                                 // obj)
+            int acqTimeoutRetry;
+            double acqTimeout;
 
             bool params_xMinSize;
             bool params_ignoreMaxImages;
@@ -837,6 +837,9 @@ namespace lima
 
             void getAcqTimeoutRetry(int &val);
             void setAcqTimeoutRetry(int val);
+
+            void setAcqTimeout(double acq_timeout);
+            void getAcqTimeout(double& acq_timeout) const;
 
             void getAdc(int &val);
             void setAdc(int val);
