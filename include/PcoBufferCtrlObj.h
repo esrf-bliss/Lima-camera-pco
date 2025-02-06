@@ -74,7 +74,7 @@ namespace lima
         class SyncCtrlObj;
         class Interface;
 
-        class CheckImgNr
+        class DLL_EXPORT CheckImgNr
         {
           public:
             CheckImgNr(Camera *cam);
