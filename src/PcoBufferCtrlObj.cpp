@@ -1586,8 +1586,6 @@ int BufferCtrlObj::_xferImag_getImage_edge()
         //=============================== check PCO ImgNr with the limaFrame
         m_checkImgNr.update(iLimaFrame, ptrSrc);
 
-        ptrSrc = ((char *)ptrSrc) + dwFrameSize;
-
         HwFrameInfoType frame_info;
         frame_info.acq_frame_nb = _newFrameReady = iLimaFrame;
         m_buffer_cb_mgr.newFrameReady(frame_info);

@@ -934,6 +934,7 @@ namespace lima
 
             void _pco_SetTimestampMode(WORD mode, int &err);
             void _pco_GetTimestampMode(WORD &mode, int &err);
+            void _pco_GetTimeStamp(SHORT sBufNr, WORD* wBuf, PCO_TIMESTAMP_STRUCT* strTimeStamp, int &err);
             void _pco_GetTransferParameter(int &err);
 
             double pcoGetCocRunTime();
@@ -957,11 +958,6 @@ namespace lima
 
             int _pco_GetRecordingState(WORD &wRecState_actual);
 
-            void dummySip();
-
-#ifdef __linux__
-            void _waitForRecording(int nrFrames, DWORD &_dwValidImageCnt, DWORD &_dwMaxImageCnt, int &error);
-#endif
             //----
             void _pco_GetInfoString(int infotype, char *buf_in, int size_in, int &error);
             void _pco_GetBinning(Bin &bin, int &err);

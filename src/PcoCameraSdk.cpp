@@ -501,7 +501,7 @@ void Camera::_pco_GetTimestampMode(WORD &mode, int &err)
     DEB_MEMBER_FUNCT();
     DEF_FNID;
 
-#//ifndef __linux__
+    //#ifndef __linux__
     const char *msg;
     int error;
     err = error = 0;
@@ -521,6 +521,29 @@ void Camera::_pco_GetTimestampMode(WORD &mode, int &err)
     DEB_TRACE() << "\n   " << DEB_VAR1(mode);
     return;
 }
+
+//=================================================================================================
+//=================================================================================================
+void Camera::_pco_GetTimeStamp(SHORT sBufNr, WORD* wBuf, PCO_TIMESTAMP_STRUCT* strTimeStamp, int &err)
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    const char *msg;
+    int error;
+    err = error = 0;
+
+    PCO_FN4(error, msg, PCO_GetTimeStamp, m_handle, sBufNr, wBuf, strTimeStamp);
+    PCO_PRINT_ERR(error, msg);
+    err |= error;
+    if (err)
+        return;
+
+    DEB_TRACE() << "\n   " << DEB_VAR1(sBufNr);
+    return;
+}
+
+
 //=================================================================================================
 //=================================================================================================
 int Camera::_pco_GetRecordingState(WORD &wRecState_actual)

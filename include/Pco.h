@@ -59,7 +59,7 @@
 
 #include "sc2_sdkstructures.h"
 #include "sc2_sdkaddendum.h"
-//#include "sc2_common.h"
+#include "sc2_common.h"
 #include "sc2_camexport.h"
 #include "sc2_defs.h"
 
