@@ -30,7 +30,7 @@
 #include <time.h>
 
 #undef DEBUG_XFER_IMAG
-#define COMPILE_WAIT_CONDITION
+//#define COMPILE_WAIT_CONDITION
 #undef COMPILEIT
 #define USING_PCO_ALLOCATED_BUFFERS
 #define EVENT_WAIT_TMOUT_MS 10000
@@ -51,8 +51,9 @@ BufferCtrlObj::BufferCtrlObj(Camera *cam) : m_cam(cam), m_pcoData(m_cam->_getPco
 {
     DEB_CONSTRUCTOR();
 
-    // SoftBufferCtrlObj::Sync &m_bufferSync = *getBufferSync(cond);
+#ifdef COMPILE_WAIT_CONDITION
     m_bufferSync = getBufferSync(cond);
+#endif
 
     //----------------------------------------------- initialization buffers &
     // creating events
@@ -106,71 +107,71 @@ void BufferCtrlObj::getStatus(int &err)
     err = m_cam->pcoGetError();
 }
 
-//===================================================================================================================
-// linux break
-//===================================================================================================================
+// //===================================================================================================================
+// // linux break
+// //===================================================================================================================
 
-//===================================================================================================================
-//===================================================================================================================
-void *BufferCtrlObj::_getFrameBufferPtr(int lima_buffer_nb, int &nb_allocated_buffers)
-{
-    DEB_MEMBER_FUNCT();
-    DEF_FNID;
-    const char *msg;
-    double timeout = 30;
-    StdBufferCbMgr &buffer_mgr = m_buffer_cb_mgr;
+// //===================================================================================================================
+// //===================================================================================================================
+// void *BufferCtrlObj::_getFrameBufferPtr(int lima_buffer_nb, int &nb_allocated_buffers)
+// {
+//     DEB_MEMBER_FUNCT();
+//     DEF_FNID;
+//     const char *msg;
+//     double timeout = 30;
+//     StdBufferCbMgr &buffer_mgr = m_buffer_cb_mgr;
 
-    Sync::Status status;
-    AutoMutex lock(cond.mutex());
+//     Sync::Status status;
+//     AutoMutex lock(cond.mutex());
 
-    void *myBuffer = NULL;
+//     void *myBuffer = NULL;
 
-    Timestamp t0 = Timestamp::now();
+//     Timestamp t0 = Timestamp::now();
 
-    for (bool doit = true; doit;)
-    {
-        double wait_timeout = timeout - double(Timestamp::now() - t0);
-        if (wait_timeout <= 0)
-        {
-            msg = "=== Sync wait INTERRUPTED + TIMEOUT === ";
-            DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
-            return NULL;
-        }
+//     for (bool doit = true; doit;)
+//     {
+//         double wait_timeout = timeout - double(Timestamp::now() - t0);
+//         if (wait_timeout <= 0)
+//         {
+//             msg = "=== Sync wait INTERRUPTED + TIMEOUT === ";
+//             DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
+//             return NULL;
+//         }
 
-        status = m_bufferSync->wait(lima_buffer_nb, wait_timeout);
-        if (m_cam->_getDebug(DBG_LIMABUFF))
-        {
-            DEB_ALWAYS() << DEB_VAR3(lima_buffer_nb, timeout, status);
-        }
+//         status = m_bufferSync->wait(lima_buffer_nb, wait_timeout);
+//         if (m_cam->_getDebug(DBG_LIMABUFF))
+//         {
+//             DEB_ALWAYS() << DEB_VAR3(lima_buffer_nb, timeout, status);
+//         }
 
-        switch (status)
-        {
-            case Sync::AVAILABLE:
-                myBuffer = buffer_mgr.getFrameBufferPtr(lima_buffer_nb);
-                buffer_mgr.getNbBuffers(nb_allocated_buffers);
-                doit = false;
-                break;
-            case Sync::TIMEOUT:
-                msg = "=== Sync wait TIMEOUT === ";
-                DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
-                return NULL;
-                break;
+//         switch (status)
+//         {
+//             case Sync::AVAILABLE:
+//                 myBuffer = buffer_mgr.getFrameBufferPtr(lima_buffer_nb);
+//                 buffer_mgr.getNbBuffers(nb_allocated_buffers);
+//                 doit = false;
+//                 break;
+//             case Sync::TIMEOUT:
+//                 msg = "=== Sync wait TIMEOUT === ";
+//                 DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
+//                 return NULL;
+//                 break;
 
-            case Sync::INTERRUPTED:
-                msg = "=== Sync wait INTERRUPTED === ";
-                DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
-                break;
+//             case Sync::INTERRUPTED:
+//                 msg = "=== Sync wait INTERRUPTED === ";
+//                 DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
+//                 break;
 
-            default:
-                msg = "=== Sync wait UNKNOWN STATUS === ";
-                DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
-        }
-    }
+//             default:
+//                 msg = "=== Sync wait UNKNOWN STATUS === ";
+//                 DEB_ALWAYS() << msg << DEB_VAR2(lima_buffer_nb, timeout);
+//         }
+//     }
 
-    return myBuffer;
-}
-//===================================================================================================================
-//===================================================================================================================
+//     return myBuffer;
+// }
+// //===================================================================================================================
+// //===================================================================================================================
 
 //===================================================================================================================
 // win break
@@ -883,6 +884,12 @@ int BufferCtrlObj::_xferImag()
                                                     m_allocBuff.bufferAllocEvent, // array of objects
                                                     false,                        // wait for any object
                                                     msTimeout);                   // ms wait timeout
+
+            if (eventRet == WAIT_TIMEOUT)
+            {
+                printf("failed\n");
+                break;
+            }
 #endif // defined(__linux__)
 
             m_cam->_pco_GetBufferStatus(sBufNr, &dwStatusDll, &dwStatusDrv, errPco);
@@ -899,8 +906,7 @@ int BufferCtrlObj::_xferImag()
                               << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
                               << m_cam->_sprintComment(false, fnId, "[PCO_GetBufferStatus]", "[ERROR]");
     
-                // SAM - According to sample code should call:
-                m_cam->_pco_AddBufferEx(0, 0, sBufNr, wArmWidth, wArmHeight, wBitPerPixel);
+                break;
             }
 
             iLoopsPolled++;
@@ -1190,7 +1196,6 @@ void *BufferCtrlObj::_getLimaBuffer(int lima_buffer_nb, Sync::Status &status)
 #    pragma message("============================================== BYPASSED ----- COMPILE_WAIT_CONDITION -----")
 
     myBuffer = buffer_mgr.getFrameBufferPtr(lima_buffer_nb);
-    status = 0;
     return myBuffer;
 #endif
 }

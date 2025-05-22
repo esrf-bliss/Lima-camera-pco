@@ -3583,10 +3583,10 @@ int Camera::_pco_WaitforNextBufferNum(SHORT *sBufNr, int timeout)
     int err = PCO_WaitforNextBufferNum(m_handle, sBufNr, timeout);
     if ((err & PCO_ERROR_TIMEOUT) == PCO_ERROR_TIMEOUT)
     {
-        PCO_THROW_OR_TRACE(err, "PCO_WaitforNextBufferNum TIMEOUT");
+        PCO_PRINT_ERR(err, "PCO_WaitforNextBufferNum TIMEOUT");
     }
     else if (err != PCO_NOERROR)
-        PCO_THROW_OR_TRACE(err, "PCO_WaitforNextBufferNum");
+        PCO_PRINT_ERR(err, "PCO_WaitforNextBufferNum");
 
     return err;
 }
