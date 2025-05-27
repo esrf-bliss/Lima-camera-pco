@@ -2017,7 +2017,7 @@ void BufferCtrlObj::_pcoAllocBuffers(bool max)
         //_dwAllocatedBufferSizeMax -= _dwAllocatedBufferSizeMax % _dwArmSize;
 
         DWORD _dwAllocatedBufferSize = max ? _dwAllocatedBufferSizeMax : _dwArmSize;
-
+	HANDLE hEvent;
         if (m_cam->_getDebug(DBG_BUFF))
         {
             DEB_ALWAYS() << DEB_VAR4(_dwAllocatedBufferSize, _wArmWidth, _wArmHeight, _bytesPerPixel);
@@ -2034,9 +2034,9 @@ void BufferCtrlObj::_pcoAllocBuffers(bool max)
         {
             m_allocBuff.pcoAllocBufferNr[bufIdx] = -1;
             m_allocBuff.pcoAllocBufferPtr[bufIdx] = NULL;
-
+	    hEvent = NULL;
             error = PCO_AllocateBuffer(m_cam->m_handle, &m_allocBuff.pcoAllocBufferNr[bufIdx], _dwAllocatedBufferSize,
-                                       &m_allocBuff.pcoAllocBufferPtr[bufIdx], nullptr);
+                                       &m_allocBuff.pcoAllocBufferPtr[bufIdx], &hEvent);
 
             m_allocBuff.createEventsDone = true;
         }
