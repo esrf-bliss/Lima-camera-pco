@@ -1438,24 +1438,61 @@ bool Camera::_isCameraType(unsigned long long tp)
                 case 0x20:
                     if (tp & (DimaxHS1 | DimaxHS))
                     {
-                        DEB_TRACE() << "DimaxHS1 / HS [exit] ";
+                        DEB_TRACE() << "Dimax HS1 / HS [exit] ";
                         return true;
                     }
                     break;
                 case 0x21:
                     if (tp & (DimaxHS2 | DimaxHS))
                     {
-                        DEB_TRACE() << "DimaxHS2 / HS [exit] ";
+                        DEB_TRACE() << "Dimax HS2 / HS [exit] ";
                         return true;
                     }
                     break;
                 case 0x23:
                     if (tp & (DimaxHS4 | DimaxHS))
                     {
-                        DEB_TRACE() << "DimaxHS4 / HS [exit] ";
+                        DEB_TRACE() << "Dimax HS4 / HS [exit] ";
                         return true;
                     }
                     break;
+
+                case 0x41:
+                    if (tp & (DimaxCS1 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS1 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x42:
+                    if (tp & (DimaxCS2 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS2 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x43:
+                    if (tp & (DimaxCS3 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS3 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x44:
+                    if (tp & (DimaxCS4 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS4 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x54:
+                    if (tp & (DimaxCS4Plus | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS4+ / CS [exit] ";
+                        return true;
+                    }
+                    break;
+
                 default:
                     break;
             }
