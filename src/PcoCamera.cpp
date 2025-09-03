@@ -930,6 +930,8 @@ void Camera::prepareAcq()
 
     int error;
 
+    m_sync->setExposing(pcoAcqIdle);
+
     int iRequestedFrames;
     // live video requested frames = 0
     m_sync->getNbFrames(iRequestedFrames);

@@ -560,7 +560,7 @@ void SyncCtrlObj::getStatus(HwInterface::StatusType &status)
 {
     bool _started = getStarted();
     DEB_MEMBER_FUNCT();
-    // DEB_TRACE() << DEB_VAR3(_started, m_buffer, m_exposing);
+    //DEB_TRACE() << DEB_VAR3(_started, m_buffer, m_exposing);
 
     if (_started)
     {
@@ -568,6 +568,11 @@ void SyncCtrlObj::getStatus(HwInterface::StatusType &status)
         {
             switch (m_exposing)
             {
+                case pcoAcqIdle:
+                    status.acq = AcqReady;
+                    status.det = DetIdle;
+                    break;
+
                 case pcoAcqStart:
                 case pcoAcqRecordStart:
                     status.acq = AcqRunning;
@@ -576,7 +581,6 @@ void SyncCtrlObj::getStatus(HwInterface::StatusType &status)
 
                 case pcoAcqStop:
                 case pcoAcqTransferStop:
-                case pcoAcqIdle:
                 case pcoAcqTransferEnd:
                 case pcoAcqRecordEnd:
                 case pcoAcqTransferStart:
@@ -602,8 +606,21 @@ void SyncCtrlObj::getStatus(HwInterface::StatusType &status)
     }
     else
     { // not started
-        status.acq = AcqReady;
-        status.det = DetIdle;
+        switch (m_exposing)
+        {
+            case pcoAcqRecordTimeout:
+            case pcoAcqWaitTimeout:
+            case pcoAcqWaitError:
+            case pcoAcqError:
+            case pcoAcqPcoError:
+                status.acq = AcqFault;
+                status.det = DetFault;
+                break;
+
+            default:
+                status.acq = AcqReady;
+                status.det = DetIdle;
+        }
     }
 
     if (m_cam->_getDebug(DBG_STATUS))
