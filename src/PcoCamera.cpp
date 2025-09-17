@@ -371,6 +371,12 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &e
                                              {CAMERASUBTYPE_PCO_DIMAX_HS2, "DIMAX_HS2"},
                                              {CAMERASUBTYPE_PCO_DIMAX_HS4, "DIMAX_HS4"},
 
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_AM_DEPRECATED, "DIMAX_CS"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_1, "DIMAX_CS_1"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_2, "DIMAX_CS_2"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_3, "DIMAX_CS_3"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_4, "DIMAX_CS_4"},
+
                                              {CAMERASUBTYPE_PCO_EDGE_SPRINGFIELD, "EDGE_SPRINGFIELD"},
                                              {CAMERASUBTYPE_PCO_EDGE_31, "EDGE_31"},
                                              {CAMERASUBTYPE_PCO_EDGE_42, "EDGE_42"},
