@@ -562,7 +562,8 @@ int BufferCtrlObj::_xferImag_buff2lima(DWORD const &dwFrameIdx, int &bufIdx)
 
     int err;
     WORD *ptrSrc = nullptr;
-    m_cam->_pco_GetBuffer(sBufNr, &ptrSrc, nullptr, err);
+    HANDLE ptrEvent = nullptr;
+    m_cam->_pco_GetBuffer(sBufNr, &ptrSrc, &ptrEvent, err);
 
     // we are using the PCO allocated buffer, so this buffer must be copied to
     // the lima buffer
@@ -2034,10 +2035,10 @@ void BufferCtrlObj::_pcoAllocBuffers(bool max)
         {
             m_allocBuff.pcoAllocBufferNr[bufIdx] = -1;
             m_allocBuff.pcoAllocBufferPtr[bufIdx] = NULL;
-
+            m_allocBuff.pcoAllocBufferEvent[bufIdx] = NULL;
             error = PCO_AllocateBuffer(m_cam->m_handle, &m_allocBuff.pcoAllocBufferNr[bufIdx], _dwAllocatedBufferSize,
-                                       &m_allocBuff.pcoAllocBufferPtr[bufIdx], nullptr);
-
+                                         &m_allocBuff.pcoAllocBufferPtr[bufIdx], &m_allocBuff.pcoAllocBufferEvent[bufIdx]);
+            m_allocBuff.dwPcoAllocBufferSize[bufIdx] = _dwAllocatedBufferSize;
             m_allocBuff.createEventsDone = true;
         }
 
