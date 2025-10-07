@@ -103,6 +103,9 @@ class Pco(tango.LatestDeviceImpl):
         self.set_state(tango.DevState.ON)
         self.get_device_properties(self.get_device_class())
 
+        if self.acq_timeout:
+            _PcoCam.setAcqTimeout(self.acq_timeout)
+
     # ==================================================================
     #
     #    Pco read/write attribute methods
@@ -136,6 +139,7 @@ class PcoClass(tango.DeviceClass):
     device_property_list = {
         "sn": [tango.DevString, "camera serial number", None],
         "params": [tango.DevString, "general parameters", []],
+        "acq_timeout": [tango.DevDouble, "acq trigger timeout", None],
     }
 
     #    Command definitions
