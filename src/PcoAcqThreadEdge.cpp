@@ -46,7 +46,7 @@ namespace lima
             const auto tStart = std::chrono::steady_clock::now();
 
             int error;
-            long msXfer;
+            //long msXfer;
             pcoAcqStatus status;
 
             m_sync->setAcqFrames(0);
@@ -77,7 +77,7 @@ namespace lima
             m_sync->getExpTime(m_pcoData->traceAcq.sExposure);
             m_sync->getLatTime(m_pcoData->traceAcq.sDelay);
 
-            m_pcoData->msAcqXfer = msXfer = msElapsedTime(tStart);
+            m_pcoData->msAcqXfer = msElapsedTime(tStart);
             // __sprintfSExt(_msg, LEN_MSG, "%s> [EXIT] xfer[%ld] (ms) status[%s]\n", fnId, msXfer,
             // sPcoAcqStatus[status]); m_cam->_traceMsg(_msg);
 
