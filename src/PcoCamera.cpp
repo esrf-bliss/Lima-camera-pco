@@ -1366,7 +1366,21 @@ void Camera::_get_PixelSize(double &x_size, double &y_size)
 
     if (_isCameraType(Edge))
     {
-        x_size = y_size = 6.5 * 1e-6; // um / pco.edge User Manual V1.01, page 34
+        switch (_getCameraSubType())
+        {
+            case CAMERASUBTYPE_PCO_EDGE_94_BI_CLHS:
+            case CAMERASUBTYPE_PCO_EDGE_100_BI_CLHS:
+            case CAMERASUBTYPE_PCO_EDGE_100_BI_LT_CLHS:
+                x_size = y_size = 4.6 * 1e-6;
+                break;
+            case CAMERASUBTYPE_PCO_EDGE_260_CLHS:
+            case CAMERASUBTYPE_PCO_EDGE_260_DS_CLHS:
+            case CAMERASUBTYPE_PCO_EDGE_260_NIR_CLHS:
+                x_size = y_size = 2.5 * 1e-6;
+                break;
+            default:
+                x_size = y_size = 6.5 * 1e-6; // um / pco.edge User Manual V1.01, page 34
+        }
         return;
     }
 
