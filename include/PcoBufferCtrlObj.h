@@ -40,6 +40,9 @@ struct stcAllocBuff
     SHORT pcoAllocBufferNr[PCO_MAX_NR_ALLOCATED_BUFFERS];
     // buffer allocated by PCO_AllocateBuffer
     WORD *pcoAllocBufferPtr[PCO_MAX_NR_ALLOCATED_BUFFERS];
+    // event handler by PCO_AllocateBuffer
+    HANDLE pcoAllocBufferEvent[PCO_MAX_NR_ALLOCATED_BUFFERS];
+    // buffer size used by PCO_AllocateBuffer
     DWORD dwPcoAllocBufferSize[PCO_MAX_NR_ALLOCATED_BUFFERS]; // buffer allocated by
                                                               // PCO_AllocateBuffer
 

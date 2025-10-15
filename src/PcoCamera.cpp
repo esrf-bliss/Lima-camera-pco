@@ -371,6 +371,12 @@ const char *Camera::_xlatPcoCode2Str(int code, enumTblXlatCode2Str table, int &e
                                              {CAMERASUBTYPE_PCO_DIMAX_HS2, "DIMAX_HS2"},
                                              {CAMERASUBTYPE_PCO_DIMAX_HS4, "DIMAX_HS4"},
 
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_AM_DEPRECATED, "DIMAX_CS"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_1, "DIMAX_CS_1"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_2, "DIMAX_CS_2"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_3, "DIMAX_CS_3"},
+                                             {CAMERASUBTYPE_PCO_DIMAX_CS_4, "DIMAX_CS_4"},
+
                                              {CAMERASUBTYPE_PCO_EDGE_SPRINGFIELD, "EDGE_SPRINGFIELD"},
                                              {CAMERASUBTYPE_PCO_EDGE_31, "EDGE_31"},
                                              {CAMERASUBTYPE_PCO_EDGE_42, "EDGE_42"},
@@ -1454,24 +1460,61 @@ bool Camera::_isCameraType(unsigned long long tp)
                 case 0x20:
                     if (tp & (DimaxHS1 | DimaxHS))
                     {
-                        DEB_TRACE() << "DimaxHS1 / HS [exit] ";
+                        DEB_TRACE() << "Dimax HS1 / HS [exit] ";
                         return true;
                     }
                     break;
                 case 0x21:
                     if (tp & (DimaxHS2 | DimaxHS))
                     {
-                        DEB_TRACE() << "DimaxHS2 / HS [exit] ";
+                        DEB_TRACE() << "Dimax HS2 / HS [exit] ";
                         return true;
                     }
                     break;
                 case 0x23:
                     if (tp & (DimaxHS4 | DimaxHS))
                     {
-                        DEB_TRACE() << "DimaxHS4 / HS [exit] ";
+                        DEB_TRACE() << "Dimax HS4 / HS [exit] ";
                         return true;
                     }
                     break;
+
+                case 0x41:
+                    if (tp & (DimaxCS1 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS1 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x42:
+                    if (tp & (DimaxCS2 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS2 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x43:
+                    if (tp & (DimaxCS3 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS3 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x44:
+                    if (tp & (DimaxCS4 | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS4 / CS [exit] ";
+                        return true;
+                    }
+                    break;
+                case 0x54:
+                    if (tp & (DimaxCS4Plus | DimaxCS))
+                    {
+                        DEB_TRACE() << "Dimax CS4+ / CS [exit] ";
+                        return true;
+                    }
+                    break;
+
                 default:
                     break;
             }

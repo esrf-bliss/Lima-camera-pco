@@ -336,6 +336,12 @@ enum enumPcoFamily
     DimaxHS2 = 1 << 10,
     DimaxHS4 = 1 << 11,
     camRAM = 1 << 12,
+    DimaxCS = 1 << 13,
+    DimaxCS1 = 1 << 14,
+    DimaxCS2 = 1 << 15,
+    DimaxCS3 = 1 << 16,
+    DimaxCS4 = 1 << 17,
+    DimaxCS4Plus = 1 << 18,
 };
 
 enum enumInterfaceTypes
