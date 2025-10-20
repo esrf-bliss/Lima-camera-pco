@@ -94,6 +94,26 @@ void Interface::reset(ResetLevel reset_level)
 
     m_sync->stopAcq();
     m_cam->reset(intLevel);
+
+}
+
+//=========================================================================================================
+//=========================================================================================================
+void Interface::cleanup()
+{
+    DEB_MEMBER_FUNCT();
+    DEF_FNID;
+
+    {
+        int err;
+        m_cam->_pco_CloseCamera(err);
+    }
+
+    uint32_t err = PCO_NOERROR;
+    DEB_ALWAYS() << "Calling PCO_CleanupLib()";
+    err = PCO_CleanupLib();
+    if (err)
+        DEB_ERROR() << "PCO_CleanupLib - cleanup pco sdk - " << err;
 }
 
 //=========================================================================================================

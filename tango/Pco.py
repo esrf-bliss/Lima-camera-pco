@@ -446,5 +446,15 @@ def get_tango_specific_class_n_device():
 #   because the cam, interface destructors are NOT called (?)
 # ==================================================================================
 def close_interface():
-    print("... close_interface()")
-    _PcoInterface.reset(RESET_CLOSE_INTERFACE)
+    global _PcoCam
+    global _PcoInterface
+    global _PcoControl
+
+    try:
+        _PcoInterface.cleanup()
+
+        _PcoControl = None
+        _PcoInterface = None
+        _PcoCam = None
+    except BaseException as e:
+        print("close_interface: BaseException", e)

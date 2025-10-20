@@ -59,6 +59,8 @@ namespace lima
             virtual int getNbAcquiredFrames();
             virtual int getNbHwAcquiredFrames();
 
+            void cleanup();
+
             double getCocRunTime()
             {
                 return m_cam->pcoGetCocRunTime();

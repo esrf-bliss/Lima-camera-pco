@@ -21,6 +21,8 @@ namespace Pco
 
     virtual int   getNbAcquiredFrames();
     virtual int   getNbHwAcquiredFrames();
+
+    void cleanup();
     
   private:
      Interface(const Interface&);

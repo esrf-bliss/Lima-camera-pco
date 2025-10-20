@@ -122,7 +122,7 @@ Camera::Camera(const std::string &sn)
         err = PCO_CleanupLib();
         if (err)
             DEB_ERROR() << "*** "
-                        << "~Camera(): PCO_CleanupLib - cleanup pco sdk - " << err;
+                        << "Camera(): PCO_CleanupLib - cleanup pco sdk - " << err;
         throw ex;
     }
 }
@@ -138,6 +138,7 @@ Camera::~Camera()
     reset(RESET_CLOSE_INTERFACE);
 
     uint32_t err = PCO_NOERROR;
+    DEB_ALWAYS() << "~Camera(): Calling PCO_CleanupLib()";
     err = PCO_CleanupLib();
     if (err)
         DEB_ERROR() << "*** "
