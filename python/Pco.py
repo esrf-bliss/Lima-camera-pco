@@ -1,7 +1,7 @@
 ############################################################################
 # This file is part of LImA, a Library for Image Acquisition
 #
-# Copyright (C) : 2009-2011
+# Copyright (C) : 2009-2026
 # European Synchrotron Radiation Facility
 # BP 220, Grenoble 38043
 # FRANCE
@@ -20,5 +20,5 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
 
-from limapco import Pco as _P
+from lima.limapco import Pco as _P
 globals().update(_P.__dict__)

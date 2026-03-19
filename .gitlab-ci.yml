@@ -6,7 +6,7 @@ stages:
 build-win:
   stage: build
   script:
-    - conda mambabuild ./conda/camera --output-folder=dist --channel=esrf-bcu
+    - conda mambabuild ./conda/camera --output-folder=dist --channel conda-forge --channel=esrf-bcu
   artifacts:
     paths:
       - dist/
@@ -16,7 +16,7 @@ build-win:
 build-lin:
   stage: build
   script:
-    - conda mambabuild ./conda/camera --output-folder=dist --channel=esrf-bcu
+    - conda mambabuild ./conda/camera --output-folder=dist --channel conda-forge --channel=esrf-bcu
   artifacts:
     paths:
       - dist/
@@ -26,7 +26,7 @@ build-lin:
 build-noarch:
   stage: build-noarch
   script:
-    - conda mambabuild ./conda/tango --output-folder=dist/ --channel=esrf-bcu --channel=http://bcu-ci.esrf.fr/stable
+    - conda mambabuild ./conda/tango --output-folder=dist/ --channel conda-forge --channel=esrf-bcu
   artifacts:
     paths:
       - dist/
@@ -47,7 +47,7 @@ deploy-devel:
     - build-noarch
   script:
     - cp -Rf dist/* /conda-devel/
-    - conda index /conda-devel/
+    - conda index --channeldata /conda-devel/
   tags:
     - linux
   only:
@@ -66,7 +66,7 @@ deploy-stable:
     - build-noarch
   script:
     - cp -Rf dist/* /conda/
-    - conda index /conda/
+    - conda index --channeldata /conda/
   tags:
     - linux
   only:
