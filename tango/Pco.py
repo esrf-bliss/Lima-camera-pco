@@ -22,16 +22,16 @@
 
 import tango
 
-from Lima import Core
-from Lima import Pco as PcoAcq
-from Lima.Server import AttrHelper
+from lima import core
+from lima.limapco import Pco as PcoAcq
+from lima.server import AttrHelper
 
 RESET_CLOSE_INTERFACE = 100
 
 
 class Pco(tango.LatestDeviceImpl):
 
-    Core.DEB_CLASS(Core.DebModApplication, "LimaCCDs")
+    core.DEB_CLASS(core.DebModule.DebModApplication, "LimaCCDs")
 
     # ------------------------------------------------------------------
     #    Device constructor
@@ -98,7 +98,7 @@ class Pco(tango.LatestDeviceImpl):
     # ------------------------------------------------------------------
     #    Device initialization
     # ------------------------------------------------------------------
-    @Core.DEB_MEMBER_FUNCT
+    @core.DEB_MEMBER_FUNCT
     def init_device(self):
         self.set_state(tango.DevState.ON)
         self.get_device_properties(self.get_device_class())
@@ -119,7 +119,7 @@ class Pco(tango.LatestDeviceImpl):
     #    Pco command methods
     #
     # ==================================================================
-    @Core.DEB_MEMBER_FUNCT
+    @core.DEB_MEMBER_FUNCT
     def getAttrStringValueList(self, attr_name):
         return AttrHelper.get_attr_string_value_list(self, attr_name)
 
@@ -428,7 +428,7 @@ def get_control(
     if _PcoCam is None:
         _PcoCam = PcoAcq.Camera(sn)
         _PcoInterface = PcoAcq.Interface(_PcoCam)
-        _PcoControl = Core.CtControl(_PcoInterface)
+        _PcoControl = core.CtControl(_PcoInterface)
 
     return _PcoControl
 
