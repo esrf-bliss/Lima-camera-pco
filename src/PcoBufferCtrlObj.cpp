@@ -978,7 +978,9 @@ int BufferCtrlObj::_xferImag()
 
         if (alwaysAssign || (dwFrameFirst2assign <= dwRequestedFrames))
         {
-            if ((m_cam->_getCameraState(CAMSTATE_RECORD_STATE)))
+            bool recording = m_cam->_getCameraState(CAMSTATE_RECORD_STATE);
+            bool runAfterAssign = m_cam->_isRunAfterAssign();
+            if ((recording && runAfterAssign) || (!runAfterAssign))
             {
                 if (dbgWaitobj)
                 {
