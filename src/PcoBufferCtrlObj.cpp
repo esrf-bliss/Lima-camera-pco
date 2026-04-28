@@ -1829,7 +1829,8 @@ int BufferCtrlObj::_xferImagMult()
 
         // recording loop / waits up to recorded images _dwValidImageCnt >=
         // dwFrameIdxFirst in continuos mode (dwFrameIdxFirst == 0) is bypassed
-        while (1)
+        int dummy;
+        while (m_sync->_getRequestStop(dummy) != (int)stopRequest)        
         {
             if ((_dwValidImageCnt > 0) && ((_dwValidImageCnt >= dwFrameIdxFirst) || (dwFrameIdxFirst == 0)))
                 break;
@@ -1863,8 +1864,33 @@ int BufferCtrlObj::_xferImagMult()
 
         tStartPco = std::chrono::steady_clock::now();
 
-        m_cam->_pco_GetImageEx(wSegment, dwFrameIdxFirst, dwFrameIdxLast, sBufNr, _wArmWidth, _wArmHeight,
-                               _wBitPerPixel, error);
+        if (m_sync->_getRequestStop(dummy) == (int)stopRequest)
+        {
+            m_sync->setStarted(false);
+            _retStatus = pcoAcqTransferStop;
+            return _retStatus;
+        }
+        try
+        {
+            if (m_sync->_getRequestStop(dummy) == (int)stopRequest)
+            {
+                m_sync->setStarted(false);
+                _retStatus = pcoAcqTransferStop;
+                return _retStatus;
+            }
+            else 
+            {
+                m_cam->_pco_GetImageEx(wSegment, dwFrameIdxFirst, dwFrameIdxLast, sBufNr, _wArmWidth, _wArmHeight,
+                                       _wBitPerPixel, error);
+            }
+        }
+        catch(...)
+        {
+            m_sync->setStarted(false);
+            _retStatus = pcoAcqTransferStop;
+            return _retStatus;
+        }
+
         // TODO PRINT ERROR
 
         m_pcoData->traceAcq.usTicks[tracePco].value += usElapsedTime(tStartPco);
