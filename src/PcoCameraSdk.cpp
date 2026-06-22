@@ -3526,10 +3526,10 @@ void Camera::_pco_GetBuffer(SHORT sBufNr, WORD** wBuf, HANDLE *hEvent, int &err)
 
     err = PCO_GetBuffer(m_handle, sBufNr, wBuf, hEvent);
 
-    PCO_CHECK_ERROR(err, "PCO_GetBufferStatus");
+    PCO_CHECK_ERROR(err, "PCO_GetBuffer");
     if (err)
     {
-        PCO_THROW_OR_TRACE(err, "PCO_GetBufferStatus");
+        PCO_THROW_OR_TRACE(err, "PCO_GetBuffer");
     }
     return;
 }
