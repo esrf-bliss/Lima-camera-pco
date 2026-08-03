@@ -140,6 +140,7 @@ class PcoClass(tango.DeviceClass):
         "sn": [tango.DevString, "camera serial number", None],
         "params": [tango.DevString, "general parameters", []],
         "acq_timeout": [tango.DevDouble, "acq trigger timeout", None],
+        "acq_thread_numa_node": [tango.DevLong, "acq thread numa node", 0],
     }
 
     #    Command definitions
@@ -413,6 +414,7 @@ _PcoControl = None
 
 def get_control(
     sn: str = "",
+    acq_thread_numa_node: int = 0,
     **keys
 ):
 
@@ -422,11 +424,12 @@ def get_control(
 
     print("============= Properties =============")
     print("           sn:", sn)
+    print("    numa_node:", acq_thread_numa_node)
     print("         keys:", keys)
     print("======================================")
 
     if _PcoCam is None:
-        _PcoCam = PcoAcq.Camera(sn)
+        _PcoCam = PcoAcq.Camera(sn, int(acq_thread_numa_node))
         _PcoInterface = PcoAcq.Interface(_PcoCam)
         _PcoControl = core.CtControl(_PcoInterface)
 

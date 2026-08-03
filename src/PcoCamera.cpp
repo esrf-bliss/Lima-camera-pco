@@ -138,7 +138,7 @@ Camera::_AcqThread::_AcqThread(Camera &aCam) : m_cam(aCam)
         exit(EXIT_FAILURE);
     }
 
-    int target_node = 1;
+    int target_node = aCam.m_thread_numa_node;
 
     cpu_set_t cpuset;
     if (build_node_cpuset(aCam.m_thread_numa_node, &cpuset) != 0) {
