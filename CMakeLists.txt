@@ -73,6 +73,10 @@ endif()
 
 find_package(PCO REQUIRED)
 
+if(UNIX)
+  find_package(Numa REQUIRED)
+endif()
+
 file(GLOB_RECURSE PCO_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
 
 add_library(pco SHARED
@@ -117,9 +121,14 @@ set_target_properties(pco PROPERTIES
   VERSION "${PROJECT_VERSION}"
   SOVERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}")
 
-target_link_libraries(pco PUBLIC limacore)
+target_link_libraries(pco
+  PUBLIC limacore
+  PUBLIC PCO::PCO
+)
 
-target_link_libraries(pco PUBLIC PCO::PCO)
+if(UNIX)
+  target_link_libraries(pco PUBLIC ${NUMA_LIBRARY})
+endif()
 
 if(WIN32)
   target_compile_definitions(pco
@@ -170,6 +179,7 @@ install(
 
 message("... LIMA_ENABLE_PYTHON: [${LIMA_ENABLE_PYTHON}]")
 message("... PYTHON_SITE_PACKAGES_DIR: [${PYTHON_SITE_PACKAGES_DIR}]")
+
 if(LIMA_ENABLE_PYTHON)
   install(
     DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/

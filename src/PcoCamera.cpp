@@ -40,6 +40,7 @@
 #endif
 
 #include <time.h>
+#include <pthread.h>
 
 #include "lima/Exceptions.h"
 #include "lima/HwSyncCtrlObj.h"
@@ -56,12 +57,101 @@ char *_split_date(const char *s);
 int __xlat_date(char *s1, char &ptrTo, int lenTo);
 char *_xlat_date(char *s1, char *s2, char *s3);
 
+#if defined(__linux__)
+
+#include <numa.h>
+
+// Build a cpu_set_t for all CPUs on a given NUMA node
+int build_node_cpuset(int node, cpu_set_t *cpuset) {
+    if (numa_available() == -1) {
+        fprintf(stderr, "NUMA not available on this system\n");
+        return -1;
+    }
+
+    int max_node = numa_max_node();
+    if (node < 0 || node > max_node) {
+        fprintf(stderr, "Invalid node %d (max is %d)\n", node, max_node);
+        return -1;
+    }
+
+    struct bitmask *nodemask = numa_allocate_cpumask();
+    if (!nodemask) {
+        fprintf(stderr, "numa_allocate_cpumask failed\n");
+        return -1;
+    }
+
+    if (numa_node_to_cpus(node, nodemask) != 0) {
+        fprintf(stderr, "Failed to get CPUs for node %d\n", node);
+        numa_free_cpumask(nodemask);
+        return -1;
+    }
+
+    CPU_ZERO(cpuset);
+    int max_cpus = numa_num_configured_cpus();
+    for (int cpu = 0; cpu < max_cpus; cpu++) {
+        if (numa_bitmask_isbitset(nodemask, cpu)) {
+            CPU_SET(cpu, cpuset);
+        }
+    }
+
+    numa_free_cpumask(nodemask);
+    return 0;
+}
+
+#endif //defined(__linux__)
+
 //=========================================================================================================
 //=========================================================================================================
 Camera::_AcqThread::_AcqThread(Camera &aCam) : m_cam(aCam)
 {
     DEB_CONSTRUCTOR();
-    pthread_attr_setscope(&m_thread_attr, PTHREAD_SCOPE_PROCESS);
+
+#if defined(__linux__)
+    // int rc = pthread_attr_setscope(&m_thread_attr, PTHREAD_SCOPE_SYSTEM);
+    // if (rc != 0) {
+    //     fprintf(stderr, "pthread_attr_setscope failed: %d\n", rc);
+    //     pthread_attr_destroy(&m_thread_attr);
+    //     exit(EXIT_FAILURE);
+    // }
+
+    // 1. Tell it to actually use the attr's scheduling fields
+    //    instead of inheriting from the calling thread
+    int rc = pthread_attr_setinheritsched(&m_thread_attr, PTHREAD_EXPLICIT_SCHED);
+    if (rc != 0) {
+        fprintf(stderr, "pthread_attr_setinheritsched failed: %d\n", rc);
+        exit(EXIT_FAILURE);
+    }
+
+    // 2. Set the scheduling policy to round-robin
+    rc = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_RR);
+    if (rc != 0) {
+        fprintf(stderr, "pthread_attr_setschedpolicy failed: %d\n", rc);
+        exit(EXIT_FAILURE);
+    }
+
+    // 3. Set the priority within that policy's valid range
+    struct sched_param param;
+    param.sched_priority = sched_get_priority_min(SCHED_RR) + 5; // pick a value in range
+    rc = pthread_attr_setschedparam(&m_thread_attr, &param);
+    if (rc != 0) {
+        fprintf(stderr, "pthread_attr_setschedparam failed: %d\n", rc);
+        exit(EXIT_FAILURE);
+    }
+
+    int target_node = 1;
+
+    cpu_set_t cpuset;
+    if (build_node_cpuset(aCam.m_thread_numa_node, &cpuset) != 0) {
+        exit(EXIT_FAILURE);
+    }
+
+    rc = pthread_attr_setaffinity_np(&m_thread_attr, sizeof(cpu_set_t), &cpuset);
+    if (rc != 0) {
+        fprintf(stderr, "pthread_attr_setaffinity_np failed: %d\n", rc);
+        pthread_attr_destroy(&m_thread_attr);
+        exit(EXIT_FAILURE);
+    }
+#endif //defined(__linux__)
 }
 
 void Camera::_AcqThread::threadFunction()
@@ -71,8 +161,9 @@ void Camera::_AcqThread::threadFunction()
 
 //=========================================================================================================
 //=========================================================================================================
-Camera::Camera(const std::string &sn)
-    : m_dwSn(0), m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL), m_handle(NULL),
+Camera::Camera(const std::string &sn, int acq_thread_numa_node)
+    : m_thread_numa_node(acq_thread_numa_node),
+      m_dwSn(0), m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL), m_handle(NULL),
       m_Roi_lastFixed_time(0), m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
       m_bRecorderForcedFifo(false), m_acq_thread(*this), m_status(Camera::Status::Ready), m_config(true)
 {
@@ -99,17 +190,6 @@ Camera::Camera(const std::string &sn)
     if (m_pcoData == NULL)
         throw LIMA_HW_EXC(Error, "m_pcoData > creation error");
 
-    // // properties: params
-    // paramsInit(camPar.c_str());
-
-    // char *value;
-    // const char *key;
-    // bool ret;
-    // int iValue;
-
-    // DEB_ALWAYS() << ALWAYS_NL << DEB_VAR1(m_pcoData->version);
-
-    // m_bin.changed = Invalid;
     try
     {
         _init();

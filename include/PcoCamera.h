@@ -716,6 +716,8 @@ namespace lima
             volatile bool m_quit_rolling;
             volatile bool m_thread_running_rolling;
 
+            const int m_thread_numa_node = 0;
+
             int m_pcoError;
 
             Roi m_Roi_lastFixed_hw;

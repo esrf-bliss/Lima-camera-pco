@@ -127,6 +127,15 @@ namespace lima
 
           public:
             BufferCtrlObj(Camera *cam);
+
+// #if defined(__linux__)
+//             void setCPUAffinityMask(const cpu_set_t& mask)
+//             {
+//               Allocator::Ref alloc = std::make_shared<NumaAllocator>(mask);
+//               AllocatorFactory::get().setDefaultAllocator(alloc);
+//             }
+// #endif
+
             void prepareAcq();
             void startAcq();
             // void getStatus(int &err,bool& exposing) {err = m_status,exposing
