@@ -166,6 +166,14 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
     if (diff > pcoImgNrDiff)
     {
         pcoImgNrDiff = diff;
+
+        char buffer[ERRMSG_SIZE + 1];
+        sprintf_s(
+            buffer, ERRMSG_SIZE,
+            "LIMA_HW_EXC ===> Missing Frame lima[%d] pco[%d] order[%d]",
+            m_traceAcq->checkImgNrLima, m_traceAcq->checkImgNrPco, m_traceAcq->checkImgNrOrder
+            );    
+        THROW_LIMA_HW_EXC(Error, buffer);
     }
     pcoImgNrLast = pcoImgNr;
 }
