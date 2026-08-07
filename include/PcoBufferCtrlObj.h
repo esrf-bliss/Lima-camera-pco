@@ -79,6 +79,8 @@ namespace lima
 
         class DLL_EXPORT CheckImgNr
         {
+          DEB_CLASS_NAMESPC(DebModCamera, "CheckImgNr", "CameraSDK");
+
           public:
             CheckImgNr(Camera *cam);
             ~CheckImgNr();
@@ -92,6 +94,8 @@ namespace lima
 
           private:
             Camera *m_cam;
+            FILE* m_file = NULL;
+
             stcTraceAcq *m_traceAcq;
             bool checkImgNr;
             int pcoImgNrDiff;

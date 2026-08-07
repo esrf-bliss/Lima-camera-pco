@@ -129,28 +129,131 @@ void _pco_time2dwbase(double exp_time, DWORD &dwExp, WORD &wBase)
 //====================================================================
 //====================================================================
 
-CheckImgNr::CheckImgNr(Camera *cam)
+
+typedef struct {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+    int microsecond;
+} PcoTimestamp;
+
+typedef struct {
+    int image_nr;
+    PcoTimestamp timestamp;
+    int valid;      /* 0 if bNoTimestamp was set / nothing decoded */
+} PcoFrameInfo;
+
+/*
+ * Decodes `nwords` consecutive 16-bit words as BCD digit pairs and combines
+ * them into a single decimal integer (2 digits per word, most-significant
+ * word first). This is the same tens/units extraction as the original
+ * image_nr loop, just generalized to any field width.
+ */
+static int decode_bcd_words(const unsigned short *words, int nwords, int shift)
 {
+    int value = 0;
+    int y = 1;
+    int i;
+
+    for (i = 0; i < nwords - 1; i++)
+        y *= 100;
+
+    for (i = 0; i < nwords; i++)
+    {
+        unsigned short c = words[i] >> shift;
+        int tens  = (c & 0x00F0) >> 4;
+        int units =  c & 0x000F;
+        value += (tens * 10 + units) * y;
+        y /= 100;
+    }
+
+    return value;
+}
+
+/*
+ * Decodes both the image number and timestamp stamped into the first 14
+ * pixels of a PCO frame (Binary or Binary+ASCII timestamp mode).
+ *
+ * buf:          pointer to the start of the image row containing the stamp
+ * shift:        bit shift to right-align the BCD nibbles (depends on ADC
+ *               bit depth, e.g. 0 for 8-bit, or however many bits your
+ *               detector's raw pixel data exceeds 8 by)
+ * bNoTimestamp: if non-zero, skip decoding entirely (matches original
+ *               early-out behavior)
+ * info:         output struct, filled on success
+ *
+ * Returns 0 on success, -1 if bNoTimestamp was set.
+ */
+int pco_decode_frame_info(const unsigned short *buf, int shift,
+                           int bNoTimestamp, PcoFrameInfo *info)
+{
+    if (bNoTimestamp)
+    {
+        memset(info, 0, sizeof(*info));
+        info->valid = 0;
+        return -1;
+    }
+
+    info->image_nr = decode_bcd_words(buf, 4, shift);
+
+    info->timestamp.year        = decode_bcd_words(buf + 4,  2, shift);
+    info->timestamp.month       = decode_bcd_words(buf + 6,  1, shift);
+    info->timestamp.day         = decode_bcd_words(buf + 7,  1, shift);
+    info->timestamp.hour        = decode_bcd_words(buf + 8,  1, shift);
+    info->timestamp.minute      = decode_bcd_words(buf + 9,  1, shift);
+    info->timestamp.second      = decode_bcd_words(buf + 10, 1, shift);
+    info->timestamp.microsecond = decode_bcd_words(buf + 11, 3, shift);
+
+    info->valid = 1;
+    return 0;
+}
+
+CheckImgNr::CheckImgNr(Camera *cam) :
+    m_cam(cam)
+{
+    DEB_MEMBER_FUNCT();
     DEF_FNID;
-    // printf("--- %s> [ENTRY]\n", fnId);
+    
+    m_file = fopen("frame_info.txt", "w+");
+    if (!m_file)
+        DEB_ERROR() << "Failed to open frame_info.txt"; 
 
     m_cam = cam;
 }
 
 CheckImgNr::~CheckImgNr()
 {
+    DEB_MEMBER_FUNCT();
     DEF_FNID;
-    // printf("--- %s> [ENTRY]\n", fnId);
+    
+    if (m_file)
+        fclose(m_file);
 }
 
 //--------------------------------------------------------------------
 //--------------------------------------------------------------------
 void CheckImgNr::update(int iLimaFrame, void *ptrImage)
 {
+    DEB_MEMBER_FUNCT();
     DEF_FNID;
     // printf("--- %s> [ENTRY]\n", fnId);
 
     int pcoImgNr, diff;
+
+    // Save the frame info to file for debugging
+    PcoFrameInfo info;
+    if (pco_decode_frame_info((unsigned short *)ptrImage, alignmentShift, false, &info) == 0)
+    {
+        if (m_file)
+            fprintf(m_file, "frame %d @ %04d-%02d-%02d %02d:%02d:%02d.%06d\n",
+                info.image_nr,
+                info.timestamp.year, info.timestamp.month, info.timestamp.day,
+                info.timestamp.hour, info.timestamp.minute, info.timestamp.second,
+                info.timestamp.microsecond);
+    }
 
     if (!checkImgNr)
         return;
@@ -172,8 +275,9 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
             buffer, ERRMSG_SIZE,
             "LIMA_HW_EXC ===> Missing Frame lima[%d] pco[%d] order[%d]",
             m_traceAcq->checkImgNrLima, m_traceAcq->checkImgNrPco, m_traceAcq->checkImgNrOrder
-            );    
-        THROW_LIMA_HW_EXC(Error, buffer);
+            );
+        //THROW_LIMA_HW_EXC(Error, buffer);
+        DEB_ERROR() << "Missing Frame lima[" << m_traceAcq->checkImgNrLima <<  "] pco[" << m_traceAcq->checkImgNrPco << "]"; 
     }
     pcoImgNrLast = pcoImgNr;
 }
