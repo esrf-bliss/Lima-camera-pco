@@ -705,6 +705,13 @@ namespace lima
                 Camera &m_cam;
             };
 
+            // Must be declared (and therefore initialized) before m_acq_thread:
+            // Thread member initialization order follows declaration order,
+            // not the constructor's initializer-list order, and
+            // _AcqThread's constructor reads these two values.
+            const int m_thread_numa_node = 0;
+            const int m_thread_rt_priority = 99;
+
             friend class _AcqThread;
             _AcqThread m_acq_thread;
 
@@ -715,9 +722,6 @@ namespace lima
             volatile bool m_wait_flag_rolling;
             volatile bool m_quit_rolling;
             volatile bool m_thread_running_rolling;
-
-            const int m_thread_numa_node = 0;
-            const int m_thread_rt_priority = 99;
 
             int m_pcoError;
 
