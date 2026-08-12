@@ -2008,6 +2008,20 @@ void BufferCtrlObj::_pcoAllocBuffers(bool max)
 
     _pcoAllocBuffersFree();
 
+    // Defensive cleanup: a previous process on this camera that was killed
+    // abruptly (crash, SIGINT, uncaught exception) may have left SDK buffers
+    // allocated on the driver side without ever freeing them. _pcoAllocBuffersFree()
+    // above only releases buffers *this* process's own bookkeeping knows
+    // about, not leaked slots from a different (dead) process. The SDK/driver
+    // buffer pool on this camera/interface has a hard ceiling (15 usable
+    // buffers, numbered from 1 - see lima-camera-pco issue #20); leaked slots
+    // shift the numbering and can push freshly-requested buffers past that
+    // ceiling, which PCO_AllocateBuffer does not itself reject but which then
+    // fails every later operation with "buffer nr is out of range". Reclaim
+    // the low slots before allocating our own.
+    for (SHORT _leakedBufNr = 0; _leakedBufNr < 32; ++_leakedBufNr)
+        PCO_FreeBuffer(m_cam->m_handle, _leakedBufNr); // errors ignored (slot not allocated = normal)
+
     // we are using pco allocated buffer, we must to allocate them
     int error = 0;
     // char *sErr;
