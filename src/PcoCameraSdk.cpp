@@ -217,9 +217,19 @@ CheckImgNr::CheckImgNr(Camera *cam) :
     DEB_MEMBER_FUNCT();
     DEF_FNID;
     
+    // Temporarily disabled: per-frame fopen()+fprintf() to frame_info.txt was
+    // a suspected contributor to the residual frame loss seen with ftimescan
+    // (blocking disk I/O in the acquisition thread's hot path can eat the
+    // narrow per-frame window even under SCHED_FIFO priority, since RT
+    // scheduling protects against preemption, not I/O wait). Re-enable by
+    // restoring the fopen() call below to compare.
+#if 1
+    m_file = NULL;
+#else
     m_file = fopen("frame_info.txt", "w+");
     if (!m_file)
-        DEB_ERROR() << "Failed to open frame_info.txt"; 
+        DEB_ERROR() << "Failed to open frame_info.txt";
+#endif
 
     m_cam = cam;
 }
@@ -243,16 +253,19 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
 
     int pcoImgNr, diff;
 
-    // Save the frame info to file for debugging
-    PcoFrameInfo info;
-    if (pco_decode_frame_info((unsigned short *)ptrImage, alignmentShift, false, &info) == 0)
+    // Save the frame info to file for debugging (skipped entirely, including
+    // the decode step, when m_file is NULL - see CheckImgNr::CheckImgNr)
+    if (m_file)
     {
-        if (m_file)
+        PcoFrameInfo info;
+        if (pco_decode_frame_info((unsigned short *)ptrImage, alignmentShift, false, &info) == 0)
+        {
             fprintf(m_file, "frame %d @ %04d-%02d-%02d %02d:%02d:%02d.%06d\n",
                 info.image_nr,
                 info.timestamp.year, info.timestamp.month, info.timestamp.day,
                 info.timestamp.hour, info.timestamp.minute, info.timestamp.second,
                 info.timestamp.microsecond);
+        }
     }
 
     if (!checkImgNr)
