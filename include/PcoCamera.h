@@ -573,7 +573,7 @@ namespace lima
             DEB_CLASS_NAMESPC(DebModCamera, "Camera", "Pco");
 
           public:
-            Camera(const std::string &sn, int acq_thread_numa_node);
+            Camera(const std::string &sn, int acq_thread_numa_node, int acq_thread_rt_priority);
             ~Camera();
 
             enum Status
@@ -717,6 +717,7 @@ namespace lima
             volatile bool m_thread_running_rolling;
 
             const int m_thread_numa_node = 0;
+            const int m_thread_rt_priority = 99;
 
             int m_pcoError;
 

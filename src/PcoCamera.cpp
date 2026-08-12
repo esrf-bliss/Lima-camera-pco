@@ -122,23 +122,34 @@ Camera::_AcqThread::_AcqThread(Camera &aCam) : m_cam(aCam)
         exit(EXIT_FAILURE);
     }
 
-    // 2. Set the scheduling policy to round-robin
-    rc = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_RR);
+    // 2. Set the scheduling policy to SCHED_FIFO: unlike SCHED_RR, a
+    //    SCHED_FIFO thread keeps running until it blocks or is preempted by a
+    //    higher-priority thread, instead of being time-sliced against other
+    //    threads at the same priority. This matters here because the whole
+    //    point is to guarantee the buffer requeue (PCO_AddBufferEx) happens
+    //    within a narrow per-frame window without being pre-empted.
+    rc = pthread_attr_setschedpolicy(&m_thread_attr, SCHED_FIFO);
     if (rc != 0) {
         fprintf(stderr, "pthread_attr_setschedpolicy failed: %d\n", rc);
         exit(EXIT_FAILURE);
     }
 
-    // 3. Set the priority within that policy's valid range
+    // 3. Set the priority within that policy's valid range.
+    //    Empirically validated on a standalone SDK-level reproducer: normal
+    //    scheduling loses images at 90 Hz / 100000 frames (both in free-run
+    //    and in external hardware trigger mode); SCHED_FIFO priority 99
+    //    eliminates the loss entirely. The previous value here
+    //    (sched_get_priority_min(SCHED_RR) + 5, i.e. priority 6) was far too
+    //    low to have a comparable effect - this is not a permissions issue,
+    //    rtprio 99 is already granted to the accounts running this server
+    //    (see /etc/security/limits.conf).
     struct sched_param param;
-    param.sched_priority = sched_get_priority_min(SCHED_RR) + 5; // pick a value in range
+    param.sched_priority = aCam.m_thread_rt_priority;
     rc = pthread_attr_setschedparam(&m_thread_attr, &param);
     if (rc != 0) {
         fprintf(stderr, "pthread_attr_setschedparam failed: %d\n", rc);
         exit(EXIT_FAILURE);
     }
-
-    int target_node = aCam.m_thread_numa_node;
 
     cpu_set_t cpuset;
     if (build_node_cpuset(aCam.m_thread_numa_node, &cpuset) != 0) {
@@ -161,8 +172,9 @@ void Camera::_AcqThread::threadFunction()
 
 //=========================================================================================================
 //=========================================================================================================
-Camera::Camera(const std::string &sn, int acq_thread_numa_node)
+Camera::Camera(const std::string &sn, int acq_thread_numa_node, int acq_thread_rt_priority)
     : m_thread_numa_node(acq_thread_numa_node),
+      m_thread_rt_priority(acq_thread_rt_priority),
       m_dwSn(0), m_cam_connected(false), m_acq_frame_nb(1), m_sync(NULL), m_buffer(NULL), m_handle(NULL),
       m_Roi_lastFixed_time(0), m_pco_buffer_nrevents(PCO_BUFFER_NREVENTS), m_iPcoAcqMode(0),
       m_bRecorderForcedFifo(false), m_acq_thread(*this), m_status(Camera::Status::Ready), m_config(true)
