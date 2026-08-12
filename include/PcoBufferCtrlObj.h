@@ -27,7 +27,14 @@
 
 #include "lima/HwBufferMgr.h"
 
-#define PCO_MAX_NR_ALLOCATED_BUFFERS 8
+// Raised from 8 to 15: 15 is the actual usable SDK/KAYA buffer ceiling on
+// CLHS interfaces (PCO_AllocateBuffer numbers buffers starting at 1, and
+// #16+ fails every operation with "buffer nr is out of range" - see
+// lima-camera-pco issue #20). The previous default of only 4 in-flight
+// buffers (PCO_BUFFER_NREVENTS below) left very little margin (~44 ms at
+// 90 Hz) and is a suspected contributor to "pending buffers in driver queue"
+// driver errors seen near the end of long (100000-frame) ftimescan runs.
+#define PCO_MAX_NR_ALLOCATED_BUFFERS 15
 
 struct stcTraceAcq;
 

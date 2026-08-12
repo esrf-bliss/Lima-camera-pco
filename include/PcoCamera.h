@@ -137,7 +137,9 @@
 
 #define PCO_CL_BAUDRATE_115K2 115200
 
-#define PCO_BUFFER_NREVENTS 4
+// Default number of in-flight SDK buffers, raised from 4 to the full
+// PCO_MAX_NR_ALLOCATED_BUFFERS (15) - see PcoBufferCtrlObj.h for why.
+#define PCO_BUFFER_NREVENTS 15
 struct stcXlatCode2Str
 {
     int code;
