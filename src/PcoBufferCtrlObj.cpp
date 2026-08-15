@@ -910,10 +910,15 @@ int BufferCtrlObj::_xferImag()
                 // queue") aborted the whole acquisition immediately, with no
                 // chance for a transient stall to clear - unlike
                 // _xferImagMult(), which already retries acqTimeoutRetry
-                // times before giving up. This mirrors that behavior here.
-                if (acqTimeoutRetry > 0)
+                // times before giving up. This mirrors that behavior here,
+                // same convention as _xferImagMult(): configured 0 means
+                // infinite retries (per the acqTimeoutRetry Tango attribute
+                // description), decrementing from 0 never reaches exactly 0
+                // again so it always retries; configured N>0 aborts once the
+                // countdown reaches 0.
+                acqTimeoutRetry--;
+                if (acqTimeoutRetry)
                 {
-                    acqTimeoutRetry--;
                     DEB_WARNING() << "\n"
                                   << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
                                   << m_cam->_sprintComment(false, fnId, "[PCO_GetBufferStatus]", "[RETRY]")
