@@ -900,8 +900,26 @@ int BufferCtrlObj::_xferImag()
                 __sprintfSExt(msg, sizeof(msg),
                               "err[0x%lx] dwStatusDll[0x%lx] dwStatusDrv[0x%lx] \n"
                               "sBufNr[%d] dwFrameIdx[%d] iLoopsPolled[%d] "
-                              "msTimeout[%d]\n",
-                              errPco, dwStatusDll, dwStatusDrv, sBufNr, dwFrameIdx, iLoopsPolled, msTimeout);
+                              "msTimeout[%d] acqTimeoutRetry[%d]\n",
+                              errPco, dwStatusDll, dwStatusDrv, sBufNr, dwFrameIdx, iLoopsPolled, msTimeout,
+                              acqTimeoutRetry);
+
+                // acqTimeoutRetry was being fetched above but never used here:
+                // any single WaitforNextBufferNum timeout followed by a
+                // non-zero driver status (eg "pending buffers in driver
+                // queue") aborted the whole acquisition immediately, with no
+                // chance for a transient stall to clear - unlike
+                // _xferImagMult(), which already retries acqTimeoutRetry
+                // times before giving up. This mirrors that behavior here.
+                if (acqTimeoutRetry > 0)
+                {
+                    acqTimeoutRetry--;
+                    DEB_WARNING() << "\n"
+                                  << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
+                                  << m_cam->_sprintComment(false, fnId, "[PCO_GetBufferStatus]", "[RETRY]")
+                                  << " acqTimeoutRetry remaining=" << acqTimeoutRetry;
+                    continue;
+                }
 
                 DEB_WARNING() << "\n"
                               << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
