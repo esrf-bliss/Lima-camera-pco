@@ -253,6 +253,33 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
 
     int pcoImgNr, diff;
 
+    // Host-side inter-frame arrival timing check (see member comments in
+    // PcoBufferCtrlObj.h) - runs unconditionally, before the checkImgNr
+    // early-return below, since it does not depend on the camera's embedded
+    // timestamp being enabled.
+    {
+        auto now = std::chrono::steady_clock::now();
+        if (m_haveLastFrameTime)
+        {
+            double intervalMs = std::chrono::duration<double, std::milli>(now - m_lastFrameTime).count();
+            if (m_intervalRollingAvgMs > 0.0 && intervalMs > 1.5 * m_intervalRollingAvgMs)
+            {
+                DEB_ERROR() << "Frame interval widening lima[" << iLimaFrame << "]: "
+                            << intervalMs << " ms (baseline=" << m_intervalRollingAvgMs
+                            << " ms) - no counter gap, possible missed trigger edge";
+            }
+            else
+            {
+                const double alpha = 0.1;
+                m_intervalRollingAvgMs = (m_intervalRollingAvgMs <= 0.0)
+                    ? intervalMs
+                    : alpha * intervalMs + (1.0 - alpha) * m_intervalRollingAvgMs;
+            }
+        }
+        m_lastFrameTime = now;
+        m_haveLastFrameTime = true;
+    }
+
     // Save the frame info to file for debugging (skipped entirely, including
     // the decode step, when m_file is NULL - see CheckImgNr::CheckImgNr)
     if (m_file)
@@ -305,6 +332,9 @@ void CheckImgNr::init(stcTraceAcq *traceAcq)
 
     pcoImgNrDiff = 1;
     alignmentShift = 0;
+
+    m_haveLastFrameTime = false;
+    m_intervalRollingAvgMs = 0.0;
 
     int err;
     WORD wTimeStampMode;
