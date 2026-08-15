@@ -919,6 +919,28 @@ int BufferCtrlObj::_xferImag()
                 acqTimeoutRetry--;
                 if (acqTimeoutRetry)
                 {
+                    // Merely re-waiting on sBufNr is not enough: this buffer
+                    // was already submitted (see _assignImage2Buffer) and the
+                    // driver just told us it is stuck - PCO_WaitforNextBufferNum
+                    // will keep timing out on the same stale descriptor
+                    // forever otherwise. The standalone reproducer
+                    // (tools/pco_edge_standalone_test/pco_edge_test.cpp) hits
+                    // this exact same driver status and recovers every time
+                    // by re-submitting the buffer before waiting again; do
+                    // the same here. dwFrame is always 0 for Edge cameras
+                    // (see _assignImage2Buffer's dwFrame computation), which
+                    // is the only camera type using this acquisition thread
+                    // (PcoAcqThreadEdge.cpp).
+                    int errRearm = m_cam->_pco_AddBufferEx(0, 0, sBufNr, wArmWidth, wArmHeight, wBitPerPixel);
+                    if (errRearm)
+                    {
+                        char msgRearm[128];
+                        __sprintfSExt(msgRearm, sizeof(msgRearm), "sBufNr[%d] errRearm[0x%x]", sBufNr, errRearm);
+                        DEB_WARNING() << "\n"
+                                      << msg << m_cam->_sprintComment(false, fnId, "[PCO_AddBufferEx rearm]", "[ERROR]")
+                                      << msgRearm;
+                    }
+
                     DEB_WARNING() << "\n"
                                   << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
                                   << m_cam->_sprintComment(false, fnId, "[PCO_GetBufferStatus]", "[RETRY]")
