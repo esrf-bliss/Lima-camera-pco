@@ -253,18 +253,59 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
 
     int pcoImgNr, diff;
 
-    // Host-side inter-frame arrival timing check (see member comments in
-    // PcoBufferCtrlObj.h) - runs unconditionally, before the checkImgNr
-    // early-return below, since it does not depend on the camera's embedded
-    // timestamp being enabled.
+    // Decode the camera-embedded per-frame info once; reused both for the
+    // debug frame_info.txt dump (if enabled) and for the interval-widening
+    // check below.
+    PcoFrameInfo info;
+    bool haveInfo = (pco_decode_frame_info((unsigned short *)ptrImage, alignmentShift, false, &info) == 0);
+
+    // Save the frame info to file for debugging (skipped entirely, including
+    // the decode step, when m_file is NULL - see CheckImgNr::CheckImgNr)
+    if (m_file && haveInfo)
     {
-        auto now = std::chrono::steady_clock::now();
+        fprintf(m_file, "frame %d @ %04d-%02d-%02d %02d:%02d:%02d.%06d\n",
+            info.image_nr,
+            info.timestamp.year, info.timestamp.month, info.timestamp.day,
+            info.timestamp.hour, info.timestamp.minute, info.timestamp.second,
+            info.timestamp.microsecond);
+    }
+
+    if (!checkImgNr)
+        return;
+
+    // Camera-side inter-frame timing check (see member comments in
+    // PcoBufferCtrlObj.h): uses the timestamp the camera itself attaches to
+    // each frame at capture time (via the embedded binary timestamp decoded
+    // above), NOT host wall-clock time. This matters: a host-side interval
+    // (time between successive calls to this function) also picks up any
+    // delay in Lima's own pipeline getting around to processing a buffer,
+    // which is expected to be more variable than the physical trigger
+    // period and would produce false positives here. The camera's own
+    // timestamp reflects the real physical capture time, uncontaminated by
+    // that downstream software jitter. Requires checkImgNr (binary
+    // timestamp mode enabled), same as the counter-gap check below.
+    if (haveInfo)
+    {
+        struct tm tmVal = {};
+        tmVal.tm_year = info.timestamp.year - 1900;
+        tmVal.tm_mon  = info.timestamp.month - 1;
+        tmVal.tm_mday = info.timestamp.day;
+        tmVal.tm_hour = info.timestamp.hour;
+        tmVal.tm_min  = info.timestamp.minute;
+        tmVal.tm_sec  = info.timestamp.second;
+        double frameTimeMs = (double)timegm(&tmVal) * 1000.0 + (double)info.timestamp.microsecond / 1000.0;
+
         if (m_haveLastFrameTime)
         {
-            double intervalMs = std::chrono::duration<double, std::milli>(now - m_lastFrameTime).count();
-            if (m_intervalRollingAvgMs > 0.0 && intervalMs > 1.5 * m_intervalRollingAvgMs)
+            double intervalMs = frameTimeMs - m_lastFrameTimeMs;
+            // 1.85x (not 1.5x): a genuinely skipped trigger edge shows up as
+            // ~2x the nominal period; normal host/pipeline jitter in the
+            // full Lima/Bliss stack can occasionally reach ~1.5-1.6x on its
+            // own (observed empirically), so a lower threshold flags too
+            // much benign jitter as a false "missed trigger edge".
+            if (m_intervalRollingAvgMs > 0.0 && intervalMs > 1.85 * m_intervalRollingAvgMs)
             {
-                DEB_ERROR() << "Frame interval widening lima[" << iLimaFrame << "]: "
+                DEB_ERROR() << "Frame interval widening (camera timestamp) lima[" << iLimaFrame << "]: "
                             << intervalMs << " ms (baseline=" << m_intervalRollingAvgMs
                             << " ms) - no counter gap, possible missed trigger edge";
             }
@@ -276,27 +317,9 @@ void CheckImgNr::update(int iLimaFrame, void *ptrImage)
                     : alpha * intervalMs + (1.0 - alpha) * m_intervalRollingAvgMs;
             }
         }
-        m_lastFrameTime = now;
+        m_lastFrameTimeMs = frameTimeMs;
         m_haveLastFrameTime = true;
     }
-
-    // Save the frame info to file for debugging (skipped entirely, including
-    // the decode step, when m_file is NULL - see CheckImgNr::CheckImgNr)
-    if (m_file)
-    {
-        PcoFrameInfo info;
-        if (pco_decode_frame_info((unsigned short *)ptrImage, alignmentShift, false, &info) == 0)
-        {
-            fprintf(m_file, "frame %d @ %04d-%02d-%02d %02d:%02d:%02d.%06d\n",
-                info.image_nr,
-                info.timestamp.year, info.timestamp.month, info.timestamp.day,
-                info.timestamp.hour, info.timestamp.minute, info.timestamp.second,
-                info.timestamp.microsecond);
-        }
-    }
-
-    if (!checkImgNr)
-        return;
 
     pcoImgNr = _get_imageNr_from_imageTimestamp(ptrImage, alignmentShift);
     if (pcoImgNr <= pcoImgNrLast)

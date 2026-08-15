@@ -27,8 +27,6 @@
 
 #include "lima/HwBufferMgr.h"
 
-#include <chrono>
-
 // Raised from 8 to 15: 15 is the actual usable SDK/KAYA buffer ceiling on
 // CLHS interfaces (PCO_AllocateBuffer numbers buffers starting at 1, and
 // #16+ fails every operation with "buffer nr is out of range" - see
@@ -113,16 +111,18 @@ namespace lima
             int alignmentShift;
             bool bNoTimestamp;
 
-            // Host-side inter-frame arrival timing, tracked independently of
-            // checkImgNr/timestamp mode: a missed trigger edge that the camera
-            // never reacts to causes no counter jump at all (the camera's own
-            // dwImgCounter only increments on frames it actually captures), so
-            // it is invisible to the pcoImgNrDiff-based "Missing Frame" check
-            // above. It does, however, show up as a widened arrival interval
-            // (~2x the running baseline) between the two frames straddling the
+            // Camera-timestamp-based inter-frame interval tracking: a missed
+            // trigger edge that the camera never reacts to causes no counter
+            // jump at all (the camera's own dwImgCounter only increments on
+            // frames it actually captures), so it is invisible to the
+            // pcoImgNrDiff-based "Missing Frame" check above. It does, however,
+            // show up as a widened interval (~2x the running baseline) between
+            // the embedded capture timestamps of the two frames straddling the
             // missed trigger. Logged immediately (not deferred to end-of-run)
             // so the event is captured even if the acquisition later times out.
-            std::chrono::steady_clock::time_point m_lastFrameTime;
+            // Uses the camera's own embedded timestamp, not host wall-clock
+            // time, so it is not contaminated by Lima-side processing jitter.
+            double m_lastFrameTimeMs = 0.0;
             bool m_haveLastFrameTime = false;
             double m_intervalRollingAvgMs = 0.0;
         }; // class CheckImgNr
