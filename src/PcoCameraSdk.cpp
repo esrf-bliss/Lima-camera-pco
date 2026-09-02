@@ -31,6 +31,10 @@
 #include <sys/timeb.h>
 #include <time.h>
 
+#ifndef __linux__
+#   define timegm _mkgmtime
+#endif
+
 #include "lima/Exceptions.h"
 #include "lima/HwSyncCtrlObj.h"
 
