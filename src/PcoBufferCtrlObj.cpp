@@ -2595,7 +2595,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
         // The return value indicates which event is signaled
 
-#    if PCO_BUFFER_NREVENTS != 4
+#    if PCO_BUFFER_NREVENTS != PCO_MAX_NR_ALLOCATED_BUFFERS
 #        error ============================================== ABORT - wrong nr of WAIT_OBJECT
 #    endif
         switch (dwEvent)
