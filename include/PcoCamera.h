@@ -137,7 +137,9 @@
 
 #define PCO_CL_BAUDRATE_115K2 115200
 
-#define PCO_BUFFER_NREVENTS 4
+// Default number of in-flight SDK buffers, raised from 4 to the full
+// PCO_MAX_NR_ALLOCATED_BUFFERS (15) - see PcoBufferCtrlObj.h for why.
+#define PCO_BUFFER_NREVENTS 15
 struct stcXlatCode2Str
 {
     int code;
@@ -573,7 +575,7 @@ namespace lima
             DEB_CLASS_NAMESPC(DebModCamera, "Camera", "Pco");
 
           public:
-            Camera(const std::string &sn);
+            Camera(const std::string &sn, int acq_thread_numa_node, int acq_thread_rt_priority);
             ~Camera();
 
             enum Status
@@ -704,6 +706,13 @@ namespace lima
               private:
                 Camera &m_cam;
             };
+
+            // Must be declared (and therefore initialized) before m_acq_thread:
+            // Thread member initialization order follows declaration order,
+            // not the constructor's initializer-list order, and
+            // _AcqThread's constructor reads these two values.
+            const int m_thread_numa_node = 0;
+            const int m_thread_rt_priority = 99;
 
             friend class _AcqThread;
             _AcqThread m_acq_thread;

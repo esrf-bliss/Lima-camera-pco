@@ -27,7 +27,14 @@
 
 #include "lima/HwBufferMgr.h"
 
-#define PCO_MAX_NR_ALLOCATED_BUFFERS 8
+// Raised from 8 to 15: 15 is the actual usable SDK/KAYA buffer ceiling on
+// CLHS interfaces (PCO_AllocateBuffer numbers buffers starting at 1, and
+// #16+ fails every operation with "buffer nr is out of range" - see
+// lima-camera-pco issue #20). The previous default of only 4 in-flight
+// buffers (PCO_BUFFER_NREVENTS below) left very little margin (~44 ms at
+// 90 Hz) and is a suspected contributor to "pending buffers in driver queue"
+// driver errors seen near the end of long (100000-frame) ftimescan runs.
+#define PCO_MAX_NR_ALLOCATED_BUFFERS 15
 
 struct stcTraceAcq;
 
@@ -79,6 +86,8 @@ namespace lima
 
         class DLL_EXPORT CheckImgNr
         {
+          DEB_CLASS_NAMESPC(DebModCamera, "CheckImgNr", "CameraSDK");
+
           public:
             CheckImgNr(Camera *cam);
             ~CheckImgNr();
@@ -92,6 +101,8 @@ namespace lima
 
           private:
             Camera *m_cam;
+            FILE* m_file = NULL;
+
             stcTraceAcq *m_traceAcq;
             bool checkImgNr;
             int pcoImgNrDiff;
@@ -99,6 +110,21 @@ namespace lima
             int pcoImgNrLast;
             int alignmentShift;
             bool bNoTimestamp;
+
+            // Camera-timestamp-based inter-frame interval tracking: a missed
+            // trigger edge that the camera never reacts to causes no counter
+            // jump at all (the camera's own dwImgCounter only increments on
+            // frames it actually captures), so it is invisible to the
+            // pcoImgNrDiff-based "Missing Frame" check above. It does, however,
+            // show up as a widened interval (~2x the running baseline) between
+            // the embedded capture timestamps of the two frames straddling the
+            // missed trigger. Logged immediately (not deferred to end-of-run)
+            // so the event is captured even if the acquisition later times out.
+            // Uses the camera's own embedded timestamp, not host wall-clock
+            // time, so it is not contaminated by Lima-side processing jitter.
+            double m_lastFrameTimeMs = 0.0;
+            bool m_haveLastFrameTime = false;
+            double m_intervalRollingAvgMs = 0.0;
         }; // class CheckImgNr
 
         class DLL_EXPORT BufferCtrlObj : public SoftBufferCtrlObj
@@ -127,6 +153,15 @@ namespace lima
 
           public:
             BufferCtrlObj(Camera *cam);
+
+// #if defined(__linux__)
+//             void setCPUAffinityMask(const cpu_set_t& mask)
+//             {
+//               Allocator::Ref alloc = std::make_shared<NumaAllocator>(mask);
+//               AllocatorFactory::get().setDefaultAllocator(alloc);
+//             }
+// #endif
+
             void prepareAcq();
             void startAcq();
             // void getStatus(int &err,bool& exposing) {err = m_status,exposing

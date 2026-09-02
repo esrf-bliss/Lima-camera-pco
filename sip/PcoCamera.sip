@@ -8,7 +8,7 @@ namespace Pco
 %End
   public:
 
-        Camera(const std::string&);
+        Camera(const std::string&, int acq_thread_numa_node, int acq_thread_rt_priority);
         ~Camera();
 
 

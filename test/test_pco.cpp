@@ -82,7 +82,7 @@ CtControl *TestApp::getCtControl()
     DEB_MEMBER_FUNCT();
 
     DEB_ALWAYS() << "Camera: " << DEB_VAR1(m_pars->sn);
-    m_cam = new Camera(m_pars->sn);
+    m_cam = new Camera(m_pars->sn, /*acq_thread_numa_node*/ 0, /*acq_thread_rt_priority*/ 99);
 
     m_interface = new Interface(m_cam);
     m_ct = new CtControl(m_interface);

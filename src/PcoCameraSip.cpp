@@ -779,7 +779,11 @@ void Camera::setNrEvents(int val)
 {
     DEB_MEMBER_FUNCT();
 
-    if ((val < 1) || (val > PCO_BUFFER_NREVENTS))
+    // Was capped at PCO_BUFFER_NREVENTS (the *default* value, 15) instead of
+    // PCO_MAX_NR_ALLOCATED_BUFFERS (the actual array/hard capacity, also 15
+    // right now but not necessarily always equal) - fixed so callers can
+    // reach the true ceiling even if the default is later lowered again.
+    if ((val < 1) || (val > PCO_MAX_NR_ALLOCATED_BUFFERS))
         return;
     m_pco_buffer_nrevents = val;
 }

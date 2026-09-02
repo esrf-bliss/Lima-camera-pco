@@ -900,8 +900,53 @@ int BufferCtrlObj::_xferImag()
                 __sprintfSExt(msg, sizeof(msg),
                               "err[0x%lx] dwStatusDll[0x%lx] dwStatusDrv[0x%lx] \n"
                               "sBufNr[%d] dwFrameIdx[%d] iLoopsPolled[%d] "
-                              "msTimeout[%d]\n",
-                              errPco, dwStatusDll, dwStatusDrv, sBufNr, dwFrameIdx, iLoopsPolled, msTimeout);
+                              "msTimeout[%d] acqTimeoutRetry[%d]\n",
+                              errPco, dwStatusDll, dwStatusDrv, sBufNr, dwFrameIdx, iLoopsPolled, msTimeout,
+                              acqTimeoutRetry);
+
+                // acqTimeoutRetry was being fetched above but never used here:
+                // any single WaitforNextBufferNum timeout followed by a
+                // non-zero driver status (eg "pending buffers in driver
+                // queue") aborted the whole acquisition immediately, with no
+                // chance for a transient stall to clear - unlike
+                // _xferImagMult(), which already retries acqTimeoutRetry
+                // times before giving up. This mirrors that behavior here,
+                // same convention as _xferImagMult(): configured 0 means
+                // infinite retries (per the acqTimeoutRetry Tango attribute
+                // description), decrementing from 0 never reaches exactly 0
+                // again so it always retries; configured N>0 aborts once the
+                // countdown reaches 0.
+                acqTimeoutRetry--;
+                if (acqTimeoutRetry)
+                {
+                    // Merely re-waiting on sBufNr is not enough: this buffer
+                    // was already submitted (see _assignImage2Buffer) and the
+                    // driver just told us it is stuck - PCO_WaitforNextBufferNum
+                    // will keep timing out on the same stale descriptor
+                    // forever otherwise. The standalone reproducer
+                    // (tools/pco_edge_standalone_test/pco_edge_test.cpp) hits
+                    // this exact same driver status and recovers every time
+                    // by re-submitting the buffer before waiting again; do
+                    // the same here. dwFrame is always 0 for Edge cameras
+                    // (see _assignImage2Buffer's dwFrame computation), which
+                    // is the only camera type using this acquisition thread
+                    // (PcoAcqThreadEdge.cpp).
+                    int errRearm = m_cam->_pco_AddBufferEx(0, 0, sBufNr, wArmWidth, wArmHeight, wBitPerPixel);
+                    if (errRearm)
+                    {
+                        char msgRearm[128];
+                        __sprintfSExt(msgRearm, sizeof(msgRearm), "sBufNr[%d] errRearm[0x%x]", sBufNr, errRearm);
+                        DEB_WARNING() << "\n"
+                                      << msg << m_cam->_sprintComment(false, fnId, "[PCO_AddBufferEx rearm]", "[ERROR]")
+                                      << msgRearm;
+                    }
+
+                    DEB_WARNING() << "\n"
+                                  << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
+                                  << m_cam->_sprintComment(false, fnId, "[PCO_GetBufferStatus]", "[RETRY]")
+                                  << " acqTimeoutRetry remaining=" << acqTimeoutRetry;
+                    continue;
+                }
 
                 DEB_WARNING() << "\n"
                               << msg << m_cam->_PcoCheckError(__LINE__, __FILE__, dwStatusDrv, error)
@@ -2008,6 +2053,20 @@ void BufferCtrlObj::_pcoAllocBuffers(bool max)
 
     _pcoAllocBuffersFree();
 
+    // Defensive cleanup: a previous process on this camera that was killed
+    // abruptly (crash, SIGINT, uncaught exception) may have left SDK buffers
+    // allocated on the driver side without ever freeing them. _pcoAllocBuffersFree()
+    // above only releases buffers *this* process's own bookkeeping knows
+    // about, not leaked slots from a different (dead) process. The SDK/driver
+    // buffer pool on this camera/interface has a hard ceiling (15 usable
+    // buffers, numbered from 1 - see lima-camera-pco issue #20); leaked slots
+    // shift the numbering and can push freshly-requested buffers past that
+    // ceiling, which PCO_AllocateBuffer does not itself reject but which then
+    // fails every later operation with "buffer nr is out of range". Reclaim
+    // the low slots before allocating our own.
+    for (SHORT _leakedBufNr = 0; _leakedBufNr < 32; ++_leakedBufNr)
+        PCO_FreeBuffer(m_cam->m_handle, _leakedBufNr); // errors ignored (slot not allocated = normal)
+
     // we are using pco allocated buffer, we must to allocate them
     int error = 0;
     // char *sErr;
@@ -2536,7 +2595,7 @@ int BufferCtrlObj::_xferImagDoubleImage()
 
         // The return value indicates which event is signaled
 
-#    if PCO_BUFFER_NREVENTS != 4
+#    if PCO_BUFFER_NREVENTS != PCO_MAX_NR_ALLOCATED_BUFFERS
 #        error ============================================== ABORT - wrong nr of WAIT_OBJECT
 #    endif
         switch (dwEvent)
