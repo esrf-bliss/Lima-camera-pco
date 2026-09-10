@@ -910,15 +910,11 @@ int BufferCtrlObj::_xferImag()
                 // queue") aborted the whole acquisition immediately, with no
                 // chance for a transient stall to clear - unlike
                 // _xferImagMult(), which already retries acqTimeoutRetry
-                // times before giving up. This mirrors that behavior here,
-                // same convention as _xferImagMult(): configured 0 means
-                // infinite retries (per the acqTimeoutRetry Tango attribute
-                // description), decrementing from 0 never reaches exactly 0
-                // again so it always retries; configured N>0 aborts once the
-                // countdown reaches 0.
-                acqTimeoutRetry--;
-                if (acqTimeoutRetry)
+                // times before giving up. This mirrors that behavior here.
+                if (acqTimeoutRetry > 0)
                 {
+                    acqTimeoutRetry--;
+
                     // Merely re-waiting on sBufNr is not enough: this buffer
                     // was already submitted (see _assignImage2Buffer) and the
                     // driver just told us it is stuck - PCO_WaitforNextBufferNum
