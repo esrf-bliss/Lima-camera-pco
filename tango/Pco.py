@@ -146,6 +146,12 @@ class PcoClass(tango.DeviceClass):
             "acq thread SCHED_FIFO real-time priority (1-99)",
             99,
         ],
+        "acq_thread_irq_pci_addr": [
+            tango.DevString,
+            "PCI address of this camera's frame grabber (e.g. '86:00.0'), used to "
+            "keep its IRQ CPU out of the acq thread's cpuset (empty disables this)",
+            "",
+        ],
     }
 
     #    Command definitions
@@ -421,6 +427,7 @@ def get_control(
     sn: str = "",
     acq_thread_numa_node: int = 0,
     acq_thread_rt_priority: int = 99,
+    acq_thread_irq_pci_addr: str = "",
     **keys
 ):
 
@@ -432,11 +439,14 @@ def get_control(
     print("           sn:", sn)
     print("    numa_node:", acq_thread_numa_node)
     print(" rt_priority :", acq_thread_rt_priority)
+    print(" irq_pci_addr:", acq_thread_irq_pci_addr)
     print("         keys:", keys)
     print("======================================")
 
     if _PcoCam is None:
-        _PcoCam = PcoAcq.Camera(sn, int(acq_thread_numa_node), int(acq_thread_rt_priority))
+        _PcoCam = PcoAcq.Camera(
+            sn, int(acq_thread_numa_node), int(acq_thread_rt_priority), acq_thread_irq_pci_addr
+        )
         _PcoInterface = PcoAcq.Interface(_PcoCam)
         _PcoControl = core.CtControl(_PcoInterface)
 

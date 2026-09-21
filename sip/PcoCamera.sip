@@ -8,7 +8,8 @@ namespace Pco
 %End
   public:
 
-        Camera(const std::string&, int acq_thread_numa_node, int acq_thread_rt_priority);
+        Camera(const std::string&, int acq_thread_numa_node, int acq_thread_rt_priority,
+               const std::string &acq_thread_irq_pci_addr = "");
         ~Camera();
 
 

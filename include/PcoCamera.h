@@ -575,7 +575,8 @@ namespace lima
             DEB_CLASS_NAMESPC(DebModCamera, "Camera", "Pco");
 
           public:
-            Camera(const std::string &sn, int acq_thread_numa_node, int acq_thread_rt_priority);
+            Camera(const std::string &sn, int acq_thread_numa_node, int acq_thread_rt_priority,
+                   const std::string &acq_thread_irq_pci_addr = "");
             ~Camera();
 
             enum Status
@@ -700,6 +701,14 @@ namespace lima
                 _AcqThread(Camera &aCam);
                 virtual ~_AcqThread() = default;
 
+                // Re-resolves the frame grabber's IRQ-affine CPU and rebuilds the
+                // thread's cpuset. Must be called before every start(), not just once
+                // at construction: at construction (Camera's member-initializer list)
+                // the camera/driver isn't connected yet, so the IRQ lookup can't
+                // succeed; and IRQ affinity can itself drift across acquisitions
+                // (irqbalance).
+                void _configureCpuAffinity();
+
               protected:
                 virtual void threadFunction();
 
@@ -713,6 +722,12 @@ namespace lima
             // _AcqThread's constructor reads these two values.
             const int m_thread_numa_node = 0;
             const int m_thread_rt_priority = 99;
+            // PCI address (e.g. "86:00.0") of this camera's frame grabber, whose IRQ
+            // CPU should be kept out of the acquisition thread's cpuset. A driver
+            // name alone doesn't identify a single card - several grabbers of the
+            // same model can share one machine - so this is deployment-specific,
+            // per-camera configuration; empty disables the exclusion.
+            const std::string m_thread_irq_pci_addr;
 
             friend class _AcqThread;
             _AcqThread m_acq_thread;
