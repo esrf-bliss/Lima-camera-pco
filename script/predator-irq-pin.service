@@ -1,0 +1,12 @@
+[Unit]
+Description=Keep frame grabber (predator_driver) IRQ pinned to a fixed CPU
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/pin-predator-irq.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

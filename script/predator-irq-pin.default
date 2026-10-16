@@ -1,0 +1,13 @@
+# Configuration for /usr/local/sbin/pin-predator-irq.sh
+#
+# PCI address of the frame grabber (find it with: lspci -d 1d2a:)
+PCI_ADDR=0000:86:00.0
+#
+# CPU to pin its interrupt to. Must match:
+#  - the "acq_thread_irq_pci_addr" Tango device property on det03_edge10bi
+#    (that property holds the PCI address, not this CPU - the Lima side
+#    re-resolves whichever CPU this pins the IRQ to on every acquisition
+#    start, so it self-adjusts if you change TARGET_CPU here)
+#  - IRQBALANCE_BANNED_CPULIST in /etc/default/irqbalance, so irqbalance
+#    never reclaims this CPU for some other interrupt
+TARGET_CPU=3
